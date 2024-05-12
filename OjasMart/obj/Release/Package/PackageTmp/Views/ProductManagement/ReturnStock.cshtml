@@ -1,0 +1,364 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Return Stock";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var RoleId = '@Request.RequestContext.HttpContext.Session["Role"]';
+        var UserId = '@Request.RequestContext.HttpContext.Session["UserName"]';
+        if (RoleId == '') {
+            window.location.href = "../Account/Index"
+        }
+        $('#txtBillDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+    });
+
+    function AddTableRow() {
+        var ddlItemGroup = $("#ddlItemGroup");
+        var ddlItemHead = $("#ddlItemHead");
+        var txtQuantity = $("#txtQuantity");
+        var txtReason = $("#txtReason");
+
+        if (ddlItemGroup.val() == "0") {
+            alert("Please Select Item Group !!!");
+            ddlItemGroup.focus();
+            return;
+        }
+
+        if (ddlItemHead.val() == "") {
+            alert("Please Select Item Head !!!");
+            ddlItemHead.focus();
+            return;
+        }
+        if (txtQuantity.val() == "" || txtQuantity.val() == "0" || txtQuantity.val() == "0.00") {
+            alert("Please Enter Quantity !!!");
+            txtQuantity.focus();
+            return;
+        }
+
+        //Get the reference of the Table's TBODY element.
+        var tBody = $("#tblItemDetail > TBODY")[0];
+
+        //Add Row.
+        var row = tBody.insertRow(-1);
+
+        var cell = $(row.insertCell(-1));
+        //cell.html(txtItem.val());
+        cell.html($("#ddlItemGroup :selected").text());
+        //Add Item Title cell.
+        var cell = $(row.insertCell(-1));
+        //cell.html(txtItem.val());
+        cell.html($("#ddlItemHead :selected").text());
+
+        //Add Category ref. cell.
+        cell = $(row.insertCell(-1));
+        cell.html(txtQuantity.val());
+        // Add HSn Code Cell
+        cell = $(row.insertCell(-1));
+        cell.html(txtReason.val());
+
+        //Add Button cell.
+        cell = $(row.insertCell(-1));
+        var btnRemove = $("<input />");
+        btnRemove.attr("type", "button");
+        btnRemove.attr("onclick", "Remove(this);");
+        btnRemove.attr("class", "btn btn-danger btn-xs");
+        btnRemove.val("Remove");
+        cell.append(btnRemove);
+        //Add item Id
+        cell = $(row.insertCell(-1));
+        cell.html(ddlItemHead.val());
+        cell.hide();
+
+        //Clear the TextBoxes.
+        ddlItemGroup.val("0");
+        ddlItemHead.val("");
+        txtQuantity.val("");
+        txtReason.val("");
+
+    }
+
+    function Remove(button) {
+        //Determine the reference of the Row using the Button.
+        var row = $(button).closest("TR");
+        var name = $("TD", row).eq(1).html();
+
+        if (confirm("Do you want to delete: " + name)) {
+            //Get the reference of the Table.
+            var table = $("#tblItemDetail")[0];
+            //Delete the Table row using it's Index.
+            table.deleteRow(row[0].rowIndex);
+        }
+    };
+
+    function allowonlyDegitandDot() {
+        if (event.which < 46 || event.which >= 58 || event.which == 47) {
+            event.preventDefault();
+        }
+
+        if (event.which == 46 && $(this).val().indexOf('.') != -1) {
+            this.value = '';
+        }
+    }
+
+
+    function CheckStockAvailibility() {
+        var dataobject = {
+            ItemCode1: $("#ddlItemHead").val()
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/DemandManagement/CheckStockAvailibility",
+            type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (data1) {
+                var Qty = $("#txtQuantity").val();
+                if (data1 == "0") {
+                    alert("Sorry ! You have not Sufficient Item Balance.");
+                    $("#txtQuantity").val('');
+                    $("#txtQuantity").focus();
+                    $("#showSpinner").hide();
+                    return;
+                }
+                else {
+                    var AvlQty = data1 != "" ? parseInt(data1) : 0;
+                    if (AvlQty < Qty) {
+                        alert("Sorry ! You have not Sufficient Item Balance.");
+                        $("#txtQuantity").val('');
+                        $("#txtQuantity").focus();
+                        $("#showSpinner").hide();
+                        return;
+                    }
+                    else {
+                        $("#showSpinner").hide();
+                        // calculateAmount();
+                    }
+                }
+                $("#showSpinner").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function BindItemsByGroup() {
+        if ($("#ddlCustomer").val() == "" || $("#ddlCustomer").val() == "0") {
+            alert("Please Select Customer's Account !!!");
+            $("#ddlCustomer").focus();
+            $("#ddlItemGroup").val('0');
+            return;
+        }
+        $("#ddlItemHead").empty();
+        $.ajax({
+            type: 'Post',
+            url: '@Url.Action("GetItemsByGroup","Sales")',
+            dataType: 'json',
+            data: { GroupCode: $("#ddlItemGroup").val() },
+            success: function (data) {
+                $.each(data, function (i, data) {
+                    $("#ddlItemHead").append('<option value="'
+                        + data.Value + '">' +
+                        data.Text + '</option>');
+                });
+                $("#ddlItemHead").val('');
+            },
+            error: function (ex) {
+                alert('Failed to retrieve Items : ' + ex);
+            }
+        });
+    }
+
+
+    function GetItemByBarCode() {
+        if ($.trim($("#txtBarCode").val()) != "") {
+            var dataobject = {
+                barCode: $("#txtBarCode").val()
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Sales/GetItemDetailByBarCode",
+                type: "POST",
+                data: dataobject,
+                dataType: "json",
+                success: function (r) {
+                    if (r.GroupCode != "0") {
+                        $("#ddlItemGroup").val(r.GroupCode);
+                        //BindItemsByGroup();
+                        $("#ddlItemHead").val(r.ItemCode);
+                        $("#txtBarCode").val('');
+                        $("#showSpinner").hide();
+                    }
+                    else {
+                        alert("Details not Found.");
+                        clearControl();
+                    }
+                    $("#showSpinner").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });
+        }
+        else {
+            clearControl();
+        }
+    }
+
+    function clearControl() {
+        $("#ddlItemGroup").val('0');
+        $("#ddlItemHead").val('');
+        $("#txtQuantity").val('');
+    }
+
+    function InsertReturnStock() {
+        if ($("#txtBillDate").val() == "") {
+            alert("Please Enter Invoice Date !!!");
+            $("#txtBillDate").focus();
+            return;
+        }
+
+        var itemdetails = [];
+        $("#tblItemDetail TBODY TR").each(function () {
+            var row = $(this);
+            item = {};
+            item["ItemCode"] = row.find("TD").eq(5).html();
+            item["Quantity"] = row.find("TD").eq(2).html();
+            item["Reason"] = row.find("TD").eq(2).html();
+            itemdetails.push(item);
+        });
+        var dataobject = {
+            ReturnDate: $("#txtBillDate").val(),
+            ItemList: itemdetails
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/ProductManagement/InsertReturnStock",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r.strId == "1") {
+                    alert(r.msg);
+                    location.reload();
+                }
+                else if (r.strId == "2") {
+                    alert("No Item added with Item List !!!");
+                    $("#showSpinner").hide();
+                    return;
+                }
+                else {
+                    alert("Something went wrong !!!");
+                    $("#showSpinner").hide();
+                    return;
+                }
+            }
+        });
+    }
+
+</script>
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <i class="fa fa-refresh fa-spin nexo-refresh-icon" style="color: rgb(0, 0, 0); font-size: 50px; position: absolute; top: 50%; left: 50%; margin-top: -25px; margin-left: -25px; width: 44px; height: 50px;">
+        </i>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                @*<a href="../OutLet/OutLetList" class="btn btn-primary waves-effect waves-light mb-2"><i class="mdi mdi-plus-circle mr-1"></i>Go to OutLet List</a>*@
+            </div>
+            <h4 class="page-title">Retun Stock</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Return Date <span style="color:red">*</span></label>
+                        <input type="text" class="form-control" id="txtBillDate" placeholder="Date" value="@Model.eDate">
+                    </div>
+                </div>
+                <span>Item List</span>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputEmail4" class="col-form-label">Barcode <small style="color:red">(To scan Barcode Please Focus Cursor on this Textbox)</small></label>
+                        <input type="text" class="form-control" id="txtBarCode" placeholder="Barcode" onchange="GetItemByBarCode()">
+                    </div>
+                </div>
+                <hr />
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-borderless table-hover table-centered m-0" id="tblItemDetail">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Item Group</th>
+                                        <th>Item Name</th>
+                                        <th>Quantity</th>
+                                        <th>Reason</th>
+                                        <th>Add</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td width="230px">
+                                            @Html.DropDownList("ddlItemGroup", (List<SelectListItem>)ViewBag.ItemGroupList, new { @id = "ddlItemGroup", @class = "form-control", @onchange = "BindItemsByGroup()" })
+                                        </td>
+                                        <td width="230px">
+                                            @*<select id="ddlItemHead" class="form-control" onchange="GetItemHeadDetails()"></select>*@
+
+                                            @Html.DropDownList("ddlItemHead", (List<SelectListItem>)ViewBag.ItemHeadList, new { @id = "ddlItemHead", @class = "form-control" })
+                                            <span id="lblUOM" style="color:red"></span>
+                                        </td>
+                                        <td width="120px">
+                                            <input type="text" class="form-control" placeholder="Qty." id="txtQuantity" onchange="CheckStockAvailibility()" onkeypress="allowonlyDegitandDot()" />
+                                        </td>
+                                        <td style="width:352px">
+                                            <input type="text" class="form-control" id="txtReason" placeholder="Reason" />
+                                        </td>
+                                        <td>
+                                            <a href="javascript:void(0)" style="color:green;font-size:20px" onclick="AddTableRow()"><i class="fa fa-plus"></i></a>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="form-row">
+                    <div class="form-group col-md-8">
+
+                    </div>
+                    <div class="form-group col-md-4">
+                        <div class="form-row">
+                            <div class="form-group col-md-10" style="margin-bottom:-2px;text-align:right">
+                                <button type="submit" id="btnSave" class="btn btn-primary waves-effect waves-light" onclick="InsertSaleOrder1()">Submit Record</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+

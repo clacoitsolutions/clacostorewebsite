@@ -1,0 +1,171 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Claco Store - Create New Account</title>
+
+    <!-- Favicon Icon -->
+    <link rel="icon" type="image/png" href="images/fav.png">
+
+    <!-- Stylesheets -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link href='~/webassets/vendor/unicons-2.0.1/css/unicons.css' rel='stylesheet'>
+    <link href="~/webassets/css/style.css" rel="stylesheet">
+    <link href="~/webassets/css/responsive.css" rel="stylesheet">
+    <link href="~/webassets/css/night-mode.css" rel="stylesheet">
+    <link href="~/webassets/css/step-wizard.css" rel="stylesheet">
+
+    <!-- Vendor Stylesheets -->
+    <link href="~/webassets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="~/webassets/vendor/OwlCarousel/assets/owl.carousel.css" rel="stylesheet">
+    <link href="~/webassets/vendor/OwlCarousel/assets/owl.theme.default.min.css" rel="stylesheet">
+    <link href="~/webassets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/webassets/vendor/semantic/semantic.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script>
+        function InsertCustomerAccount() {            
+         
+            debugger;
+            if ($("#txtMobileNo").val() == "") {
+                alert("Please Enter Mobile No !!!");
+                $("#txtMobileNo").focus();
+                return;
+            }
+            
+            var dataobject = {
+              
+                ContactNo: $("#txtMobileNo").val(),
+           
+                AccountType: 'Online'
+            };
+            $("#showSpinner").show();
+            $.ajax({
+             url: "/Account/InsertCustomerAccounts1",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    if (r.strId == '1') {
+                      /*  alert(r.msg);*/
+                        var url = null;
+                        var url = "../CustomerAccount/VerifyOTP";
+                        window.location.href = url;
+                        $("#showSpinner").hide();
+                    }
+                    else if (r.strId == '2') {
+                        alert(r.msg);
+                        $("#showSpinner").hide();
+                    }
+                    else {
+                        alert('Server not Responding, Please try later !!!');
+                        $("#showSpinner").hide();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });
+
+        }
+    </script>
+
+</head>
+<body>
+    <div class="sign-inup">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-5">
+                    <div class="sign-form">
+                        <div class="sign-inner">
+                            <div class="sign-logo" id="logo">
+                                <a href="../WebHome/Index"><img src="~/img/logo.jpeg" alt=""></a>
+                                <a href="../WebHome/Index"><img class="logo-inverse" src="~/img/logo.jpeg" alt=""></a>
+                            </div>
+                            <div class="form-dt">
+                                <div class="form-inpts checout-address-step">
+
+                                    <div class="form-title"><h6>login</h6></div>
+                                    @*<div class="form-group pos_rel">
+                                        <input id="txtName" name="fullname" type="text" placeholder="Full name" class="form-control lgn_input" required="">
+                                        <i class="uil uil-user-circle lgn_icon"></i>
+                                    </div>
+                                    <div class="form-group pos_rel">
+                                        <input id="txtEmailAddress" name="emailaddress" type="email" placeholder="Email Address" class="form-control lgn_input" required="">
+                                        <i class="uil uil-envelope lgn_icon"></i>
+                                    </div>*@
+                                    <div class="form-group pos_rel">
+                                        <input id="txtMobileNo" name="phone" type="text" placeholder="Phone Number" class="form-control lgn_input" required="">
+                                        <i class="uil uil-mobile-android-alt lgn_icon"></i>
+                                    </div>
+
+                                    @*<div class="form-group pos_rel">
+                                        <input id="txtGstInNo" name="phone" type="text" placeholder="GSTIN NO." class="form-control lgn_input">
+                                        <i class="uil uil-mobile-android-alt lgn_icon"></i>
+                                    </div>*@
+
+
+                                    @*<div class="form-group pos_rel" style="display:none">
+                                        <label class="control-label">Enter Code</label>
+                                        <ul class="code-alrt-inputs signup-code-list">
+                                            <li>
+                                                <input id="code[1]" name="number" type="text" placeholder="" class="form-control input-md" required="">
+                                            </li>
+                                            <li>
+                                                <input id="code[2]" name="number" type="text" placeholder="" class="form-control input-md" required="">
+                                            </li>
+                                            <li>
+                                                <input id="code[3]" name="number" type="text" placeholder="" class="form-control input-md" required="">
+                                            </li>
+                                            <li>
+                                                <input id="code[4]" name="number" type="text" placeholder="" class="form-control input-md" required="">
+                                            </li>
+
+                                            <li>
+                                                <a class="chck-btn hover-btn code-btn145" href="#">Send</a>
+                                            </li>
+                                        </ul>
+                                        <a href="#" class="resend-link">Resend Code</a>
+                                    </div>
+                                    <div class="form-group pos_rel">
+                                        <input id="txtPassword" name="password1" type="password" placeholder="New Password" class="form-control lgn_input" required="">
+                                        <i class="uil uil-padlock lgn_icon"></i>
+                                    </div>*@
+                                    <button class="login-btn hover-btn" type="submit" onclick="InsertCustomerAccount()">Sign Up /Login</button>
+
+                                </div>
+                                <div class="signup-link">
+                                    @*<p> <a href=""></a></p>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="copyright-text text-center mt-3">
+                        <i class="uil uil-copyright"></i>Copyright 2022 <b>Claco Store</b> . All rights reserved
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Javascripts -->
+    <script src="~/webassets/js/jquery-3.3.1.min.js"></script>
+    <script src="~/webassets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/webassets/vendor/OwlCarousel/owl.carousel.js"></script>
+    <script src="~/webassets/vendor/semantic/semantic.min.js"></script>
+    <script src="~/webassets/js/jquery.countdown.min.js"></script>
+    <script src="~/webassets/js/custom.js"></script>
+    <script src="~/webassets/js/product.thumbnail.slider.js"></script>
+    <script src="~/webassets/js/offset_overlay.js"></script>
+    <script src="~/webassets/js/night-mode.js"></script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Stock Transfer Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using System.Data;
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#tblItemHead").DataTable();
+
+        $("body").on("click", "#tblItemHead .details", function () {
+            var dataobject = {
+                InvoiceNo: $(this).attr('id')
+            };
+            $.ajax({
+                url: "@Url.Action("StockTransferItemWiseDetails", "DemandManagement")",
+                type: "POST",
+                data: dataobject,
+                dataType: "json",
+                success: function (data) {
+                    $('#tblItemDetails tbody').empty();
+                    $.each(data.poList, function (i, item) {
+                        var rows = "<tr>" +
+                            "<td>" + item.ItemName + "</td>" +
+                            "<td>" + item.HSNCode + "</td>" +
+                            "<td>" + item.Quantity + "</td>" +                          
+                            "<td>" + item.Rate + "</td>" +
+                            "<td>" + item.Payablegst + "</td>" +
+                            "<td>" + item.NetTotal + "</td>" +
+                            "</tr>";
+                        $('#tblItemDetails tbody').append(rows);
+                    });
+                },
+                error: function () {
+
+                }
+            });
+
+        });
+    });
+
+
+</script>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Stock Transfer Report</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <div class="table-responsive">
+                <table id="tblItemHead" class="table table-centered mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sr.No</th>
+                            <th>Transfer Code</th>
+                            <th>Transfer Date</th>
+                            <th>Party Name</th>
+                            <th>Stockiest Name</th>
+                            <th>Sub Total</th>
+                            <th>GST Payable</th>
+                            <th>Roundoff Amt.</th>
+                            <th>Net Total</th>
+                            <th>Demand Code</th>                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                i++;
+                                <tr>
+                                    <td>@i</td>
+                                    <td>
+                                        <a href="javascript:void(0);" class="details" data-toggle="modal" data-target="#full-width-modal" id="@dr["TransferCode"]">  @dr["TransferCode"] </a>
+</td>
+                                    <td>
+                                        @dr["TransferDate"]
+                                    </td>
+                                    <td>@dr["PartyName"]</td>
+                                    <td>@dr["TransferBy"]</td>
+                                    <td>@dr["SubTotal"]</td>
+                                    <td>@dr["TotalTax"]</td>
+                                    <td>@dr["RoundoffAmount"]</td>
+                                    <td>@dr["NetTotal"]</td>
+                                    <td>@dr["DemandCode"]</td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                    <tfoot>
+                        <tr style="color:#8e0707">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td style="font-weight:bold">Total:</td>
+                            <td>@Model.GrossPayable</td>
+                            <td>@Model.Payablegst</td>
+                            <td></td>
+                            <td>@Model.NetTotal</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>
+
+
+<div id="full-width-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="full-width-modalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="full-width-modalLabel">Stock Transfer Item Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <table id="tblItemDetails" class="table table-centered mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Item</th>
+                            <th>HSN Code</th>                            
+                            <th>Transfered Qty.</th>                            
+                            <th>Rate</th>
+                            <th>GST Payable</th>
+                            <th>Net Total</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
+                
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+

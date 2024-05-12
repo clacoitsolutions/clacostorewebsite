@@ -1,0 +1,261 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Create Super Stockist";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#txtmfgDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+        $('#txtExpiryDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+        $("#tblItemHead").DataTable();
+
+        //$('#ddlState').select2();
+
+        if ($("#hdSSCode").val() != "") {
+            $("#btnUpdate").show();
+            $("#btnCancel").show();
+            $("#btnSave").hide();
+            $("#ddlState").val($("#hdStateCode").val());
+        }
+    });
+
+
+    function calcRate() {
+        var PurchRate = $("#txtPurchaseRate").val() != "" ? parseFloat($("#txtPurchaseRate").val()) : 0;
+        var MRP = $("#txtMRP").val() != "" ? parseFloat($("#txtMRP").val()) : 0;
+        var IGST = $("#txtIGSt").val() != "" ? parseFloat($("#txtIGSt").val()) : 0;
+
+        var cgst = IGST / 2;
+        var sgst = IGST / 2;
+        var Rate = (MRP / ((100 + IGST) / 100));
+        $("#txtcgst").val(cgst.toFixed(2));
+        $("#txtsgst").val(sgst.toFixed(2));
+        $("#txtRate").val(Rate.toFixed(2));
+
+    }
+
+    function InsertSuperStockiest() {
+        if ($("#txtSSName").val() == "") {
+            alert("Enter SS Name !!!");
+            $("#txtSSName").focus();
+            return;
+        }
+        if ($("#txtContactPerson").val() == "") {
+            alert("Enter Contact Person !!!");
+            $("#txtContactPerson").focus();
+            return;
+        }
+        if ($("#txtContactNo").val() == "") {
+            alert("Enter Contact No !!!");
+            $("#txtContactNo").focus();
+            return;
+        }
+        if ($("#ddlState").val() == "") {
+            alert("Select State Name !!!");
+            $("#ddlState").focus();
+            return;
+        }
+        
+        var dataobject = {
+            SSName: $("#txtSSName").val(),
+            ContactPerson: $("#txtContactPerson").val(),
+            ContactNo: $("#txtContactNo").val(),
+            EmailAddress: $("#txtEmailAddress").val(),
+            PinCode: $("#txtPinCode").val(),
+            Address: $("#txtAddress").val(),
+            StateId: $("#ddlState").val(),
+            CityName: $("#txtCityName").val(),
+            GstNo: $("#txtGstNo").val(),
+            PanNo: $("#txtPanNo").val(),
+            Action: "1",
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/SuperStockiest/InsertUpdateSuperStockiest",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r != '0') {
+                    alert(r);
+                    location.reload();
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+
+    function UpdateSuperStockiest() {
+        if ($("#hdSSCode").val() == "") {
+            alert("SS Code Not Found !!!");           
+            return;
+        }
+        if ($("#txtSSName").val() == "") {
+            alert("Enter SS Name !!!");
+            $("#txtSSName").focus();
+            return;
+        }
+        if ($("#txtContactPerson").val() == "") {
+            alert("Enter Contact Person !!!");
+            $("#txtContactPerson").focus();
+            return;
+        }
+        if ($("#txtContactNo").val() == "") {
+            alert("Enter Contact No !!!");
+            $("#txtContactNo").focus();
+            return;
+        }
+        if ($("#ddlState").val() == "") {
+            alert("Select State Name !!!");
+            $("#ddlState").focus();
+            return;
+        }
+
+        var dataobject = {
+            SSCode: $("#hdSSCode").val(),
+            SSName: $("#txtSSName").val(),
+            ContactPerson: $("#txtContactPerson").val(),
+            ContactNo: $("#txtContactNo").val(),
+            EmailAddress: $("#txtEmailAddress").val(),
+            PinCode: $("#txtPinCode").val(),
+            Address: $("#txtAddress").val(),
+            StateId: $("#ddlState").val(),
+            CityName: $("#txtCityName").val(),
+            GstNo: $("#txtGstNo").val(),
+            PanNo: $("#txtPanNo").val(),
+            Action: "2",
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/SuperStockiest/InsertUpdateSuperStockiest",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r != '0') {
+                    alert(r);
+                    window.location.href = "../SuperStockiest/SuperStockiestList";
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+
+    function CancelUpdate() {
+        window.location.href = "../SuperStockiest/SuperStockiestList";
+    }
+</script>
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                <a href="../SuperStockiest/SuperStockiestList" class="btn btn-primary waves-effect waves-light mb-2"><i class="mdi mdi-plus-circle mr-1"></i>Go to SS List</a>
+            </div>
+            <h4 class="page-title">Create Super Stockist</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-8">
+                        <label for="inputEmail4" class="col-form-label">SS Name <span style="color:red">*</span> </label>
+                        <input type="text" class="form-control" id="txtSSName" placeholder="Enter SS Name" value="@Model.SSName">
+                        <input type="hidden" id="hdSSCode" value="@Model.SSCode" />
+                        <input type="hidden" id="hdStateCode" value="@Model.StCode" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputPassword4" class="col-form-label">Contact Person <span style="color:red">*</span></label>
+                        <input type="text" class="form-control" id="txtContactPerson" placeholder="Enter Contact Person" value="@Model.ContactPerson">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress" class="col-form-label">Contact No <span style="color:red">*</span></label>
+                        <input type="text" class="form-control" id="txtContactNo" maxlength="10" placeholder="Enter Contact No" value="@Model.ContactNo">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2" class="col-form-label">e-Mail Address</label>
+                        <input type="text" class="form-control" id="txtEmailAddress" placeholder="Enter e-Mail Address" value="@Model.EmailAddress">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2" class="col-form-label">Pin Code</label>
+                        <input type="text" class="form-control" id="txtPinCode" maxlength="6" placeholder="Enter 6 digit Pin Code" value="@Model.PinCode">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="inputAddress" class="col-form-label">Compelete Address</label>
+                        <textarea id="txtAddress" class="form-control" placeholder="Enter Compelete Address" rows="5">@Model.Address</textarea>
+                        
+                    </div>                   
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputAddress2" class="col-form-label">Select State <span style="color:red">*</span></label>
+                        @Html.DropDownList("ddlState", (List<SelectListItem>)ViewBag.StateList, new { @id = "ddlState", @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="inputAddress2" class="col-form-label">City Name </label>
+                        <input type="text" class="form-control" id="txtCityName" placeholder="Enter City Name" value="@Model.CityName">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputAddress2" class="col-form-label">GST No.</label>
+                        <input type="text" class="form-control" id="txtGstNo" placeholder="Enter GST No." value="@Model.GstNo">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="inputAddress2" class="col-form-label">PAN No. </label>
+                        <input type="text" class="form-control" id="txtPanNo" placeholder="Enter PAN No." value="@Model.PanNo">
+                    </div>
+                </div>               
+                <button type="submit" id="btnSave" class="btn btn-primary waves-effect waves-light" onclick="InsertSuperStockiest()">Save Record</button>
+                <button type="submit" id="btnUpdate" style="display:none" class="btn btn-warning waves-effect waves-light" onclick="UpdateSuperStockiest()">Update Record</button>
+                
+                <button type="submit" id="btnCancel" style="display:none" class="btn btn-danger waves-effect waves-light" onclick="CancelUpdate()">Cancel</button>
+
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+

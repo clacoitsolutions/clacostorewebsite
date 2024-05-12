@@ -1,0 +1,1763 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Generate Purchase Order";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using System.Data;
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $(this).removeClass('enlarged');
+
+        $('select').select2();
+        var RoleId = '@Request.RequestContext.HttpContext.Session["Role"]';
+        var UserId = '@Request.RequestContext.HttpContext.Session["UserName"]';
+
+        if (RoleId == '') {
+            window.location.href = "../Account/Index"
+        }
+
+        $('#txtBillDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+        $('#txtgstExpiry').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+
+
+        $('body').addClass("sidebar-enable enlarged");
+
+
+    });
+    function InsertSuppliersAccount() {
+        if ($("#txtName").val() == "") {
+            alert("Enter Supplier Account Name !!!");
+            $("#txtName").focus();
+            return;
+        }
+        if ($("#txtPhone").val() == "") {
+            alert("Enter Phone/Mobile No !!!");
+            $("#txtPhone").focus();
+            return;
+        }
+        if ($("#ddlState").val() == "") {
+            alert("Select State Name !!!");
+            $("#ddlState").focus();
+            return;
+        }
+
+        var dataobject = {
+            SSName: $("#txtName").val(),
+            ContactNo: $("#txtPhone").val(),
+            Address: $("#txtAddress").val(),
+            CityName: $("#txtCity").val(),
+            StateId: $("#ddlState").val(),
+            PinCode: $("#txtPinCode").val(),
+            GstNo: $("#txtGstNO").val(),
+            PanNo: $("#txtPanNo").val(),
+            TINNo: $("#txtTinNo").val(),
+            Description: $("#txtAbout").val()
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/ProductManagement/InsertSupplierAccounts",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r != '0') {
+                    alert(r);
+                    location.reload();
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+    function GetAccountCode() {
+        if ($("#ddlSupplier").val() != "" && $("#ddlSupplier").val() != "0") {
+            var dataobject = {
+                AccountCode: $("#ddlSupplier").val()
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/ProductManagement/GetSupplierAccDetail",
+                type: "POST",
+                data: dataobject,
+                dataType: "json",
+                success: function (r) {
+                    if (r.AccountCode != "") {
+                        $("#txtAcCode").val(r.AccountCode);
+                        $("#hdSuppAccStateCode").val(r.StCode);
+                    }
+                    $("#showSpinner").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });
+        }
+        else {
+            $("#txtAcCode").val('');
+            $("#hdSuppAccStateCode").val('');
+        }
+    }
+    function GetItemHeadDetails(obj) {
+      
+        if ($("#ddlSupplier").val() == "" || $("#ddlSupplier").val() == "0") {
+            alert("Please Select Supplier's Account !!!");
+            $("#ddlSupplier").focus();
+            $("#ddlItemHead").val('');
+            return;
+        }
+        var VariationId = $('option:selected', obj).attr('VarId');
+
+        var dataobject = {
+            ItemCode1: $("#ddlItemHead").val(),
+            AccType: "Retail",
+            BillType: "Purchase",
+            VarId: VariationId
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/ProductManagement/GetItemHeadDetail",
+            type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (r) {
+                
+                $("#ddlSize").empty();
+                var Html = "<option value='0'>Select</option>";
+                if (r.ProductVariationsDetails!="") {
+                    var EvalVarationData = eval(r.ProductVariationsDetails);
+                    for (var i = 0; i < EvalVarationData.length; i++) {
+                        Html += "<option  SaleRate=" + EvalVarationData[i].SalePrice + " Purchaserate=" + EvalVarationData[i].PurchaseRate + " value=" + EvalVarationData[i].VariationId + " >" + EvalVarationData[i].VarriationName + "</option>"
+                    }
+                }
+                else
+                {
+                    Html += "<option value='Select'>Select</option>";
+                }
+
+                $("#txtSize").html(Html);
+
+
+
+                if (r.Rate != "" || r.Rate != "0") {
+                    $("#txtRate").val(r.Rate);
+                    $("#lblUOM").text(r.UOM);
+                    $("#ddlItemHead").val(r.ItemCode);
+                    if ($("#hdSuppAccStateCode").val() == $("#hdCompanyStateCode").val()) {
+                        $("#hdgstPer").val('0');
+                        $("#hdCgstPer").val(r.CGSTPer);
+                        $("#hdSgstPer").val(r.SGSTPer);
+                    }
+                    else {
+                        $("#hdgstPer").val(r.GSTPer);
+                        $("#hdCgstPer").val('0');
+                        $("#hdSgstPer").val('0');
+                    }
+                    $("#lblTaxPer").val(r.GSTPer);
+                    $("#hdPurTaxType").val(r.Purchase_taxIncludeExclude);
+                    $("#hdtotTaxPer").val(r.GSTPer);
+                    if ($("#txtQuantity").val() != "") {
+                        calculateAmount();
+                    }
+                    $("#hdItemId").val(r.ItemCode);
+                    $("#hdVarId").val(r.VariationId);
+                    $("#txtHSNCode").val(r.HSNCode);
+
+
+
+                }
+                $("#showSpinner").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+    function BindItemRef() {
+
+      //  alert("Hello");
+       
+       
+        var dataobject = {
+          
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/ProductManagement/GetItemRef",
+            type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (r) {
+
+                $("#ddlItemHead").empty();
+                var Html = "<option value='0'>Select Item</option>";
+                if (r.ProductVariationsDetails != "") {
+                    var EvalVarationData = eval(r.ProductVariationsDetails);
+                    for (var i = 0; i < EvalVarationData.length; i++) {
+                        Html += "<option value=" + EvalVarationData[i].ItemCode + " >" + EvalVarationData[i].ItemName + "</option>"
+                    }
+                }
+                else {
+                    Html += "<option value='Select'>Select</option>";
+                }
+
+                $("#ddlItemHead").html(Html);
+
+                $("#showSpinner").hide();
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+    function calculateAmount() {
+        debugger;
+        var totTaxPer = $("#hdtotTaxPer").val() != "" ? parseFloat($("#hdtotTaxPer").val()) : 0;
+        //var gstPer = $("#hdgstPer").val() != "" ? parseFloat($("#hdgstPer").val()) : 0;
+        var gstPer = $("#lblTaxPer").val() != "" ? parseFloat($("#lblTaxPer").val()) : 0;
+        var CgstPer = $("#hdCgstPer").val() != "" ? parseFloat($("#hdCgstPer").val()) : 0;
+        var SgstPer = $("#hdSgstPer").val() != "" ? parseFloat($("#hdSgstPer").val()) : 0;
+        var Rate = $("#txtRate").val() != "" ? parseFloat($("#txtRate").val()) : 0;
+        var MRP = $("#txtMRP").val() != "" ? parseFloat($("#txtMRP").val()) : 0;
+        var TaxAmt = $("#lbltaxAmt").text() != "" ? parseFloat($("#lbltaxAmt").text()) : 0;
+        var taxtype = $("#hdPurTaxType").val();
+        if (taxtype == "Include") {
+           // totTaxPer = 1 + (totTaxPer / 100);
+           // totTaxPer = totTaxPer;
+            //Rate = Rate / totTaxPer;
+            Rate = Rate;
+        }
+        var Quantity = $("#txtQuantity").val() != "" ? parseFloat($("#txtQuantity").val()) : 0;
+        var DiscPer = $("#txtDiscPer").val() != "" ? parseFloat($("#txtDiscPer").val()) : 0;
+
+        var DiscPer2 = $("#txtDiscPer2").val() != "" ? parseFloat($("#txtDiscPer2").val()) : 0;
+
+        var subTotal = Rate * Quantity;
+        var subMRPTotal = MRP * Quantity;
+        var DiscAmt = (subTotal * DiscPer) / 100;
+        var DiscAmt2 = (subTotal * DiscPer2) / 100;
+        var AfterDisc = subTotal - DiscAmt - DiscAmt2;
+        var AfterMRPDisc = subMRPTotal - DiscAmt - DiscAmt2;
+     
+        if (DiscAmt != null && DiscAmt != NaN && DiscAmt != "") {
+            $("#txtDiscAmt").val(DiscAmt.toFixed(2));
+        }
+
+        if (DiscAmt2 != null && DiscAmt2 != NaN && DiscAmt2 != "") {
+            $("#txtDiscAmt2").val(DiscAmt2.toFixed(2));
+        }
+
+        var gstAmt = (AfterDisc * gstPer) / 100;
+        var CgstAmt = (AfterDisc * CgstPer) / 100;
+        var SgstAmt = (AfterDisc * SgstPer) / 100;
+        var taxAmt = (gstAmt + CgstAmt + SgstAmt);
+        
+        var TotalDiscount = parseFloat(DiscAmt) + parseFloat(DiscAmt2);
+
+
+
+       // alert(TotalDiscount);
+        $("#lblDiscAmt").text(TotalDiscount.toFixed(2));
+     //   $("#lbltaxAmt").text(taxAmt.toFixed(2));
+        $("#hdgstAmt").val(gstAmt.toFixed(2));
+        $("#hdCgstAmt").val(CgstAmt.toFixed(2));
+        $("#hdSgstAmt").val(SgstAmt.toFixed(2));
+
+        var TotalAmt = AfterDisc;
+        var TotalMRPAmt = AfterMRPDisc;
+      //  var taxtAmount1 = (TotalAmt.toFixed(2) - taxAmt.toFixed(2)).toFixed(2);
+        var taxtAmount1 = (Rate + TaxAmt) * Quantity;
+        $("#txtAmount").text(taxtAmount1.toFixed(2));
+
+
+        //var taxamount = ((Rate - TotalDiscount) * gstPer / 100) * Quantity;
+        var taxamount = (((Rate*Quantity) - TotalDiscount) * gstPer / 100)  ;
+    //    alert(taxamount);
+        $("#lbltaxAmt").text(taxamount.toFixed(2));
+
+
+     //   alert(Rate);
+     //   alert(TotalDiscount);
+     //   alert(taxamount);
+     //   alert(Quantity);
+        
+        //var totalamount = ((Rate - TotalDiscount) + taxamount) * Quantity;
+        //var totalamount = (((Rate * Quantity) - TotalDiscount) + taxamount);
+        var totalamount = (((Rate * Quantity) - TotalDiscount) );
+
+
+    //    alert(totalamount);
+
+
+        $("#txtAmount").text(totalamount.toFixed(2));
+
+        if ($("#txtQuantity").val() != "" && $("#txtMRP").val() != "") {
+           
+            //var profit = parseFloat($("#txtMRP").val()) - parseFloat($("#lbltaxAmt").text()) - parseFloat($("#txtRate").val())
+
+            var profit = parseFloat($("#txtMRP").val()) - parseFloat($("#txtRate").val()) 
+
+
+            $("#txtProfit").text(profit.toFixed(2));
+            //var Profit_Per = ((parseFloat($("#txtMRP").val()) - parseFloat($("#lbltaxAmt").text()) - parseFloat($("#txtRate").val())) * 100) / (parseFloat($("#txtRate").val()) + parseFloat($("#lbltaxAmt").text()));
+
+
+            var Profit_Per = ((parseFloat($("#txtMRP").val()) - parseFloat($("#txtRate").val())   ) * 100) / (parseFloat($("#txtRate").val()) + parseFloat($("#lbltaxAmt").text()));
+
+
+            $("#txtProfit_Per").text(Profit_Per.toFixed(2));
+
+        }
+
+
+    
+
+
+
+
+    }
+    function ratecalculateAmount() {
+        var Rate = $("#txtRate").val() != "" ? parseFloat($("#txtRate").val()) : 0;
+        var TaxPer = $("#lblTaxPer").val() != "" ? parseFloat($("#lblTaxPer").val()) : 0;
+        var TaxAmt = $("#lbltaxAmt").text() != "" ? parseFloat($("#lbltaxAmt").text()) : 0;
+        var MRP = $("#txtMRP").val() != "" ? parseFloat($("#txtMRP").val()) : 0;
+        
+        var Quantity = $("#txtQuantity").val() != "" ? parseFloat($("#txtQuantity").val()) : 0;
+
+      //  alert(Rate);
+     //   alert(TaxPer);
+
+        var amount = (Rate * TaxPer * Quantity) / 100;
+
+       // alert(amount);
+
+        $("#lbltaxAmt").text(amount.toFixed(2));
+
+
+        calculateAmount();
+
+
+
+    }
+    function grd_ratecalculateAmount(obj) {
+
+        var row = $(obj).closest("TR");
+
+        var Rate = row.find("TD").eq(4).find("input").val() != "" ? parseFloat(row.find("TD").eq(4).find("input").val()) : 0; //4
+     
+        
+        var TaxPer = row.find("TD").eq(11).find("input").val() != "" ? parseFloat(row.find("TD").eq(11).find("input").val()) : 0; // 11
+        var TaxAmt = row.find("TD").eq(11).html() != "" ? parseFloat(row.find("TD").eq(11).html()) : 0; // 11
+        var MRP = row.find("TD").eq(5).find("input").val() != "" ? parseFloat(row.find("TD").eq(5).find("input").val()) : 0;  // 5
+      
+        var Quantity = row.find("TD").eq(3).find("input").val() != "" ? parseFloat(row.find("TD").eq(3).find("input").val()) : 0;  //3
+
+        var DiscAmt1 = row.find("TD").eq(7).find("input").val() != "" ? parseFloat(row.find("TD").eq(7).find("input").val()) : 0; //4
+        var DiscAmt2 = row.find("TD").eq(9).find("input").val() != "" ? parseFloat(row.find("TD").eq(9).find("input").val()) : 0; //4
+     
+       
+        //var amount = (Rate * TaxPer * Quantity) / 100;
+        var amount = (((Rate * Quantity) - (DiscAmt1 + DiscAmt2)) * TaxPer) / 100;
+
+        
+       
+        row.find("TD").eq(11).html(amount.toFixed(2));
+
+
+        var InpTax = $("<input />");
+        InpTax.attr("type", "text");
+        InpTax.attr("style", "width:50px");
+        InpTax.val(TaxPer);
+        InpTax.attr("onchange", "grd_ratecalculateAmount(this);");
+        row.find("TD").eq(11).append(InpTax);
+
+        grdcalculateAmount(obj);
+
+    //    calculateAmount();
+
+
+
+    }
+    function barcodecalculateAmount() {
+        debugger;
+        var totTaxPer = $("#hdtotTaxPer").val() != "" ? parseFloat($("#hdtotTaxPer").val()) : 0;
+        //var gstPer = $("#hdgstPer").val() != "" ? parseFloat($("#hdgstPer").val()) : 0;
+        var gstPer = $("#lblTaxPer").val() != "" ? parseFloat($("#lblTaxPer").val()) : 0;
+        var CgstPer = $("#hdCgstPer").val() != "" ? parseFloat($("#hdCgstPer").val()) : 0;
+        var SgstPer = $("#hdSgstPer").val() != "" ? parseFloat($("#hdSgstPer").val()) : 0;
+        var Rate = $("#txtRate").val() != "" ? parseFloat($("#txtRate").val()) : 0;
+        var MRP = $("#txtMRP").val() != "" ? parseFloat($("#txtMRP").val()) : 0;
+        var TaxAmt = $("#lbltaxAmt").text() != "" ? parseFloat($("#lbltaxAmt").text()) : 0;
+        var taxtype = $("#hdPurTaxType").val();
+        if (taxtype == "Include") {
+            // totTaxPer = 1 + (totTaxPer / 100);
+            // totTaxPer = totTaxPer;
+            //Rate = Rate / totTaxPer;
+            Rate = Rate;
+        }
+        var Quantity = $("#txtQuantity").val() != "" ? parseFloat($("#txtQuantity").val()) : 0;
+        var DiscPer = $("#txtDiscPer").val() != "" ? parseFloat($("#txtDiscPer").val()) : 0;
+
+        var DiscPer2 = $("#txtDiscPer2").val() != "" ? parseFloat($("#txtDiscPer2").val()) : 0;
+
+        var subTotal = Rate * Quantity;
+        var subMRPTotal = MRP * Quantity;
+        var DiscAmt = (subTotal * DiscPer) / 100;
+        var DiscAmt2 = (subTotal * DiscPer2) / 100;
+        var AfterDisc = subTotal - DiscAmt - DiscAmt2;
+        var AfterMRPDisc = subMRPTotal - DiscAmt - DiscAmt2;
+
+        var gstAmt = (AfterDisc * gstPer) / 100;
+        var CgstAmt = (AfterDisc * CgstPer) / 100;
+        var SgstAmt = (AfterDisc * SgstPer) / 100;
+        var taxAmt = (gstAmt + CgstAmt + SgstAmt);
+
+        $("#lblDiscAmt").text(DiscAmt.toFixed(2));
+     //   $("#lbltaxAmt").text(taxAmt.toFixed(2));
+        $("#hdgstAmt").val(gstAmt.toFixed(2));
+        $("#hdCgstAmt").val(CgstAmt.toFixed(2));
+        $("#hdSgstAmt").val(SgstAmt.toFixed(2));
+
+        var TotalAmt = AfterDisc;
+        var TotalMRPAmt = AfterMRPDisc;
+        //var taxtAmount1 = (TotalAmt.toFixed(2) - taxAmt.toFixed(2)).toFixed(2);
+        //var taxtAmount1 = Rate + TaxAmt;
+        var taxtAmount1 = Rate ;
+        $("#txtAmount").text(taxtAmount1.toFixed(2));
+
+        if ($("#txtQuantity").val() != "" && $("#txtMRP").val() != "") {
+
+            var profit = parseFloat($("#txtMRP").val())  - parseFloat($("#txtRate").val())
+
+            $("#txtProfit").text(profit.toFixed(2));
+            var Profit_Per = ((parseFloat($("#txtMRP").val())  - parseFloat($("#txtRate").val())) * 100) / (parseFloat($("#txtRate").val()) + parseFloat($("#lbltaxAmt").text()));
+
+            $("#txtProfit_Per").text(Profit_Per.toFixed(2));
+
+        }
+    } 
+    function BindRateBehopeofSize(obj)
+    {
+        debugger;
+        var Rate = $("#txtSize :selected").attr('Purchaserate');
+        var MRPORSaleRate = $("#txtSize :selected").attr('salerate');
+        $("#txtRate").val(Rate);
+        $("#txtMRP").val(MRPORSaleRate);
+    }
+    function AddTableRow() {
+        
+        var ddlItemHead = $("#ddlItemHead");
+        var txtQuantity = $("#txtQuantity");    
+        var HSNCode = $("#txtHSNCode");
+        var Size = $("#txtSize :selected");
+        var txtRate = $("#txtRate");
+        var txtMRP = $("#txtMRP");
+        var txtDiscPer = $("#txtDiscPer");
+        var txtDiscAmt = $("#txtDiscAmt");
+        var txtDiscAmt2 = $("#txtDiscAmt2");
+        var txtDiscPer2 = $("#txtDiscPer2");
+        var lblDiscAmt = $("#lblDiscAmt");
+        var lbltaxAmt = $("#lbltaxAmt");
+        var lblTaxPer = $("#lblTaxPer");
+        var txtAmount = $("#txtAmount");
+        var Profit = $("#txtProfit");
+        var Profit_Per = $("#txtProfit_Per");
+
+        var hdgstPer = $("#hdgstPer");
+        var hdCgstPer = $("#hdCgstPer");
+        var hdSgstPer = $("#hdSgstPer");
+        var hdgstAmt = $("#hdgstAmt");
+        var hdCgstAmt = $("#hdCgstAmt");
+        var hdSgstAmt = $("#hdSgstAmt");
+        var hdItemId = $("#hdItemId");
+        var hdVarId = $("#hdVarId");
+
+        if (ddlItemHead.val() == "") {
+            alert("Please Select Item Head !!!");p
+            ddlItemHead.focus();
+            return;
+        }
+        if (txtQuantity.val() == "" || txtQuantity.val() == "0" || txtQuantity.val() == "0.00") {
+            alert("Please Enter Quantity !!!");
+            txtQuantity.focus();
+            return;
+        }
+        if (txtRate.val() == "") {
+            alert("Rate Can not be Blank !!!");
+            txtRate.focus();
+            return;
+        }
+        if (txtAmount.text() == "" || txtAmount.text() == "0" || txtAmount.text() == "0.00") {
+            alert("Total Amount Can not be Blank");
+            txttotal.focus();
+            return;
+        }
+
+        //Get the reference of the Table's TBODY element.
+        var tBody = $("#tblItemDetail > TBODY")[0];
+
+
+        //Add Row.
+        var row = tBody.insertRow(-1);       
+        //Add Item Title cell.
+        var cell = $(row.insertCell(-1));
+        //cell.html(txtItem.val());
+        cell.html($("#ddlItemHead :selected").text());
+
+        //Add Category ref. cell.
+        cell = $(row.insertCell(-1));
+      //  cell.html(HSNCode.val());
+        var btnHSN = $("<input />");
+        btnHSN.attr("type", "text");
+        btnHSN.attr("style", "width:75px");
+        btnHSN.val(HSNCode.val());
+        cell.append(btnHSN);
+
+        //Add Category ref. cell.
+        //cell = $(row.insertCell(-1));
+        //cell.html(Size.val());
+        cell = $(row.insertCell(-1));
+         cell.html(Size.text())        
+        // cell.html(Size.attr(''));       //Old [2212020]
+        //Add Category ref. cell.
+
+
+        cell = $(row.insertCell(-1));
+      //  cell.html(txtQuantity.val());
+        var btnQty = $("<input />");
+        btnQty.attr("type", "text");
+        btnQty.attr("style", "width:50px");
+        btnQty.attr("Id", $("#ddlItemHead").val());
+        btnQty.attr("onchange", "grdcalculateAmount(this);");
+        btnQty.val(txtQuantity.val());
+        cell.append(btnQty);
+
+
+
+
+        // Add HSn Code Cell
+        cell = $(row.insertCell(-1));
+       // cell.html(txtRate.val());
+        var btnRate = $("<input />");
+        btnRate.attr("type", "text");
+        btnRate.attr("style", "width:75px");
+        btnRate.val(txtRate.val());
+        btnQty.attr("onchange", "grdcalculateAmount(this);");
+        cell.append(btnRate);
+
+        cell = $(row.insertCell(-1));
+     //   cell.html(txtMRP.val());
+        var btnMRP = $("<input />");
+        btnMRP.attr("type", "text");
+        btnMRP.attr("style", "width:75px");
+        btnMRP.val(txtMRP.val());
+        btnMRP.attr("onchange", "grdcalculateAmount(this);");
+        cell.append(btnMRP);
+
+        //Add UOM Cell
+        cell = $(row.insertCell(-1));
+        var discper = txtDiscPer.val() != "" ? txtDiscPer.val() : 0;
+      //  cell.html(discper);
+        var btnDisc = $("<input />");
+        btnDisc.attr("type", "text");
+        btnDisc.attr("style", "width:50px");
+        btnDisc.val(discper);
+        btnDisc.attr("onchange", "grdcalculateAmount(this);");
+        cell.append(btnDisc);
+
+        cell = $(row.insertCell(-1));
+        var discperAmt = txtDiscAmt.val() != "" ? txtDiscAmt.val() : 0;
+        //  cell.html(discper);
+        var btnDiscAmt = $("<input />");
+        btnDiscAmt.attr("type", "text");
+        btnDiscAmt.attr("style", "width:50px");
+        btnDiscAmt.val(discperAmt);
+        btnDiscAmt.attr("onchange", "GrdDiscountAmount(1,this);");
+        cell.append(btnDiscAmt);
+
+
+
+
+        cell = $(row.insertCell(-1));
+        var discper2 = txtDiscPer2.val() != "" ? txtDiscPer2.val() : 0;
+     //   cell.html(discper2);
+        var btnDisc2 = $("<input />");
+        btnDisc2.attr("type", "text");
+        btnDisc2.attr("style", "width:50px");
+        btnDisc2.val(discper2);
+        btnDisc2.attr("onchange", "grdcalculateAmount(this);");
+        cell.append(btnDisc2);
+
+
+        cell = $(row.insertCell(-1));
+        var discperAmt2 = txtDiscAmt2.val() != "" ? txtDiscAmt2.val() : 0;
+        //  cell.html(discper);
+        var btnDiscAmt2 = $("<input />");
+        btnDiscAmt2.attr("type", "text");
+        btnDiscAmt2.attr("style", "width:50px");
+        btnDiscAmt2.val(discperAmt2);
+        btnDiscAmt2.attr("onchange", "GrdDiscountAmount(2,this);");
+        cell.append(btnDiscAmt2);
+
+
+        //Add taxRate Cell
+        cell = $(row.insertCell(-1));
+        cell.html(lblDiscAmt.text());
+        // Add Unit Cell
+
+        cell = $(row.insertCell(-1));
+        cell.html(lbltaxAmt.text());
+        var InpTax = $("<input />");
+        InpTax.attr("type", "text");
+        InpTax.attr("style", "width:50px");
+        InpTax.val(lblTaxPer.val());
+        InpTax.attr("onchange", "grd_ratecalculateAmount(this);");
+        cell.append(InpTax);
+
+    //    alert(lblTaxPer.text());
+
+
+        // Add MRP Cell
+        cell = $(row.insertCell(-1));
+        cell.html(txtAmount.text());
+
+        cell = $(row.insertCell(-1));
+        cell.html(Profit.text());
+
+        cell = $(row.insertCell(-1));
+        //cell.html(Profit_Per.text());
+        cell.html(Profit_Per.text());
+
+        //Add Button cell.
+        cell = $(row.insertCell(-1));
+       
+
+        var btnRemove = $("<a ></a>");
+        btnRemove.attr("onclick", "Remove(this);");
+        btnRemove.html("<i class='fa fa-trash' aria-hidden='true' style='color:Red;'></i>");
+
+
+        cell.append(btnRemove);
+        //Add item Id
+        cell = $(row.insertCell(-1));
+        cell.html($("#ddlItemHead").val());
+        cell.hide();
+        // Add CGST Cell
+        cell = $(row.insertCell(-1));
+        var cgst = hdCgstPer.val() != "" ? hdCgstPer.val() : 0;
+        cell.html(cgst);
+        cell.hide();
+        cell = $(row.insertCell(-1));
+        var gstPer = hdgstPer.val() != "" ? hdgstPer.val() : 0;
+        cell.html(gstPer);
+        cell.hide();
+        // Add CGST Cell
+        cell = $(row.insertCell(-1));
+        var SgstPer = hdSgstPer.val() != "" ? hdSgstPer.val() : 0;
+        cell.html(SgstPer);
+        cell.hide();
+
+        cell = $(row.insertCell(-1));
+        var gstAmt = hdgstAmt.val() != "" ? hdgstAmt.val() : 0;
+        cell.html(gstAmt);
+        cell.hide();
+        // Add IGST Cell
+        cell = $(row.insertCell(-1));
+        var CgstAmt = hdCgstAmt.val() != "" ? hdCgstAmt.val() : 0;
+        cell.html(CgstAmt);
+        cell.hide();
+
+        cell = $(row.insertCell(-1));
+        var SgstAmt = hdSgstAmt.val() != "" ? hdSgstAmt.val() : 0;
+        cell.html(SgstAmt);
+        cell.hide();
+        cell = $(row.insertCell(-1));
+        cell.html(hdVarId.val());
+        cell.hide();
+        CalculateTotal();
+        //Clear the TextBoxes.
+          // ddlItemHead.val("").trigger('change');
+        ddlItemHead.val("");
+        txtQuantity.val("");
+        txtRate.val("");
+        txtDiscPer.val('');
+        lblTaxPer.text('');
+        lblDiscAmt.text("0.00");
+        lbltaxAmt.text("0.00");
+        txtAmount.text("0.00");
+        hdVarId.val('');
+        hdItemId.val('');
+        hdgstPer.val("");
+        hdCgstPer.val("");
+        hdSgstPer.val("");
+        hdgstAmt.val("");
+        hdCgstAmt.val("");
+        hdSgstAmt.val("");
+
+        $("#ddlItemHead").removeAttr("disabled", "disabled");
+        $("#ddlItemHead").addClass('select2-hidden-accessible');
+
+      //  $("#txtSize").addClass('select2-hidden-accessible');
+
+        $("#tblItemDetail .select2").css('display', 'block');
+    }
+    function Remove(button) {
+        debugger;
+        //Determine the reference of the Row using the Button.
+        var row = $(button).closest("TR");
+        var name = $("TD", row).eq(0).html();
+        var cgsttAmt = $("TD", row).eq(16).html();
+        var sgstAmt = $("TD", row).eq(17).html();
+        var igstAmt = $("TD", row).eq(15).html();
+        var tAmt = $("TD", row).eq(6).html();
+
+        if (confirm("Do you want to delete: " + name)) {
+            //Get the reference of the Table.
+            var table = $("#tblItemDetail")[0];
+            //Delete the Table row using it's Index.
+            table.deleteRow(row[0].rowIndex);
+
+
+            var lbltaxableAmt = $.trim($("#lbltaxableAmt").text()) != "" ? parseFloat($.trim($("#lbltaxableAmt").text())) : 0;
+            var lblTotaltax = $.trim($("#lblTotaltax").text()) != "" ? parseFloat($.trim($("#lblTotaltax").text())) : 0;
+            var lblRoundOff = $.trim($("#lblRoundOff").text()) != "" ? parseFloat($.trim($("#lblRoundOff").text())) : 0;
+            var lblNetPayable = $.trim($("#lblNetPayable").text()) != "" ? parseFloat($.trim($("#lblNetPayable").text())) : 0;
+
+            var hdTotIgst = $.trim($("#hdTotIgst").val()) != "" ? parseFloat($.trim($("#hdTotIgst").val())) : 0;
+            var hdTotCgst = $.trim($("#hdTotCgst").val()) != "" ? parseFloat($.trim($("#hdTotCgst").val())) : 0;
+            var hdTotSgst = $.trim($("#hdTotSgst").val()) != "" ? parseFloat($.trim($("#hdTotSgst").val())) : 0;
+
+            var tcgst = $.trim(cgsttAmt) != "" ? parseFloat(cgsttAmt) : 0;
+            var tSgst = $.trim(sgstAmt) != "" ? parseFloat(sgstAmt) : 0;
+
+            var totcgst = hdTotCgst - tcgst;
+            var totsgst = hdTotSgst - tSgst;
+            $("#hdTotCgst").val(totcgst.toFixed(2));
+            $("#hdTotSgst").val(totsgst.toFixed(2));
+
+            var tt = $.trim(tAmt) != "" ? parseFloat(tAmt) : 0;
+            var total = lbltaxableAmt - tt;
+
+            var gstAmt1 = $.trim(igstAmt) != "" ? parseFloat(igstAmt) : 0;
+            var cgstAmt1 = $.trim(cgsttAmt) != "" ? parseFloat(cgsttAmt) : 0;
+            var SgstAmt1 = $.trim(sgstAmt) != "" ? parseFloat(sgstAmt) : 0;
+
+            var taxAmt = lblTotaltax - (gstAmt1 + cgstAmt1 + SgstAmt1);
+            $("#lbltaxableAmt").text(total.toFixed(2));
+            $("#lblTotaltax").text(taxAmt.toFixed(2));
+            $("#hdTotIgst").val(taxAmt.toFixed(2));
+
+            var tt = total + taxAmt;
+            //total = Math.abs(tt);
+            //var absTotal = Math.round(total.toFixed(2))
+            //var r = total - Math.floor(total);
+            //var rrr = (absTotal - tt)
+            //rrr = Math.abs(rrr);
+            //$("#lblRoundOff").text(rrr.toFixed(2));
+            //$("#lblNetPayable").text(Math.round(total.toFixed(2))).toString("0.00");
+            $("#lblNetPayable").text(tt.toFixed(2));
+
+            GrdCalculateTotal();
+
+        }
+    };
+    function CalculateTotal() {
+
+        
+        var disc = 0;
+        var amt = 0;
+        var tax = 0;
+        $("#tblItemDetail TBODY TR").each(function () {
+            var row = $(this);
+            item = {};
+
+
+            disc += parseFloat(row.find("TD").eq(10).html());
+
+            amt += parseFloat(row.find("TD").eq(12).html());
+
+            tax += parseFloat(row.find("TD").eq(11).html());
+
+
+
+        });
+
+        $("#lblTotalDiscount").text(disc.toFixed(2));
+        $("#lblTotaltax").text(tax.toFixed(2));
+        $("#lbltaxableAmt").text((parseFloat(amt.toFixed(2))).toFixed(2));
+
+        $("#lblNetPayable").text((parseFloat(amt) + parseFloat(tax)).toFixed(2));
+
+    }
+    function GrdCalculateTotal() {
+
+        var disc = 0;
+        var amt = 0;
+        var tax = 0;
+        $("#tblItemDetail TBODY TR").each(function () {
+            var row = $(this);
+            item = {};
+
+           
+            disc += parseFloat(row.find("TD").eq(10).html());
+           
+            amt += parseFloat(row.find("TD").eq(12).html());
+            
+            tax += parseFloat(row.find("TD").eq(11).html());
+            
+
+
+        });
+
+        $("#lblTotalDiscount").text(disc.toFixed(2));
+        $("#lblTotaltax").text(tax.toFixed(2));
+        $("#lbltaxableAmt").text((parseFloat(amt.toFixed(2))).toFixed(2));
+
+        $("#lblNetPayable").text(Math.round((parseFloat(amt) + parseFloat(tax)).toFixed(2)));
+
+    } 
+    function allowonlyDegitandDot() {
+        if (event.which < 46 || event.which >= 58 || event.which == 47) {
+            event.preventDefault();
+        }
+
+        if (event.which == 46 && $(this).val().indexOf('.') != -1) {
+            this.value = '';
+        }
+    }
+    function InsertPurchaseOrder() {
+
+      
+        if ($("#ddlSupplier").val() == "0") {
+            alert("Please Select Supplier Account !!!");
+            $("#ddlSupplier").focus();
+            return;
+        }
+        if ($("#txtBillDate").val() == "") {
+            alert("Please Enter Invoice Date !!!");
+            $("#txtBillDate").focus();
+            return;
+        }
+        if ($("#txtInvoiceNo").val() == "") {
+            alert("Please Enter Invoice No. !!!");
+            $("#txtInvoiceNo").focus();
+            return;
+        }
+
+
+       
+        var itemdetails = [];
+        $("#tblItemDetail TBODY TR").each(function () {
+            var row = $(this);
+            item = {};
+
+          //  row.find("TD").eq(5).find("input").val()
+            
+            item["ItemCode"] = row.find("TD").eq(16).html();
+            item["HSNCode"] = row.find("TD").eq(1).find("input").val();
+            item["Quantity"] = row.find("TD").eq(3).find("input").val();
+            item["Rate"] = parseFloat(row.find("TD").eq(4).find("input").val());
+            item["MRP"] = row.find("TD").eq(5).find("input").val();
+
+            item["DiscountPer"] = row.find("TD").eq(6).find("input").val();
+            item["DiscountPer2"] = row.find("TD").eq(8).find("input").val();
+            item["DiscountAmt"] = row.find("TD").eq(10).html();
+
+            item["cgstAmt"] = parseFloat(row.find("TD").eq(11).html()) / 2;
+            item["cgstPer"] = parseFloat(row.find("TD").eq(11).find("input").val()) / 2;
+            item["sgstAmt"] = parseFloat(row.find("TD").eq(11).html()) / 2;
+            item["sgstPer"] = parseFloat(row.find("TD").eq(11).find("input").val()) / 2;
+
+            item["igstPer"] = row.find("TD").eq(11).html();
+            item["igstAmt"] = row.find("TD").eq(11).find("input").val();
+
+
+            item["TotalAmount"] = row.find("TD").eq(12).html();
+            item["UOM"] = row.find("TD").eq(2).html();
+        //    item["MRP"] = row.find("TD").eq(5).html();
+            item["TaxableAmount"] = row.find("TD").eq(20).html();
+            item["Profit"] = row.find("TD").eq(13).html();
+            item["Profit_Per"] = row.find("TD").eq(14).html();
+            item["Reason"] = row.find("TD").eq(19).html();
+
+            item["VariationId"] = row.find("TD").eq(23).html();
+
+
+            itemdetails.push(item);
+
+        });
+
+        
+
+
+        var dataobject = {
+            SupplierAccCode: $("#ddlSupplier").val(),
+            InvoiceDate: $("#txtBillDate").val(),
+            ShipmentPref: null,
+            StateId: null,
+            DeliveryTo: null,
+            TermsCond: null,
+            notes: null,
+            DiscPer: 0,
+            DiscAmt: 0,
+            CgstAmt: $("#hdTotCgst").val() == "" ? 0 : $("#hdTotCgst").val(),
+            SgstAmt: $("#hdTotSgst").val() == "" ? 0 : $("#hdTotSgst").val(),
+            IgstAmt: $("#hdTotIgst").val() == "" ? 0 : $("#hdTotIgst").val(),
+            PayableAmt: $("#lbltaxableAmt").text(),
+            GrossPayable: $("#lbltaxableAmt").text(),
+            NetTotal: $("#lblNetPayable").text(),
+            Payablegst: $("#lblTotaltax").text(),
+            InvoiceNo: $("#txtInvoiceNo").val(),
+            RoundOffAmt: $("#lblRoundOff").text(),
+            PayMode: "Cash",
+            ItemList: itemdetails,
+
+        };
+
+     
+        $.ajax({
+            url: "/ProductManagement/InsertPurchaseOrder",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r != "0") {
+                    alert(r);
+                    location.reload();
+                }
+                else {
+                    alert("Error !!!");
+                }
+            },
+            error: function (ex) {
+            alert('Something went wrong!! : ' + ex);
+        }
+
+
+
+        });
+
+
+
+
+    }
+    function BindItemsByGroup() {
+        if ($("#ddlCustomer").val() == "" || $("#ddlCustomer").val() == "0") {
+            alert("Please Select Customer's Account !!!");
+            $("#ddlCustomer").focus();
+            $("#ddlItemGroup").val('0');
+            return;
+        }
+        $("#ddlItemHead").empty();
+        $.ajax({
+            type: 'Post',
+            url: '@Url.Action("GetItemsByGroup","Sales")',
+            dataType: 'json',
+            data: { GroupCode: $("#ddlItemGroup").val() },
+            success: function (data) {
+                $.each(data, function (i, data) {
+                    $("#ddlItemHead").append('<option value="'
+                        + data.Value + '">' +
+                        data.Text + '</option>');
+                });
+                $("#ddlItemHead").val('');
+            },
+            error: function (ex) {
+                alert('Failed to retrieve Items : ' + ex);
+            }
+        });
+    } 
+    function GetItemByBarCode() {
+    
+        if ($("#ddlCustomer").val() == "" || $("#ddlCustomer").val() == "0") {
+            alert("Please Select Customer's Account !!!");
+            $("#ddlCustomer").focus();
+            $("#txtBarCode").val('');
+            return;
+        }
+
+        
+        if ($.trim($("#txtBarCode").val()) != "") {
+            var dataobject = {
+                Action: 1,
+                barCode: $("#txtBarCode").val()
+            };
+          //  $("#showSpinner").show();
+            $.ajax({
+                url: "/Sales/GetItemDetailByBarCode",
+                type: "POST",
+                data: dataobject,
+                dataType: "json",
+                success: function (r) {
+
+                    
+                    if (r.Id == "1") {
+
+                      
+
+                        
+                        
+
+
+                        var Html = "";
+                        if (r.VariationId != "") {
+                            
+                            Html += "<option value=" + r.VariationId + " >" + r.UOM + "</option>"
+                           
+                        }
+                        else {
+                            Html += "";
+                        }
+
+
+                        var Rate = r.Rate
+                        var gstAmt = (Rate * r.GSTPer) / 100;
+                        //var TaxableRate = Rate - gstAmt;
+                        var TaxableRate = Rate ;
+                       
+
+                        $("#txtSize").removeClass('select2-hidden-accessible');
+                        $("#txtSize").html(Html);
+
+                       
+                        $("#txtHSNCode").val(r.HSNCode);
+                        $("#lblUOM").text(r.UOM);
+                        $("#txtRate").val(TaxableRate);
+                        $("#txtMRP").val(r.MRP);
+                        
+                        $("#hdgstPer").val(r.GSTPer);
+                        $("#lbltaxAmt").text(gstAmt.toFixed(2));
+                        $("#lblTaxPer").val(r.GSTPer);
+                        $("#hdtotTaxPer").val(r.GSTPer);
+                            $("#txtQuantity").val(1);
+                            barcodecalculateAmount();
+                        
+                        $("#hdItemId").val(r.ItemCode);
+                        $("#hdVarId").val(r.VariationId);
+
+                        $("#ddlItemHead").removeClass('select2-hidden-accessible');
+                        $("#tblItemDetail .select2").css('display', 'none');
+                        $("#ddlItemHead").val(r.ItemCode);
+
+                        $("#ddlItemHead").attr("disabled","disabled");
+
+                        $("#txtBarCode").val('');
+
+
+                        var flag = 0;
+                        $("#tblItemDetail TBODY TR").each(function () {
+                            var row = $(this);
+                            var itemcode = row.find("TD").eq(16).html();
+                            var variantid = row.find("TD").eq(23).html();
+
+                            if (itemcode == r.ItemCode && variantid == r.VariationId) {
+                                flag++;
+
+                                var qty = parseInt(row.find("TD").eq(3).find("input").val()) + parseInt(1);
+                                row.find("TD").eq(3).find("input").val(qty);
+                                grdcalculateAmount(this);
+                            }
+
+
+                        });
+
+
+                        if (flag != 0) {
+                            //alert("Record already added!!");
+                            //return;
+                        }
+                        else {
+                            AddTableRow();
+
+                        }
+                        
+
+
+                       
+                    }
+                    else {
+
+                       
+                        alert("Record not found!!");
+                        clearControl();
+                      //  location.reload();
+                    }
+                 //   $("#showSpinner").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });
+        }
+        else {
+            clearControl();
+        }
+    } 
+    function grdcalculateAmount(obj) {
+        
+
+        var row = $(obj).closest("TR");
+      
+        var totTaxPer = $("TD", row).eq(18).text() != "" ? parseFloat($("TD", row).eq(18).text()) : 0;
+
+      //  alert(totTaxPer);
+
+
+        var gstPer = $("TD", row).eq(18).text() != "" ? parseFloat($("TD", row).eq(18).text()) : 0;
+        var CgstPer = $("TD", row).eq(18).text() != "" ? parseFloat($("TD", row).eq(18).text() / 2) : 0;
+        var SgstPer = $("TD", row).eq(18).text() != "" ? parseFloat($("TD", row).eq(18).text() / 2) : 0;
+        var Rate = $("TD", row).eq(4).find("input").val() != "" ? parseFloat($("TD", row).eq(4).find("input").val()) : 0;
+        var MRP = $("TD", row).eq(5).find("input").val() != "" ? parseFloat($("TD", row).eq(5).find("input").val()) : 0;
+        var TaxAmt = $("TD", row).eq(11).text() != "" ? parseFloat($("TD", row).eq(11).text()) : 0;
+       
+        var Quantity = $("TD", row).eq(3).find("input").val() != "" ? parseFloat($("TD", row).eq(3).find("input").val()) : 0;
+        var DiscPer = $("TD", row).eq(6).find("input").val() != "" ? parseFloat($("TD", row).eq(6).find("input").val()) : 0;
+
+        var DiscPer2 = $("TD", row).eq(8).find("input").val() != "" ? parseFloat($("TD", row).eq(8).find("input").val()) : 0;
+
+        var subTotal = Rate * Quantity;
+        var subMRPTotal = MRP * Quantity;
+        var DiscAmt = (subTotal * DiscPer) / 100;
+        var DiscAmt2 = ((subTotal - DiscAmt) * DiscPer2) / 100;
+        var AfterDisc = subTotal - DiscAmt - DiscAmt2;
+        var AfterMRPDisc = subMRPTotal - DiscAmt - DiscAmt2;
+
+    //    alert(DiscPer);
+
+
+
+        $("TD", row).eq(7).find("input").val(DiscAmt.toFixed(2))
+        $("TD", row).eq(9).find("input").val(DiscAmt2.toFixed(2))
+
+      
+        var gstAmt = (AfterDisc * gstPer) / 100;
+        var CgstAmt = (AfterDisc * CgstPer) / 100;
+        var SgstAmt = (AfterDisc * SgstPer) / 100;
+        var taxAmt = (gstAmt + CgstAmt + SgstAmt);
+
+        var TotalDiscount = parseFloat(DiscAmt) + parseFloat(DiscAmt2);
+
+
+        $("TD", row).eq(10).text(TotalDiscount.toFixed(2))
+       
+    
+        
+     //   $("TD", row).eq(12).text(taxtAmount1.toFixed(2));
+
+        var taxamount = (((Rate * Quantity) - TotalDiscount) * gstPer / 100);
+
+
+
+
+        $("TD", row).eq(11).html(taxamount.toFixed(2));
+        var InpTax = $("<input />");
+        InpTax.attr("type", "text");
+        InpTax.attr("style", "width:50px");
+        InpTax.val(gstPer);
+        InpTax.attr("onchange", "grd_ratecalculateAmount(this);");
+        row.find("TD").eq(11).append(InpTax);
+      
+
+
+        //var totalamount = (((Rate * Quantity) - TotalDiscount) + taxamount);
+        var totalamount = (((Rate * Quantity) - TotalDiscount) );
+       
+       
+        $("TD", row).eq(12).text(totalamount.toFixed(2));
+
+        if ($("TD", row).eq(3).find("input").val() != "" && $("TD", row).eq(5).find("input").val() != "") {
+
+            
+            var profit = parseFloat($("TD", row).eq(5).find("input").val()) - parseFloat($("TD", row).eq(4).find("input").val()) 
+
+            $("TD", row).eq(13).text(profit.toFixed(2))
+           
+            
+            var Profit_Per = ((parseFloat($("TD", row).eq(5).find("input").val()) - parseFloat($("TD", row).eq(4).find("input").val()) ) * 100) / (parseFloat($("TD", row).eq(5).find("input").val()));
+
+
+            $("TD", row).eq(14).text(Profit_Per.toFixed(2))
+
+        }
+
+
+        GrdCalculateTotal();
+
+
+
+
+    }
+    function bindBankdetails() {
+       
+        if ($('#ddlPayMethod').val() != "") {
+            if ($('#ddlPayMethod').val() == "16") {
+                $('#divBankAccount').show();
+                $('#divMethod').show();
+                $("#txtPaidAmount").val($('#lblNetPayable').text());
+            }
+            else if ($('#ddlPayMethod').val() == "18") {
+                $('#divBankAccount').hide();
+                $('#divMethod').hide();
+                $("#txtPaidAmount").val($('#lblNetPayable').text());
+            }
+            else if ($('#ddlPayMethod').val() == "CREDIT") {
+                $('#divBankAccount').hide();
+                $('#divMethod').hide();
+                $("#txtPaidAmount").val('0.00');
+            }
+            else {
+                $('#divBankAccount').hide();
+                $('#divMethod').hide();
+                $("#txtPaidAmount").val($('#lblNetPayable').text());
+            }
+        }
+        else {
+            $('#divBankAccount').hide();
+            $('#divMethod').hide();
+            $("#txtPaidAmount").val($('#lblNetPayable').text());
+        }
+    }
+    function ddlPayMode() {
+        if ($('#ddlPayMode').val() != "") {
+            if ($('#ddlPayMode').val() == "Cheque/DD") {
+                $('#divChq').show();
+                $('#divtxn').hide();
+            }
+            else if ($('#ddlPayMode').val() == "NEFT/RTGS/UPI") {
+                $('#divChq').hide();
+                $('#divtxn').show();
+            }
+        }
+        else {
+            $('#divChq').hide();
+            $('#divtxn').hide();
+        }
+
+    }
+    function ChangeMRP(obj) {
+        var x = confirm("Are you sure you want to change mrp?");
+        if (x) {
+            var row = $(obj).closest("TR");
+            var ProductId = $("TD", row).eq(12).text();
+            var VarId = $("TD", row).eq(19).text();
+            var MRP = $(obj).val();
+
+            var dataobject = {
+                VarId: VarId,
+                MRP: MRP,
+                Action: 2,
+                ItemCode: ProductId
+            };
+
+
+            $.ajax({
+                url: "/Sales/GetItemDetailByBarCode",
+                type: "POST",
+                data: dataobject,
+                dataType: "json",
+                success: function (r) {
+
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });  
+           // grdcalculateAmount(obj);
+
+        }
+        else {
+            return false;
+        }
+    }
+</script>
+
+<script>
+
+    function DiscountAmount(action) {
+        
+        if (action == 1) {
+            var C_DiscAmt = parseFloat($("#txtDiscAmt").val());
+            var C_TaxableAmt = parseFloat($("#txtAmount").text()) + parseFloat($("#lblDiscAmt").text());
+            var C_Qty = parseFloat($("#txtQuantity").val());
+            var C_DiscPer = ((parseFloat(C_DiscAmt) * 100) / parseFloat(C_TaxableAmt)) / C_Qty;
+
+            $("#txtDiscPer").val(C_DiscPer.toFixed(2));
+        }
+        else if (action == 2) {
+            var C_DiscAmt = parseFloat($("#txtDiscAmt2").val());
+            var C_TaxableAmt = parseFloat($("#txtAmount").text()) + parseFloat($("#lblDiscAmt").text());
+            var C_Qty = parseFloat($("#txtQuantity").val());
+            var C_DiscPer = ((parseFloat(C_DiscAmt) * 100) / parseFloat(C_TaxableAmt)) / C_Qty;
+
+            $("#txtDiscPer2").val(C_DiscPer.toFixed(2));
+
+            
+        }
+
+        calculateAmount();
+    }
+    function GrdDiscountAmount(action,obj) {
+
+        var row = $(obj).closest("TR");
+
+        //   $("TD", row).eq(7).find("input").val()
+        //  $("TD", row).eq(7).text()
+
+        if (action == 1) {
+            var C_DiscAmt = parseFloat($("TD", row).eq(7).find("input").val());
+            var C_TaxableAmt = parseFloat($("TD", row).eq(12).text()) + parseFloat($("TD", row).eq(10).text());
+            var C_Qty = parseFloat($("TD", row).eq(3).find("input").val());
+            //var C_DiscPer = ((parseFloat(C_DiscAmt) * 100) / parseFloat(C_TaxableAmt)) / C_Qty;
+            var C_DiscPer = (parseFloat(C_DiscAmt) * 100) / parseFloat(C_TaxableAmt) ;
+
+           
+
+            $("TD", row).eq(6).find("input").val(C_DiscPer.toFixed(2));
+        }
+        else if (action == 2) {
+            var C_DiscAmt = parseFloat($("TD", row).eq(9).find("input").val());
+            var C_TaxableAmt = parseFloat($("TD", row).eq(12).text()) + parseFloat($("TD", row).eq(10).text());
+            var C_Qty = parseFloat($("TD", row).eq(3).find("input").val());
+            //var C_DiscPer = ((parseFloat(C_DiscAmt) * 100) / parseFloat(C_TaxableAmt)) / C_Qty;
+            var C_DiscPer = ((parseFloat(C_DiscAmt) * 100) / parseFloat(C_TaxableAmt));
+
+            $("TD", row).eq(8).find("input").val(C_DiscPer.toFixed(2));
+
+        }
+
+        grdcalculateAmount(obj);
+    }
+
+
+
+</script>
+
+
+<style>
+    .card-body {
+        padding-top: 1% !important;
+    }
+
+    .table .thead-light th {
+    color: white !important;
+    background-color: #f16236 !important;
+    /* border-color: #dee2e6; */
+}
+
+    .table td, .table th {
+     padding: 0px; 
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+}
+
+</style>
+
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+
+
+
+<input type="hidden" id="hdSuppAccStateCode" />
+<input type="hidden" id="hdCompanyStateCode" value="@Model.StateName" />
+
+<div class="row" style="margin-top:2%;">
+
+    
+    
+
+
+
+    <div class="col-12">
+        <div class="card">
+
+
+            
+
+
+
+            <div class="card-body">
+
+
+
+                <div class="page-title-box" style="line-height:0px;">
+                    <div class="page-title-right" style="margin-top:12px;">
+                        <span style="color: Red">Fields Marked with * are Mandatory</span>
+                     </div>
+                    <h4 class="page-title" style="margin:0px;padding:0px;line-height:20px;">Generate Purchase Bill</h4>
+                </div>
+            <hr style="border-top: 2px solid #f16236;" />
+
+
+                <div class="form-row" id="divSSDDl">
+
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Barcode <small style="color:red">(To scan Barcode Please Focus Cursor on this Textbox)</small></label>
+                        <input type="text" class="form-control" id="txtBarCode" placeholder="Barcode" onchange="GetItemByBarCode()">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Supplier <span style="color:red">*</span> <a href="#" data-toggle="modal" data-target="#con-close-modal"><i class="fa fa-plus"></i> Add Supplier</a> </label>
+                        @Html.DropDownList("ddlSupplier", (List<SelectListItem>)ViewBag.SupplierList, new { @id = "ddlSupplier", @class = "form-control", @onchange = "GetAccountCode()" })
+                    </div>
+                    <div class="form-group col-md-2" style="display:none">
+                        <label for="inputEmail4" class="col-form-label">A/C Code </label>
+                        <input type="text" class="form-control" id="txtAcCode" placeholder="A/C Code" disabled>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="inputEmail4" class="col-form-label">Date <span style="color:red">*</span></label>
+                        <input type="text" class="form-control" id="txtBillDate" placeholder="Date" value="@Model.eDate">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="inputEmail4" class="col-form-label">Invoice No <span style="color:red">*</span> </label>
+                        <input type="text" class="form-control" id="txtInvoiceNo" placeholder="Enter Invoice No">
+                    </div>
+                </div>
+               
+               
+
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-borderless table-hover table-centered m-0" id="tblItemDetail">
+                                <thead class="thead-light">
+                                    <tr>                                        
+                                        <th>Item Name
+                                            <a href="#" onclick="BindItemRef()" style="color:white;">Refresh</a>
+                                        </th>
+                                        <th>HSN Code</th>
+                                        <th>Size</th>
+                                        <th>Qty</th>
+                                        <th>Rate</th>
+                                        <th>MRP</th>
+                                        <th>Dis% 1</th>
+                                        <th>D_Amt 1</th>
+                                        <th>Dis% 2</th>
+                                        <th>D_Amt 2</th>
+                                        <th>Dis. Amt</th>
+                                        <th>Tax Amt</th>
+                                        <th>Amount</th>
+                                        <th>P.Amt</th>
+                                        <th>P.(%)</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr >                                       
+                                        <td width="360px;">
+                                            <span style="float:left;width:200px;padding:0px;">
+                                                @*<select id="ddlItemHead" class="form-control" onchange="GetItemHeadDetails(this)">*@
+                                                @Html.DropDownList("ddlItemHead", (List<SelectListItem>)ViewBag.ItemHeadList, new { @id = "ddlItemHead", @class = "form-control", @onchange = "GetItemHeadDetails()" })
+                                            </span>
+                                              <span id="lblUOM" style="color:white;float:left;width:20%;text-align:center;display:none;"></span>
+                                        </td>
+
+                                        <td width="120px">
+                                            <input type="text" placeholder="HSN Code" id="txtHSNCode" style="float:left;width:75px;"/>
+                                        </td>
+                                        <td width="120px">
+                                            <span style="float:left;width:75px;">
+                                                @*@Html.DropDownList("txtSize", new List<SelectListItem>() { new SelectListItem { Text = "Select", Value = "" } }, new { @id = "txtSize", @class = "form-control", @onchange = "BindRateBehopeofSize(this)" })*@
+                                          
+
+                                                @Html.DropDownList("txtSize", new List<SelectListItem>() , new { @id = "txtSize", @onchange = "BindRateBehopeofSize(this)" })
+                                            
+                                              </span>
+</td>
+
+                                        <td width="50px">
+                                            <input type="text" placeholder="Qty" style="float:left;width:50px;"  id="txtQuantity" onchange="calculateAmount()" onkeypress="allowonlyDegitandDot()" />
+                                        </td>
+                                        <td width="120px">
+
+                                            <input type="text"  id="txtRate" onchange="ratecalculateAmount()" placeholder="Rate" style="float:left;width:75px;" />
+
+                                         </td>
+                                        <td>
+                                            <input type="text"  id="txtMRP" placeholder="MRP" onkeypress="allowonlyDegitandDot()" style="float:left;width:75px;" onchange="calculateAmount()" />
+                                        </td>
+
+                                        <td width="100px">
+                                            <input type="text" style="float:left;width:50px;"  id="txtDiscPer" onchange="calculateAmount()" onkeypress="allowonlyDegitandDot()" placeholder="%" />
+                                        </td>
+
+                                        <td width="100px">
+                                            <input type="text" style="float:left;width:60px;" id="txtDiscAmt" onchange="DiscountAmount(1)" onkeypress="allowonlyDegitandDot()"  />
+                                        </td>
+
+
+                                        <td width="100px">
+                                            <input type="text" style="float:left;width:50px;"  id="txtDiscPer2" onchange="calculateAmount()" onkeypress="allowonlyDegitandDot()" placeholder="%" />
+                                        </td>
+
+                                        <td width="100px">
+                                            <input type="text" style="float:left;width:60px;" id="txtDiscAmt2" onchange="DiscountAmount(2)" onkeypress="allowonlyDegitandDot()" />
+                                        </td>
+
+
+                                        <td width="120px">
+                                            <span id="lblDiscAmt" style="float:left;width:75px;">0.00</span>
+                                        </td>
+                                        <td width="120px">
+                                            <span id="lbltaxAmt" style="float:left;width:75px;">0.00</span><br />
+                                            @*<span id="lblTaxPer" style="color:#3d963c"></span>*@
+                                            <input type="text" placeholder="Tax(%)" style="float:left;width:75px;"  id="lblTaxPer" maxlength="2" onkeypress="allowonlyDegitandDot()" onchange="ratecalculateAmount()"  />
+                                        </td>
+                                        <td>
+                                           
+                                            <span id="txtAmount" style="float:left;width:100px;">0.00</span>
+                                            
+                                            <input type="hidden" id="hdgstPer" />
+                                            <input type="hidden" id="hdCgstPer" />
+                                            <input type="hidden" id="hdSgstPer" />
+
+                                            <input type="hidden" id="hdgstAmt" />
+                                            <input type="hidden" id="hdCgstAmt" />
+                                            <input type="hidden" id="hdSgstAmt" />
+                                            <input type="hidden" id="hdtotTaxPer" />
+                                            <input type="hidden" id="hdPurTaxType" />
+                                            <input type="hidden" id="hdItemId" />
+                                            <input type="hidden" id="hdVarId" />
+                                        </td>
+                                        <td>
+                                            <span id="txtProfit" style="float:left;width:50px;">0.00</span>
+                                            
+                                        </td>
+                                        <td>
+                                            <span id="txtProfit_Per" style="float:left;width:50px;">0.00</span>
+                                        </td>
+                                        <td>
+                                            <a href="#" style="color:green;font-size:20px" onclick="AddTableRow()"><i class="fa fa-plus"></i></a>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="form-row">
+                    <div class="form-group col-md-8">
+
+                    </div>
+                    <div class="form-group col-md-4">
+                        <div class="form-row">
+                            <div class="form-group col-md-12" style="margin-bottom:-2px">
+                                <label>Taxable Amount: </label>
+                                <div style="float:right"> <span id="lbltaxableAmt">0.00</span> </div>
+                            </div>
+                        </div>
+                        <div class="form-row" style="display:none">
+                            <div class="form-group col-md-12" style="margin-bottom:-2px">
+                                <label>Adjustment </label>
+                                <div style="float:right"> <input type="text" class="form-control" id="txtAdjustment" value="0.00"> </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12" style="margin-bottom:-2px">
+                                <label>Total Tax: </label>
+                                <div style="float:right"> <span id="lblTotaltax">0.00</span> </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12" style="margin-bottom:-2px">
+                                <label>Total Discount: </label>
+                                <div style="float:right"> <span id="lblTotalDiscount">0.00</span> </div>
+                            </div>
+                        </div>
+                        <div class="form-row" style="display:none">
+                            <div class="form-group col-md-10" style="margin-bottom:-2px">
+                                <label>Total Roundoff: </label>
+                                <div style="float:right"> <span id="lblRoundOff" style="color:red">0.00</span> </div>
+                            </div>
+                        </div>
+                        <hr style="border-top: 2px solid #f16236;" />
+                        <div class="form-row">
+                            <div class="form-group col-md-12" style="margin-bottom:-2px">
+                                <label>Net Payable: </label>
+                                <div style="float:right"> <span id="lblNetPayable">0.00</span> </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-8" style="margin-bottom:0px">
+                                        <label for="inputEmail4" class="col-form-label">Payment Method<span class="text-danger">*</span></label>
+                                        @Html.DropDownList("ddlPayMethod", (List<SelectListItem>)ViewBag.ModeList, new { @id = "ddlPayMethod", @class = "form-control",@onchange="bindBankdetails()" })
+                                    </div>
+                                </div>
+                                <div id="divPayBank">
+                                    <div class="form-row" id="divBankAccount" style="display:none">
+                                        <div class="form-group col-md-12" style="margin-bottom:0px">
+                                            <label for="inputEmail4" class="col-form-label">Select Account<span class="text-danger">*</span></label>
+                                            @Html.DropDownList("ddlBankAccount", (List<SelectListItem>)ViewBag.ModeList1, new { @id = "ddlBankAccount", @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    <div class="form-row" id="divMethod" style="display:none">
+                                        <div class="form-group col-md-8" style="margin-bottom:0px">
+                                            <label for="inputEmail4" class="col-form-label">Mode<span class="text-danger">*</span></label>
+                                            <select class="form-control" id="ddlPayMode" onchange="ddlPayMode()">
+                                                <option>Select</option>
+                                                <option>Cheque/DD</option>
+                                                <option>NEFT/RTGS/UPI</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="divChq" style="display:none">
+                                    <div class="form-group col-md-6" style="margin-bottom:0px">
+                                        <label for="inputEmail4" class="col-form-label">Cheque No<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" placeholder="Cheque No" id="txtChqNo" />
+                                    </div>
+                                    <div class="form-group col-md-6" style="margin-bottom:0px">
+                                        <label for="inputEmail4" class="col-form-label">Cheque Date<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" placeholder="Cheque Date" id="txtChqDate" />
+                                    </div>
+                                    <div class="form-group col-md-12" style="margin-bottom:0px">
+                                        <label for="inputEmail4" class="col-form-label">Bank Name</label>
+                                        <input type="text" class="form-control" placeholder="Bank Name" id="txtChqBank" />
+                                    </div>
+                                </div>
+                                <div class="row" id="divtxn" style="display:none">
+                                    <div class="form-group col-md-6" style="margin-bottom:0px">
+                                        <label for="inputEmail4" class="col-form-label">Txn No.<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" placeholder="Txn No" id="txtBankTxnNo" />
+                                    </div>
+                                    <div class="form-group col-md-6" style="margin-bottom:0px">
+                                        <label for="inputEmail4" class="col-form-label">Txn Date<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" placeholder="Txn Date" id="txtTxnDate" />
+                                    </div>
+                                </div>
+                                <input type="hidden" id="hdTotIgst" />
+                                <input type="hidden" id="hdTotCgst" />
+                                <input type="hidden" id="hdTotSgst" />
+                            </div>
+                        </div>
+                        <hr style="border-top: 2px solid #f16236;" />
+                        <div class="form-row">
+                            <div class="form-group col-md-12" style="margin-bottom:-2px">
+                                <button style="background:#f16236;width:100%;" type="submit" id="btnSave" class="btn btn-primary waves-effect waves-light" onclick="InsertPurchaseOrder()">Save Invoice</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+
+<div id="con-close-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add Supplier</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="field-1" class="control-label">Name<span style="color:red">*</span></label>
+                            <input type="text" class="form-control" id="txtName" placeholder="Name">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="field-2" class="control-label">Phone/Mobile No<span style="color:red">*</span></label>
+                            <input type="text" class="form-control" id="txtPhone" placeholder="Phone/Mobile No">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="field-3" class="control-label">Address</label>
+                            <input type="text" class="form-control" id="txtAddress" placeholder="Address">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="field-4" class="control-label">City</label>
+                            <input type="text" class="form-control" id="txtCity" placeholder="Lucknow">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="field-5" class="control-label">State<span style="color:red">*</span></label>
+                            @Html.DropDownList("ddlState", (List<SelectListItem>)ViewBag.StateList, new { @id = "ddlState", @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="field-6" class="control-label">Pin Code</label>
+                            <input type="text" class="form-control" id="txtPinCode" placeholder="123456">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="field-4" class="control-label">GST No</label>
+                            <input type="text" class="form-control" id="txtGstNO" placeholder="GST No">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="field-5" class="control-label">PAN No</label>
+                            <input type="text" class="form-control" id="txtPanNo" placeholder="PAN No">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="field-6" class="control-label">TIN No</label>
+                            <input type="text" class="form-control" id="txtTinNo" placeholder="TIN No">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group no-margin">
+                            <label for="field-7" class="control-label">Personal Info</label>
+                            <textarea class="form-control" id="txtAbout" placeholder="Write something about yourself"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-info waves-effect waves-light" onclick="InsertSuppliersAccount()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+

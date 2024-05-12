@@ -1,0 +1,16 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    Layout = null;
+}
+@using System.Data;
+
+@if (Model.dtMenuSub != null && Model.dtMenuSub.Rows.Count > 0)
+{
+    <div class="menu dropdown_page">
+        @foreach (DataRow dr1 in Model.dtMenuSub.Rows)
+        {
+            <a href="../ProductDetail/SearchCategory?CatName=@dr1["ProductCategory"]&&CatId=@dr1["ParrentCategoryId"]&&SubCatId=@dr1["SrNo"]" class="item channel_item page__links">@dr1["ProductCategory"]</a>
+        }
+    </div>
+}
+

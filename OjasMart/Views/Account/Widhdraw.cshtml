@@ -1,0 +1,121 @@
+﻿
+@{
+    ViewBag.Title = "Widhdraw";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+@using System.Data;
+<div class="gambo-Breadcrumb">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="../WebHome/Index">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Reqest For Withdraw</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="dashboard-group">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                @Html.Action("_pUserHeader", "CustomerAccount")
+            </div>
+        </div>
+    </div>
+</div>
+<div class="">
+    <div class="container">
+        <div class="row">
+            @Html.Action("_pUserSideMenu", "CustomerAccount")
+            <div class="col-lg-9 col-md-8" id="div">
+                <div class="dashboard-right" id="div1">
+                    <div class="row">
+
+                        <form>
+                            <div class="form-row">
+                                <div class="form-group col-sm-6">
+                                    <label for="input1">Account Holder Name</label>
+                                    <input type="text" class="form-control" id="input1" placeholder="Enter Account Holder Name">
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    <label for="input2">Account Number</label>
+                                    <input type="text" class="form-control" id="input2" placeholder="Enter Account Number"><br />
+                                </div>
+
+                                <div class="form-group col-sm-6">
+                                    <label for="input2">Account Number</label>
+                                    <input type="text" class="form-control" id="input2" placeholder="Enter Account Number"><br />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-sm-6">
+                                    <label for="input3">IFSC Code</label>
+                                    <input type="text" class="form-control" id="input3" placeholder="Enter IFSC CODE">
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label for="input4">Amount</label>
+                                    <input type="text"  class="form-control" value="@ViewBag.Amt" id="input4" readonly>
+                                </div>
+                            </div>
+                            <br />
+
+                            <button type="submit" class="btn btn-primary" onclick="submitForm()">Submit</button>
+                        </form>
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    function submitForm() {
+        debugger;
+        // Get values from the form
+        var accountHolderName = $('#input1').val();
+        var accountNumber = $('#input2').val();
+        var ifscCode = $('#input3').val();
+        var amount = $('#input4').val();
+        debugger
+        // Create data object to be sent in the AJAX request
+        var data = {
+            AccountHolderName: accountHolderName,
+            AccountNumber: accountNumber,
+            IFSC: ifscCode,
+            Amt: amount
+        };
+
+        // Send AJAX request
+        $.ajax({
+            url: '/Account/Widhdraw', // Replace with your server endpoint
+            type: 'POST', // Use 'POST' or 'GET' based on your server requirements
+            data: data,
+            success: function (response) {
+                // Handle the success response from the server
+      
+                window.location.href = "/CustomerAccount/MyWallet";
+                     alert("Success")
+            },
+            error: function (error) {
+                // Handle any errors that occurred during the AJAX request
+                console.error('Error:', error);
+            }
+        });
+    }
+</script>
+
+
+
+

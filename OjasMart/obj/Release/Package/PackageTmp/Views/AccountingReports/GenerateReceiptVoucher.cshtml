@@ -1,0 +1,959 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Receipt Voucher";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var RoleId = '@Request.RequestContext.HttpContext.Session["Role"]';
+        var BranchCode = '@Request.RequestContext.HttpContext.Session["UserName"]';
+        if (RoleId == '3') {
+            $('#ddlBranch').val(BranchCode);
+            $('#ddlBranch').attr('disabled', 'disabled');
+        }
+        else {
+            $('#ddlBranch').val($('#hdCompanyCode').val()).trigger('change');
+        }
+
+        $('select').select2();
+        $('#txtVoucherDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+        //$('#txtChqDate').datepicker({
+        //    format: 'dd-MM-yyyy'
+        //});
+        //$('#txtTxnDate').datepicker({
+        //    format: 'dd-MM-yyyy'
+        //});
+        //$("#tblItemHead").DataTable();
+
+        $('#ddlPayMethod').change(function () {
+            if ($('#ddlPayMethod').val() != "") {
+                if ($('#ddlPayMethod').val() == "16") {
+                    // $('#divBankAccount').show();
+                    $('#divPayBank').show();
+                    $("#txtPaidAmount").val($('#lblNetPayable').text());
+                }
+                else if ($('#ddlPayMethod').val() == "18") {
+                    $('#divBankAccount').show();
+                    $('#divPayBank').hide();
+                    $('#ddlPayMode').val('Select').trigger('change');
+                    $("#txtPaidAmount").val($('#lblNetPayable').text());
+                }
+                else {
+                    // $('#divBankAccount').hide();
+                    $('#divPayBank').hide();
+                    $('#ddlPayMode').val('Select').trigger('change');
+                    $("#txtPaidAmount").val($('#lblNetPayable').text());
+                }
+            }
+            else {
+                //$('#divBankAccount').hide();
+                $('#divPayBank').hide();
+                $('#ddlPayMode').val('Select').trigger('change');
+                $("#txtPaidAmount").val($('#lblNetPayable').text());
+            }
+        });
+        $('#ddlPayMode').change(function () {
+
+            if ($('#ddlPayMode').val() != "" && $('#ddlPayMode').val() != "Select") {
+                if ($('#ddlPayMode').val() == "Cheque/DD") {
+                    $('#divChq').show();
+                    $('#divtxn').hide();
+                }
+                else if ($('#ddlPayMode').val() == "NEFT/RTGS/UPI") {
+                    $('#divChq').hide();
+                    $('#divtxn').show();
+                }
+            }
+            else {
+                $('#divChq').hide();
+                $('#divtxn').hide();
+            }
+
+        });
+    });
+    function InsertVoucher() {
+        if ($('#ddlBranch').val() == '' || $('#ddlBranch').val() == '0') {
+            alert('Please Select Branch !!!');
+            $('#ddlBranch').focus();
+            return;
+        }
+        if ($('#txtVoucherDate').val() == "") {
+            alert('Please Enter Date !!!');
+            $('#txtVoucherDate').focus();
+            return;
+        }
+        var PaidAmt = $("#lblNetTotal").text() != "" ? parseFloat($("#lblNetTotal").text()) : 0;
+        if (PaidAmt <= 0) {
+            alert('Amount must be Greater than 0 !!!');
+            $('#lblNetTotal').focus();
+            return;
+        }
+        if ($("#ddlPayMethod").val() == "" || $("#ddlPayMethod").val() == "0") {
+            alert("Please Select Payment Method !!!");
+            $("#ddlPayMethod").focus();
+            return;
+        }
+        if ($("#ddlBankAccount").val() == "" || $("#ddlBankAccount").val() == "0") {
+            alert("Please Select Account !!!");
+            $("#ddlBankAccount").focus();
+            return;
+        }
+        if ($("#ddlPayMethod").val() == "16") {
+            if ($('#ddlPayMode').val() == "" || $('#ddlPayMode').val() == "0") {
+                alert('Please Select Payment Mode !!!');
+                $('#ddlPayMode').focus();
+                return;
+            }
+            if ($("#ddlPayMode").val() == "" || $("#ddlPayMode").val() == "0" || $("#ddlPayMode").val() == "Select") {
+                alert("Please Select Payment Mode !!!");
+                $("#ddlPayMode").focus();
+                return;
+            }
+            if ($('#ddlPayMode').val() == 'Cheque/DD') {
+                if ($('#txtChqNo').val() == "") {
+                    alert('Please Enter Cheque/DD No. !!!');
+                    $('#txtChqNo').focus();
+                    return;
+                }
+                if ($('#txtChqDate').val() == "") {
+                    alert('Please Enter Cheque/DD Date !!!');
+                    $('#txtChqDate').focus();
+                    return;
+                }
+            }
+            else {
+                if ($('#txtBankTxnNo').val() == "") {
+                    alert('Please Enter Bank Transaction No. !!!');
+                    $('#txtBankTxnNo').focus();
+                    return;
+                }
+                if ($('#txtTxnDate').val() == "") {
+                    alert('Please Enter Bank Transaction Date !!!');
+                    $('#txtTxnDate').focus();
+                    return;
+                }
+            }
+        }
+
+        var paymode = null;
+        if ($("#ddlPayMethod").val() == "18") {
+            paymode = 'Cash';
+        }
+        else {
+            paymode = $('#ddlPayMode').val();
+        }
+
+        var itemdetails = [];
+        $("#tblItemDetail TBODY TR").each(function () {
+            var row = $(this);
+            item = {};
+            item["AccCode"] = row.find("TD").eq(4).html();
+            item["AccName"] = row.find("TD").eq(0).html();
+            item["Amount"] = row.find("TD").eq(1).html() != "" ? parseFloat(row.find("TD").eq(1).html()) : 0;
+            item["TDSPer"] =  0;
+            var tdsAmt =  0;
+            var NetAmt = 0;
+
+            item["TDSAmount"] = 0;
+            if (tdsAmt > 0) {
+                NetAmt = row.find("TD").eq(7).html() != "" ? parseFloat(row.find("TD").eq(7).html()) : 0;
+            }
+            else {
+                NetAmt = row.find("TD").eq(1).html() != "" ? parseFloat(row.find("TD").eq(1).html()) : 0;
+            }
+            item["NetAmount"] = NetAmt;
+            item["narration"] = row.find("TD").eq(2).html();
+
+            itemdetails.push(item);
+
+        });
+
+        var dataobject = {
+            InvoiceDate: $("#txtVoucherDate").val(),
+            FinancialYear: $('#txtVoucherDate').val(),
+            PayMode: paymode,
+            AccountCode: $('#ddlBankAccount').val(),
+            AccountName: $("#ddlBankAccount option:selected").text(),
+            PaidAmount: $("#lblNetTotal").text() != "" ? parseFloat($("#lblNetTotal").text()) : 0,
+            GroupCode: $("#ddlPayMethod").val(),
+            ChqNo: $("#txtChqNo").val(),
+            mDate: $("#txtChqDate").val(),
+            BanKAccName: $("#txtChqBank").val(),
+            txnId: $("#txtBankTxnNo").val(),
+            eDate: $("#txtTxnDate").val(),
+            ItemList: itemdetails,
+            vType: "R"
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/AccountingReports/InsertVoucherDetails",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r.strId != '0') {
+                    alert(r.msg);
+                    location.reload();
+                    var url = "../VoucherPrint/printVoucher?VoucherNo=" + r.InvoiceNo;
+                    window.open(url, '_blank');
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+    function allowonlyDegitandDot() {
+        if (event.which < 46 || event.which >= 58 || event.which == 47) {
+            event.preventDefault();
+        }
+
+        if (event.which == 46 && $(this).val().indexOf('.') != -1) {
+            this.value = '';
+        }
+    }
+    function BindBankAccounts() {
+        $("#ddlBankAccount").empty();
+        $.ajax({
+            type: 'Post',
+            url: '@Url.Action("GetBankAccounts","ProductManagement")',
+            dataType: 'json',
+            data: { GroupCode: $("#ddlPayMethod").val() },
+            success: function (data) {
+                $.each(data, function (i, data) {
+                    $("#ddlBankAccount").append('<option value="'
+                        + data.Value + '">' +
+                        data.Text + '</option>');
+                });
+                if ($("#hdPaymodeId").val() == '') {
+                    $("#ddlBankAccount").val('0').trigger('change');
+                }
+                else {
+                    $("#ddlBankAccount").val($("#hdPaymodeId").val()).trigger('change');
+                    GetBalance();
+                }
+            },
+            error: function (ex) {
+                alert('Failed to retrieve Accounts : ' + ex);
+            }
+        });
+    }
+
+    function AddTableRow() {
+        //var ddlItemGroup = $("#ddlItemGroup");
+        var ddlAccountList = $("#ddlAccountList");
+        var txtAmount = $("#txtAmount");
+
+
+        var hdtAmount = $("#hdtAmount");
+
+        var txtNarration = $("#txtNarration");
+        if (ddlAccountList.val() == "" || ddlAccountList.val() == "0") {
+            alert("Please Select Account Head !!!");
+            ddlAccountList.focus();
+            return;
+        }
+        if (txtAmount.val() == "" || txtAmount.val() == "0" || txtAmount.val() == "0.00") {
+            alert("Please Enter Amount !!!");
+            txtAmount.focus();
+            return;
+        }
+        //Get the reference of the Table's TBODY element.
+        var tBody = $("#tblItemDetail > TBODY")[0];
+
+
+        //Add Row.
+        var row = tBody.insertRow(-1);
+        var cell = $(row.insertCell(-1));
+        //cell.html(txtItem.val());
+        cell.html($("#ddlAccountList :selected").text());
+
+        //Add Category ref. cell.
+        cell = $(row.insertCell(-1));
+        cell.html(txtAmount.val());
+
+
+
+        cell = $(row.insertCell(-1));
+        cell.html(txtNarration.val());
+
+        //Add Button cell.
+        cell = $(row.insertCell(-1));
+        var btnRemove = $("<input />");
+        btnRemove.attr("type", "button");
+        btnRemove.attr("onclick", "Remove(this);");
+        btnRemove.attr("class", "btn btn-danger btn-xs");
+        btnRemove.val("Remove");
+        cell.append(btnRemove);
+        //Add item Id
+        cell = $(row.insertCell(-1));
+        cell.html(ddlAccountList.val());
+        cell.hide();
+
+        cell = $(row.insertCell(-1));
+        cell.html(hdtAmount.val());
+        cell.hide();
+
+        CalculateTotal();
+        // CalculateTotal();
+        //Clear the TextBoxes.
+        //ddlItemGroup.val("0");
+        ddlAccountList.val("0").trigger('change');
+        txtAmount.val("");
+        txtNarration.val("");
+
+        txtTDSPer.val("");
+        txtTDSAmount.val("0");
+        hdtAmount.val("0");
+
+    }
+
+    function Remove(button) {
+        //Determine the reference of the Row using the Button.
+        var row = $(button).closest("TR");
+        var name = $("TD", row).eq(0).html();
+        var tAmt = $("TD", row).eq(1).html();
+
+        if (confirm("Do you want to delete: " + name)) {
+            //Get the reference of the Table.
+            var table = $("#tblItemDetail")[0];
+            //Delete the Table row using it's Index.
+            table.deleteRow(row[0].rowIndex);
+
+            var NetTotal = $.trim($('#lblNetTotal').text()) != "" ? parseFloat($.trim($('#lblNetTotal').text())) : 0;
+            var rAmt = $.trim(tAmt) != "" ? parseFloat(tAmt) : 0;
+            var tt = NetTotal - rAmt;
+            $('#lblNetTotal').text(tt.toFixed(2));
+        }
+    };
+
+    function CalculateTotal() {
+        var NetTotal = $.trim($('#lblNetTotal').text()) != "" ? parseFloat($.trim($('#lblNetTotal').text())) : 0;
+        var tAmount = $.trim($("#txtAmount").val()) != "" ? parseFloat($.trim($("#txtAmount").val())) : 0;
+
+        var tt = NetTotal + tAmount;
+
+        $('#lblNetTotal').text(tt.toFixed(2));
+    }
+
+    function GetBalance() {
+        if ($('#ddlBankAccount').val() != '' && $('#ddlBankAccount').val() != '0') {
+            var dataobject = {
+                AccCode: $('#ddlBankAccount').val()
+            };
+            $.ajax({
+                type: "POST",
+                url: "/AccountingReports/GetAccountBalance",
+                data: dataobject,
+                dataType: "json",
+                success: function (r) {
+                    if (r != null) {
+                        $("#lblCurrBalance").text(r.WalletBalance);
+                        $("#lblType").text(r.OfferType);
+                    }
+                    else {
+                        $("#lblCurrBalance").text('0.00');
+                        $("#lblType").text('');
+                    }
+                }
+            });
+        }
+        else {
+            $("#lblCurrBalance").text('0.00');
+            $("#lblType").text('');
+        }
+    }
+
+    function calculateAmount() {
+        var GAmount = $('#txtAmount').val() != "" ? parseFloat($('#txtAmount').val()) : 0;
+        if (GAmount <= 0) {
+            alert('Please Add Some Amount!');
+            $('#txtAmount').focus();
+            $('#txtTDSAmount').val('0');
+            $('#hdtAmount').val('0');
+            $('#txtTDSPer').val('');
+            return;
+        }
+
+
+    }
+
+
+
+
+    function NewbtnClick() {
+        location.reload();
+    }
+    function FindbtnClick(val) {
+        var dataobject = {
+            Action: "1",
+            strId: val,
+            InvoiceNo: null,
+            AccCode: $.trim($("#spnInvNo").text()),
+            OfferType:'Receipt Voucher'
+        };
+        $("#showSpinner").show();
+        //clearcshbk();
+        $.ajax({
+            url: "/AccountingReports/BindVoucherData",
+            type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (r) {
+                debugger;
+                $('#tblItemDetail tbody').empty();
+                if (r.msg == "1") {
+                    $('#divOldInv').show();
+                    $("#hdInvoiceNo").val(r.InvoiceNo);
+                    $("#spnInvNo").text(r.InvoiceNo);
+                    $("#ddlBranch").val(r.BranchCode).trigger('change');
+                    $("#txtVoucherDate").val(r.eDate);
+                    $("#lblNetTotal").text(r.NetTotal);
+
+                    $("#ddlPayMethod").val(r.PayMode).trigger('change');
+                    debugger;
+                    //$("#ddlBankAccount").val(r.AccountCode).trigger('change');
+                    $("#hdPaymodeId").val(r.AccCode);
+
+
+                    if (r.PayMode == '16') {
+                        $("#ddlPayMode").val(r.OfferType).trigger('change');
+                        if (r.OfferType == 'Cheque/DD') {
+                            $("#txtChqNo").val(r.ChqNo);
+                            $("#txtChqDate").val(r.cdate);
+                            $("#txtChqBank").val(r.Bankname);
+                        }
+                        else {
+                            $("#txtBankTxnNo").val(r.txnId);
+                            $("#txtTxnDate").val(r.txndate);
+                        }
+
+                    }
+                    else {
+                        $("#ddlPayMode").val('').trigger('change');
+                        $("#txtChqNo").val('');
+                        $("#txtChqDate").val('');
+                        $("#txtChqBank").val('');
+                        $("#txtBankTxnNo").val('');
+                        $("#txtTxnDate").val('');
+                    }
+                    $("#ddlBankAccount").val(r.AccCode).trigger('change');
+                    debugger;
+                    for (var i = 0; i < r.poList.length; i++) {
+
+                        var rows = "<tr>"
+                                                 + "<td>" + r.poList[i].ItemName + "</td>"
+                                                   + "<td>" + r.poList[i].NetTotal + "</td>"
+                                                  + "<td>" + r.poList[i].narration + "</td>"
+                                                   + "<td><input type='button' onclick='Remove(this);' class='btn btn-danger btn-xs' value='Remove'></td>"
+                                                   + "<td style='display: none;'>" + r.poList[i].ItemCode + "</td>"
+                                                   + "<td style='display: none;'>0</td>"
+                                                 + "</tr>";
+                        $('#tblItemDetail tbody').append(rows);
+
+                    }
+                    $('#btnupdate').show();
+                    $('#btnSave').hide();
+
+                }
+                $("#showSpinner").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function printBill() {
+        if ($.trim($('#hdInvoiceNo').val()) == '') {
+            alert('Please select voucher first.');
+            return;
+        }
+        var type = $('input:radio[name=BillType]:checked').val();
+        var url = '';
+        url = '../VoucherPrint/printVoucher?VoucherNo=' + $.trim($('#hdInvoiceNo').val());
+        window.open(url, '_blank');
+    }
+
+    function DeleteItemHeadDetails() {
+        if ($.trim($('#hdInvoiceNo').val()) == '') {
+            alert('Please select voucher first.');
+            return;
+        }
+        var InvoiceNo = $.trim($('#hdInvoiceNo').val());
+        var x = confirm("Are you sure you want to delete?");
+        if (x) {
+            var data = new FormData();
+            data.append("VoucherNo", InvoiceNo);
+            $.ajax({
+                url: "@Url.Action("DeleteVoucherMasterDetail", "Report")",
+                type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                if (r.strId != '0') {
+                    alert(r.msg);
+                    location.reload();
+                }
+                if (r == "0") {
+                    alert("Please Check Values Entered by you!");
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $('.loader').hide();
+            }
+        });
+    }
+    else {
+            return false;
+    }
+    }
+
+    function Searchfunc(val) {
+        if ($.trim($('#txtInvNo').val()) == '') {
+            alert('Please Enter Voucher No.');
+            $('#txtInvNo').focus();
+            return;
+        }
+        var dataobject = {
+            Action: "1",
+            strId: val,
+            InvoiceNo: null,
+            AccCode: $.trim($("#txtInvNo").val()),
+            OfferType: 'Receipt Voucher'
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/AccountingReports/BindVoucherData",
+            type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (r) {
+                debugger;
+                $('#tblItemDetail tbody').empty();
+                if (r.msg == "1") {
+                    $('#divOldInv').show();
+                    $("#hdInvoiceNo").val(r.InvoiceNo);
+                    $("#spnInvNo").text(r.InvoiceNo);
+                    $("#ddlBranch").val(r.BranchCode).trigger('change');
+                    $("#txtVoucherDate").val(r.eDate);
+                    $("#lblNetTotal").text(r.NetTotal);
+
+                    $("#ddlPayMethod").val(r.PayMode).trigger('change');
+                    debugger;
+                    //$("#ddlBankAccount").val(r.AccountCode).trigger('change');
+                    $("#hdPaymodeId").val(r.AccCode);
+
+
+                    if (r.PayMode == '16') {
+                        $("#ddlPayMode").val(r.OfferType).trigger('change');
+                        if (r.OfferType == 'Cheque/DD') {
+                            $("#txtChqNo").val(r.ChqNo);
+                            $("#txtChqDate").val(r.cdate);
+                            $("#txtChqBank").val(r.Bankname);
+                        }
+                        else {
+                            $("#txtBankTxnNo").val(r.txnId);
+                            $("#txtTxnDate").val(r.txndate);
+                        }
+
+                    }
+                    else {
+                        $("#ddlPayMode").val('').trigger('change');
+                        $("#txtChqNo").val('');
+                        $("#txtChqDate").val('');
+                        $("#txtChqBank").val('');
+                        $("#txtBankTxnNo").val('');
+                        $("#txtTxnDate").val('');
+                    }
+                    $("#ddlBankAccount").val(r.AccCode).trigger('change');
+                    debugger;
+                    for (var i = 0; i < r.poList.length; i++) {
+
+                        var rows = "<tr>"
+                                                 + "<td>" + r.poList[i].ItemName + "</td>"
+                                                   + "<td>" + r.poList[i].NetTotal + "</td>"
+                                                  + "<td>" + r.poList[i].narration + "</td>"
+                                                   + "<td><input type='button' onclick='Remove(this);' class='btn btn-danger btn-xs' value='Remove'></td>"
+                                                   + "<td style='display: none;'>" + r.poList[i].ItemCode + "</td>"
+                                                   + "<td style='display: none;'>0</td>"
+                                                 + "</tr>";
+                        $('#tblItemDetail tbody').append(rows);
+
+                    }
+                    $('#btnupdate').show();
+                    $('#btnSave').hide();
+
+                }
+                else {
+                    alert('No Record found.');
+                }
+                $('#txtInvNo').val('');
+                $('#modalFind').modal('hide');
+
+                $("#showSpinner").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+
+    function UpdateVoucher() {
+        if ($.trim($('#hdInvoiceNo').val()) == '') {
+            alert('Please select voucher first.');
+            return;
+        }
+        if ($('#ddlBranch').val() == '' || $('#ddlBranch').val() == '0') {
+            alert('Please Select Branch !!!');
+            $('#ddlBranch').focus();
+            return;
+        }
+        if ($('#txtVoucherDate').val() == "") {
+            alert('Please Enter Date !!!');
+            $('#txtVoucherDate').focus();
+            return;
+        }
+        var PaidAmt = $("#lblNetTotal").text() != "" ? parseFloat($("#lblNetTotal").text()) : 0;
+        if (PaidAmt <= 0) {
+            alert('Amount must be Greater than 0 !!!');
+            $('#lblNetTotal').focus();
+            return;
+        }
+        if ($("#ddlPayMethod").val() == "" || $("#ddlPayMethod").val() == "0") {
+            alert("Please Select Payment Method !!!");
+            $("#ddlPayMethod").focus();
+            return;
+        }
+        if ($("#ddlBankAccount").val() == "" || $("#ddlBankAccount").val() == "0") {
+            alert("Please Select Account !!!");
+            $("#ddlBankAccount").focus();
+            return;
+        }
+        if ($("#ddlPayMethod").val() == "16") {
+            if ($('#ddlPayMode').val() == "" || $('#ddlPayMode').val() == "0") {
+                alert('Please Select Payment Mode !!!');
+                $('#ddlPayMode').focus();
+                return;
+            }
+            if ($("#ddlPayMode").val() == "" || $("#ddlPayMode").val() == "0" || $("#ddlPayMode").val() == "Select") {
+                alert("Please Select Payment Mode !!!");
+                $("#ddlPayMode").focus();
+                return;
+            }
+            if ($('#ddlPayMode').val() == 'Cheque/DD') {
+                if ($('#txtChqNo').val() == "") {
+                    alert('Please Enter Cheque/DD No. !!!');
+                    $('#txtChqNo').focus();
+                    return;
+                }
+                if ($('#txtChqDate').val() == "") {
+                    alert('Please Enter Cheque/DD Date !!!');
+                    $('#txtChqDate').focus();
+                    return;
+                }
+            }
+            else {
+                if ($('#txtBankTxnNo').val() == "") {
+                    alert('Please Enter Bank Transaction No. !!!');
+                    $('#txtBankTxnNo').focus();
+                    return;
+                }
+                if ($('#txtTxnDate').val() == "") {
+                    alert('Please Enter Bank Transaction Date !!!');
+                    $('#txtTxnDate').focus();
+                    return;
+                }
+            }
+        }
+
+        var paymode = null;
+        if ($("#ddlPayMethod").val() == "18") {
+            paymode = 'Cash';
+        }
+        else {
+            paymode = $('#ddlPayMode').val();
+        }
+
+        var itemdetails = [];
+        $("#tblItemDetail TBODY TR").each(function () {
+            var row = $(this);
+            item = {};
+            item["AccCode"] = row.find("TD").eq(4).html();
+            item["AccName"] = row.find("TD").eq(0).html();
+            item["Amount"] = row.find("TD").eq(1).html() != "" ? parseFloat(row.find("TD").eq(1).html()) : 0;
+            item["TDSPer"] = 0;
+            var tdsAmt = 0;
+            var NetAmt = 0;
+
+            item["TDSAmount"] = 0;
+            if (tdsAmt > 0) {
+                NetAmt = row.find("TD").eq(7).html() != "" ? parseFloat(row.find("TD").eq(7).html()) : 0;
+            }
+            else {
+                NetAmt = row.find("TD").eq(1).html() != "" ? parseFloat(row.find("TD").eq(1).html()) : 0;
+            }
+            item["NetAmount"] = NetAmt;
+            item["narration"] = row.find("TD").eq(2).html();
+
+            itemdetails.push(item);
+
+        });
+
+        var dataobject = {
+            InvoiceDate: $("#txtVoucherDate").val(),
+            FinancialYear: $('#txtVoucherDate').val(),
+            PayMode: paymode,
+            AccountCode: $('#ddlBankAccount').val(),
+            AccountName: $("#ddlBankAccount option:selected").text(),
+            PaidAmount: $("#lblNetTotal").text() != "" ? parseFloat($("#lblNetTotal").text()) : 0,
+            GroupCode: $("#ddlPayMethod").val(),
+            ChqNo: $("#txtChqNo").val(),
+            mDate: $("#txtChqDate").val(),
+            BanKAccName: $("#txtChqBank").val(),
+            txnId: $("#txtBankTxnNo").val(),
+            eDate: $("#txtTxnDate").val(),
+            ItemList: itemdetails,
+            vType: "R",
+            vNo: $.trim($('#hdInvoiceNo').val()),
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/AccountingReports/UpdateVoucherDetails",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r.strId != '0') {
+                    alert(r.msg);
+                    location.reload();
+                    var url = "../VoucherPrint/printVoucher?VoucherNo=" + r.InvoiceNo;
+                    window.open(url, '_blank');
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+</script>
+<input type="hidden" value="@Model.CompanyCode" id="hdCompanyCode" />
+
+<input type="hidden" id="hdPaymodeId" />
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Generate Receipt Voucher</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-8">
+                        <input type="submit" value="New" onclick="NewbtnClick()" class="btn btn-info btn-sm" />
+                        <input type="submit" value="Find" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalFind" />
+                        <input type="submit" value="Delete" onclick="DeleteItemHeadDetails()" class="btn btn-danger btn-sm" />
+                        <input type="submit" value="First" onclick="FindbtnClick('First')" class="btn btn-success btn-sm" />
+                        <input type="submit" value="Next" onclick="FindbtnClick('Next')" class="btn btn-primary btn-sm" />
+                        <input type="submit" value="Previous" onclick="FindbtnClick('Previous')" class="btn btn-warning btn-sm" />
+                        <input type="submit" value="Last" onclick="FindbtnClick('Last')" class="btn btn-success btn-sm" />
+                        <input type="submit" value="Print" onclick="printBill()" class="btn btn-danger btn-sm" />
+                    </div>
+                    <div class="form-group col-md-4" id="divOldInv" style="margin-top: 6px;font-size: 18px;display:none">
+                        <span>Invoice No:#</span><span style="color:red;font-weight:bold" id="spnInvNo"></span>
+                        <input type="hidden" id="hdInvoiceNo" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress" class="col-form-label">Branch <span style="color:red">*</span></label>
+                        @Html.DropDownList("ddlBranch", (List<SelectListItem>)ViewBag.BranchList, new { @id = "ddlBranch", @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Date <span style="color:red">*</span> </label>
+                        <input type="text" class="form-control" id="txtVoucherDate" value="@Model.mDate" placeholder="Voucher Date" data-date-autoclose="true">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="inputEmail4" class="col-form-label">Financial Year</label>
+                        <input type="text" class="form-control" id="txtFinYear" value="@Model.FinancialYear" disabled placeholder="Financial Year">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <h4>CREDIT</h4>
+                    <hr />
+                    <div class="table-responsive">
+                        <table class="table table-borderless table-hover table-centered m-0" id="tblItemDetail">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Account Head</th>
+                                    <th>Amount</th>
+                                    <th>Narration</th>
+                                    <th>Add</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <td width="230px">
+                                        @Html.DropDownList("ddlAccountList", (List<SelectListItem>)ViewBag.AccountList, new { @id = "ddlAccountList", @class = "form-control" })
+                                    </td>
+                                    <td width="130px">
+                                        <input type="text" class="form-control" maxlength="7" id="txtAmount" placeholder="Amount" onchange="calculateAmount()" onkeypress="allowonlyDegitandDot()" />
+                                        <input type="hidden" id="hdtAmount" value="0" />
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" id="txtNarration" placeholder="Narration" />
+                                    </td>
+                                    <td>
+                                        <a href="javascript:void(0)" style="color:green;font-size:20px" onclick="AddTableRow()"><i class="fa fa-plus"></i></a>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <hr />
+                <div class="form-row">
+                    <div class="form-group col-md-8">
+                        <h4>DEBIT</h4>
+                        <hr />
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="inputAddress" class="col-form-label">Payment Methos <span style="color:red">*</span></label>
+                                @Html.DropDownList("ddlPayMethod", (List<SelectListItem>)ViewBag.ModeList, new { @id = "ddlPayMethod", @class = "form-control", @onchange = "BindBankAccounts()" })
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="inputEmail4" class="col-form-label">Select Account<span class="text-danger">*</span></label>
+                                @*@Html.DropDownList("ddlBankAccount", (List<SelectListItem>)ViewBag.ModeList, new { @id = "ddlBankAccount", @class = "form-control" })*@
+                                <select id="ddlBankAccount" class="form-control" onchange="GetBalance()"></select>
+                            </div>
+                            <div class="form-group col-md-2" style="margin-top:36px">
+                                Curr. Balance: <span id="lblCurrBalance" style="color:red">0.00</span> <span id="lblType"></span>
+                            </div>
+                        </div>
+                        <div id="divPayBank" style="display:none">
+                            <div class="form-row">
+                                <div class="col-md-4" style="margin-bottom:0px;">
+                                    <label for="inputEmail4" class="col-form-label">Mode<span class="text-danger">*</span></label>
+                                    <select class="form-control" id="ddlPayMode">
+                                        <option>Select</option>
+                                        <option>Cheque/DD</option>
+                                        <option>NEFT/RTGS/UPI</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="divChq" style="display:none">
+                            <div class="form-group col-md-6" style="margin-bottom:0px">
+                                <label for="inputEmail4" class="col-form-label">Cheque No<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" placeholder="Cheque No" id="txtChqNo" />
+                            </div>
+                            <div class="form-group col-md-6" style="margin-bottom:0px">
+                                <label for="inputEmail4" class="col-form-label">Cheque Date<span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" placeholder="Cheque Date" id="txtChqDate" />
+                            </div>
+                            <div class="form-group col-md-12" style="margin-bottom:0px">
+                                <label for="inputEmail4" class="col-form-label">Bank Name</label>
+                                <input type="text" class="form-control" placeholder="Bank Name" id="txtChqBank" />
+                            </div>
+                        </div>
+                        <div class="row" id="divtxn" style="display:none">
+                            <div class="form-group col-md-6" style="margin-bottom:0px">
+                                <label for="inputEmail4" class="col-form-label">Txn No.<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" placeholder="Txn No" id="txtBankTxnNo" />
+                            </div>
+                            <div class="form-group col-md-6" style="margin-bottom:0px">
+                                <label for="inputEmail4" class="col-form-label">Txn Date<span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" placeholder="Txn Date" id="txtTxnDate" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-4" style="border-left:1px dotted red;padding-left:25px">
+                        <h4>Payment Details</h4>
+                        <hr />
+
+                        <p><strong>Total Payable: <span id="lblNetTotal" style="color:red;float:right">0.00</span></strong> </p>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="form-group col-md-12" style="text-align:right">
+                        <button type="submit" id="btnCancel" class="btn btn-danger btn-sm waves-effect waves-light" onclick="NewbtnClick()">Cancel</button>
+                        <button type="submit" id="btnSave" class="btn btn-primary btn-sm waves-effect waves-light" onclick="InsertVoucher()">Save & Print Voucher</button>
+                        <button type="submit" id="btnupdate" style="display:none" class="btn btn-primary btn-sm waves-effect waves-light" onclick="UpdateVoucher()">Update Voucher</button>
+                    </div>
+                </div>
+                @*<button type="submit" id="btnSave" class="btn btn-primary waves-effect waves-light" onclick="InsertAccountHead()">Save Record</button>
+                    <button type="submit" id="btnUpdate" style="display:none" class="btn btn-warning waves-effect waves-light" onclick="UpdateItemHead()">Update Record</button>
+                    <button type="submit" id="btnCancel" style="display:none" class="btn btn-danger waves-effect waves-light" onclick="CancelUpdate()">Cancel</button>*@
+
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+
+
+<div id="modalFind" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Find Invoice</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="field-1" class="control-label">Voucher No.<span style="color:red">*</span></label>
+                            <input type="text" class="form-control" id="txtInvNo" placeholder="Voucher No.">
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="margin-top: 28px;">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary waves-effect" onclick="Searchfunc('Find')">Find</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

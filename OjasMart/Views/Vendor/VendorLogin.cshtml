@@ -1,0 +1,487 @@
+﻿@model OjasMart.Models.vmLogin
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>E-Commerce Login</title>
+    <link rel="shortcut icon" type="image/png" href="@Url.Content("~/image/logo/favicon.png")" />
+    <!-- Libs CSS
+    ============================================ -->
+    <link rel="stylesheet" href="@Url.Content("~/css/bootstrap/css/bootstrap.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/font-awesome/css/font-awesome.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/js/datetimepicker/bootstrap-datetimepicker.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/js/owl-carousel/owl.carousel.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/themecss/lib.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/js/jquery-ui/jquery-ui.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/js/minicolors/miniColors.css")" />
+
+    <!-- Theme CSS
+    ============================================ -->
+    <link rel="stylesheet" href="@Url.Content("~/css/themecss/so_searchpro.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/themecss/so_megamenu.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/themecss/so-categories.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/themecss/so-newletter-popup.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/themecss/so-listing-tabs.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/footer/footer1.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/header/header1.css")" />
+    <link rel="stylesheet" id="color_scheme" href="@Url.Content("~/css/theme.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/responsive.css")" />
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500,500i,700' rel='stylesheet' type='text/css'>
+
+
+
+
+    <style type="text/css">
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .typeheader-1 .header-middle {
+            clear: both;
+            background-color: #fff0;
+            padding: 15px 0 7px 0;
+        }
+
+        .typeheader-1 {
+            background-color: #e6e6e6;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    @*<script type="text/javascript">
+            $(document).ready(function () {
+                $("#btnSignup").click(function (event) {
+                    event.preventDefault();
+                    var url = '@Url.Action("VendorSignup", "Vendor")';
+                    window.location.href = url;
+                });
+            });
+        </script>*@
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(document).on('click', '#btnSignup', function () {
+                var url = '@Url.Action("VendorSignup", "Vendor")';
+                window.location.href = url;
+            });
+        });
+    </script>
+    @*checkBox*@
+    <script>
+        function toggleLoginButton() {
+            var agreeCheckbox = document.getElementById("agreeCheckbox1");
+            var loginButton = document.getElementById("btnSubmit");
+
+            if (agreeCheckbox.checked) {
+                loginButton.disabled = false; // Enable the login button
+            } else {
+                loginButton.disabled = true; // Disable the login button
+            }
+        }
+
+
+    </script>
+
+    @*hide show password icon*@
+    <script>
+        function togglePasswordVisibility() {
+            var passwordInput = document.getElementById("txtPassword");
+            var passwordIcon = document.getElementById("passwordIcon");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                passwordIcon.classList.remove("fa-eye-slash");
+                passwordIcon.classList.add("fa-eye");
+            } else {
+                passwordInput.type = "password";
+                passwordIcon.classList.remove("fa-eye");
+                passwordIcon.classList.add("fa-eye-slash");
+            }
+        }
+
+    </script>
+    <style>
+        .toggle-password {
+            position: absolute;
+            top: 28%;
+            right: 10px; /* Adjusted right position */
+            transform: translateY(-50%);
+            z-index: 1;
+            background: none;
+            border: none !important;
+            opacity: 0.5 !important;
+            font-size: 18px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    @*end hide show*@
+
+
+</head>
+<body class="res layout-1 layout-subpage" style="background: #eef5fa; ">
+    <div id="wrapper" class="wrapper-fluid banners-effect-5">
+        <!-- Header Container  -->
+        <!-- //Header Container  -->
+        <!-- Main Container  -->
+        <div class="main-container container">
+            <ul class="breadcrumb">
+                <li><a href="/Home/Index"><i class="fa fa-home"></i></a></li>
+                <li><a href="#">Seller</a></li>
+                <li><a href="#">Login</a></li>
+            </ul>
+            @if (ViewBag.Message != null && ViewBag.Message != "")
+            {
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="alert alert-danger">
+                            <strong>Error!</strong> @ViewBag.Message
+                        </div>
+                    </div>
+                </div>
+            }
+
+
+            <div class="row">
+                <div id="content" class="col-sm-12">
+                    <div class="page-login">
+                        <div class="account-border">
+                            <!---->
+                            <div class="row">
+                                <div class="col-sm-3"></div>
+                                <div class="col-sm-6 " style="">
+                                    <div class="row mainbox " style="">
+
+
+                                        @using (Html.BeginForm("VendorLogin", "Vendor", FormMethod.Post))
+                                        {
+                                            <div class="col-sm-12">
+                                                <!-- Updated to full width in mobile view -->
+                                                <div class="row">
+                                                    <div>
+                                                        <div class="col-sm-5 " style="padding:10px">
+
+
+                                                            <img src="~/img/seller login.png" class="logimage" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-7  customer-login" style="">
+
+                                                        @*no change*@
+
+                                                        <div class="well">
+                                                            <h1>    </h1>
+
+                                                            <div class="form-group">
+                                                                @*<label class="control-label " for="input-email" >E-Mail Address/Mobile No.</label>*@
+                                                                <div class="form-group">
+                                                                    @Html.TextBoxFor(m => m.UserId, new { @class = "form-control", placeholder = "" })
+                                                                    <label class="placeholder" for="UserId">&#128241;User Id</label>
+                                                                    @Html.ValidationMessageFor(m => m.UserId, "", new { @class = "text-danger" })
+                                                                </div>
+
+
+                                                                @*<input type="text" name="email" value="" id="input-email" class="form-control" />*@
+                                                            </div>
+                                                            <div class="form-group">
+                                                                @*<label class="control-label " for="input-password">Password</label>*@
+                                                                @*<input type="password" name="password" value="" id="input-password" class="form-control" />*@
+                                                                <div class="form-group">
+                                                                    <input id="txtPassword" type="password" name="Password" class="form-control" placeholder="">
+                                                                    <label class="placeholder" for="Password">&#128274; Password</label>
+                                                                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">
+                                                                        <i id="passwordIcon" class="fas fa-eye-slash"></i>
+                                                                    </button>
+                                                                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                                                                </div>
+
+                                                            </div>
+
+                                                            @* no change*@
+
+                                                            &nbsp;&nbsp;<input id="agreeCheckbox1" type="checkbox" name="name" value="" onchange="toggleLoginButton()" /> <a href="#"><b style="opacity:0.8">Remember me</b></a>
+                                                            <a id="" style="color:#808080 !important" class="forgot bottom-right" href=""> <span class="psrd-hvr">Forgot Password?</span></a>
+                                                            <h5>  </h5>
+                                                            <input style="background:#ff006e;color:white;font-weight:bold;opacity:0.8" type="submit" value="Login" class="form-control" id="btnSubmit"  />
+
+                                                            @*</div>
+                                                                </div>
+                                                                     <div class="col-sm-1"></div>*@
+
+
+                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:#454545 !important;opacity:0.8 !important">Don't have account?</span>&nbsp;&nbsp;
+                                                            <a id="" class="" href="/Vendor/VendorSignup/" style=""><span style="color:#ff006e !important;opacity:0.9">Register</span></a>
+                                                        </div>
+
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-3"></div>
+                            </div>
+
+
+                        </div>
+                        <!---->
+
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Forgot Password</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input id="txtOTP" placeholder="Enter OTP" />
+                        <button id="btnVerify" type="button" class="btn btn-default" data-dismiss="modal" onclick="VerifyOTP()">Verify</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*VenderLogin Box*@
+        <style>
+        .bottom-right {
+            position: absolute;
+            left: 60%;
+            color: #333232 !important;
+        }
+
+        .mainbox {
+            background: white;
+            min-height: 400px;
+            border-radius: 20px;
+            box-shadow: 2px 3px 15px #dcd9d9;
+            padding: 20px;
+        }
+
+        .customer-login {
+            margin: 0px;
+            padding: 20px !important;
+            background: white;
+            min-height: 400px
+        }
+
+        .well {
+            min-height: 400px !important;
+            padding: 40px !important;
+            border: none !important
+        }
+
+        .logimage {
+            opacity: 0.9;
+        }
+            .psrd-hvr:hover {
+                color: orangered;
+                opacity: 0.8;
+            }
+            @@media only screen and (max-width:768px) {
+                .bottom-right {
+                position: absolute;
+                left: 55%;
+            }
+
+            .well {
+                padding: 20px !important
+            }
+            .logimage {
+                height:400px;
+
+            }
+        }
+
+
+    @*start inputbox*@
+
+
+        .form-group {
+            position: relative;
+            /* Adjust as needed */
+        }
+
+        .form-control {
+            /* Set initial width */
+            min-height: 45px; /* Set initial height */
+            transition: height 0.3s ease; /* Smooth transition for height change */
+
+            margin-bottom: 20px;
+        }
+
+            .form-control:focus {
+                height: 45px; /* Set expanded height when focused */
+            }
+
+        .placeholder {
+            position: absolute;
+            left: 10px; /* Adjust as needed */
+            top: 30%;
+            transform: translateY(-50%);
+            color: #aaa;
+            pointer-events: none; /* Prevent interaction with placeholder */
+            transition: top 0.3s ease, font-size 0.3s ease;
+        }
+
+        .form-control:focus + .placeholder,
+        .form-control:not(:placeholder-shown) + .placeholder {
+            top: -13px;
+            left: 10PX;
+            font-size: 16px;
+            color: #454545;
+            opacity: 0.8;
+
+        }
+
+        @*end input box*@
+
+            @* End VenderLogin Box*@
+
+        </style>
+        <!-- //Main Container -->
+        @*<!-- Footer Container -->
+            <footer class="footer-container typefooter-1">
+
+                @{Html.RenderAction("footerbottom", "footer"); }
+                <!-- /Footer Bottom Container -->
+                <!--Back To Top-->
+                <div class="back-to-top"><i class="fa fa-angle-up"></i></div>
+                <!--Back To Top-->
+                <div class="back-to-top"><i class="fa fa-angle-up"></i></div>
+            </footer>
+            <!-- //end Footer Container -->*@
+        <script>
+            $("#ForgotPassword").click(function () {
+                debugger;
+                if ($("#UserId").val() == "") {
+                    alert("Please Enter Email/Registered Mobile No !");
+                    $("#UserId").focus();
+                    return;
+                }
+                var dataobject = {
+                    Email: $("#UserId").val()
+                };
+                $.ajax({
+                    url: "/Vendor/ForgotPasswordDetails",
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    //data: dataobject,
+                    data: JSON.stringify(dataobject),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (r) {
+                        if (r[0] == '1') {
+                            $('#myModal').modal('show');
+                            // alert("Your password is="+r[1]);
+                            // var url = null;
+                            // var url = "../CustomerAccount/CustomerSignIn";
+                            // window.location.href = url;
+                            VerifyOTP();
+                        } else {
+                            alert("You are Not Registered With Us");
+                            $("#showSpinner").hide();
+                        }
+                    }
+                });
+            });
+            function VerifyOTP() {
+                debugger
+                if ($('#txtOTP').val() != "") {
+                    $.post('/CustomerAccount/MatchOTP/', { OTP: $('#txtOTP').val() }, function (data) {
+                        if (data && data == "True") {
+                            $('#myModal').modal('hide');
+                            alert("OTP Verified");
+                            $('#txtOTP').val('');
+                            var dataobject = {
+                                Email: $("#UserId").val(),
+                                IsOtpVerified: true
+                            };
+                            $.ajax({
+                                url: "/Vendor/ForgotPasswordDetails",
+                                type: "POST",
+                                contentType: false,
+                                processData: false,
+                                //data: dataobject,
+                                data: JSON.stringify(dataobject),
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                success: function (r) {
+                                    if (r[0] == '1') {
+                                        $('#myModal').modal('hide');
+                                        alert("Your password is=" + r[1]);
+                                        $('#myModal').modal('hide');
+                                        //  var url = null;
+                                        //  var url = "../CustomerAccount/CustomerSignIn";
+                                        //  window.location.href = url;
+
+                                    } else {
+                                        alert("password not found");
+                                        $("#showSpinner").hide();
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            alert("OTP Not Match");
+                        }
+                    })
+                }
+                //else {
+                //    alert("Please Enter OTP");
+                //}
+            }
+        </script>
+    </div>
+
+    <!-- Include Libs & Plugins
+    ============================================ -->
+    <script src="@Url.Content("~/js/jquery-2.2.4.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/bootstrap.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/owl-carousel/owl.carousel.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/themejs/libs.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/unveil/jquery.unveil.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/countdown/jquery.countdown.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/dcjqaccordion/jquery.dcjqaccordion.2.8.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/datetimepicker/moment.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/datetimepicker/bootstrap-datetimepicker.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/jquery-ui/jquery-ui.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/modernizr/modernizr-2.6.2.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/minicolors/jquery.miniColors.min.js")" type="text/javascript"></script>
+
+
+    <!-- Theme files
+    ============================================ -->
+    <script src="@Url.Content("~/js/themejs/application.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/themejs/homepage.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/themejs/toppanel.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/themejs/so_megamenu.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/themejs/addtocart.js")" type="text/javascript"></script>
+
+
+
+    <script src="@Url.Content("~/js/jquery.validate.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.9/jquery.validate.unobtrusive.js")" type="text/javascript"></script>
+
+    @*@section Scripts {
+            @Scripts.Render("~/bundles/jqueryval")
+        }*@
+
+
+
+
+</body>
+</html>

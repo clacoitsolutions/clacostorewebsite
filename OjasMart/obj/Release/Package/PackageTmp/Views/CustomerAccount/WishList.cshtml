@@ -1,0 +1,45 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "WishList";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+@using System.Data;
+
+<div class="gambo-Breadcrumb">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="../WebHome/Index">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Whish List</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="">
+    <div class="container">
+
+        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+        {
+            <div class="row">
+                @foreach (DataRow dr in Model.dt.Rows)
+                {
+
+                    <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductId"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" target="_blank">
+                        <p>
+                            Wishlist
+                        </p>
+                    </a> 
+                       
+                 }
+
+
+</div>
+        }
+    </div>
+</div>
+
+

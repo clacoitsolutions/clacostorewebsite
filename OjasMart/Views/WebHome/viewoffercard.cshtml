@@ -1,0 +1,85 @@
+﻿
+@model OjasMart.Models.PropertyClass
+@using System.Data;
+@using OjasMart.Models;
+
+
+<style>
+    .pname {
+        display: none;
+    }
+    .card-body {
+        margin-top: 0px!important;
+    }
+    @@media only screen and (max-width:767px) {
+        .pn {
+            display: none;
+        }
+
+        .pname {
+            display: block;
+        }
+
+        .p-img {
+            margin: 10% !important;
+            padding: 0px;
+            width: 60%;
+        }
+
+        .crd {
+            margin: 0px !important;
+        }
+
+        .cr {
+            padding: 5px;
+        }
+    }
+</style>
+
+@if (Model.dtCatProduct != null && Model.dtCatProduct.Rows.Count > 0)
+{
+    int counter = 0;
+
+    foreach (DataRow dr in Model.dtCatProduct.Rows)
+    {
+        if (counter >= 2)
+        {
+            <div class="col-6 cr">
+                <div class="card crd" style="margin:10px;">
+                    <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]&&VarId=@dr["VarId"]" target="_blank" class="product-img">
+                        <img class="p-img" src="@dr["ProductMainImageUrl"]" alt="Card image cap" style="height:; width:150px;align-items:center!important;margin-left:20% ;margin-top:10%">
+                        <div style="margin-top:10px;">
+                            @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                            {
+
+                                <h5 style="color:orange;font-size:15px; font-weight:bold;text-align:center">
+
+                                    <span>Get</span>  @dr["Discper"]% off
+                                </h5>
+                            }
+                        </div>
+                        <div class="card-body pn">
+                            <p class="card-text product-name" style="text-overflow:ellipsis; white-space:nowrap;overflow:hidden;text-align:center">@dr["ProductName"]</p>
+
+                        </div>
+                        <div class="pname">
+                            <p class="card-text product-name" style="text-overflow:ellipsis; white-space:nowrap;overflow:hidden;text-align:center">@dr["ProductName"]</p>
+
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+
+
+
+ 
+            break;
+        }
+
+        counter++;
+    }
+
+}
+
+

@@ -1,0 +1,57 @@
+﻿@model OjasMart.Models.ClsContactUs
+@{
+    ViewBag.Title = "ContactUsDetails";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+            </div>
+            <h4 class="page-title">Contact User Details</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <div class="table-responsive" id="divDetails">
+                <table id="tblItemHead" class="table table-centered mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sr.No</th>
+                            <th>User Name</th>
+                            <th>Mobile No</th>
+                            <th>Email Address</th>
+                            <th>Message</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.dtContactUs != null && Model.dtContactUs.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (System.Data.DataRow dr in Model.dtContactUs.Rows)
+                            {
+                                i++;
+                                <tr>
+                                    <td>@i</td>
+                                    <td>@dr["FullName"]</td>
+                                    <td>@dr["MobileNo"]</td>
+                                    <td>@dr["EmailAddress"]</td>
+                                    <td>@dr["Message"]</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>

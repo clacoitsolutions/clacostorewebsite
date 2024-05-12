@@ -1,0 +1,516 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "My Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using System.Data;
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#tblDemandList").DataTable();
+        $("#tblStockDetail").DataTable();
+        $("#tblItemSaleBill").DataTable();
+
+        $("body").on("click", "#tblDemandList .details", function () {
+            var dataobject = {
+                InvoiceNo: $(this).attr('id')
+            };
+            $.ajax({
+                url: "@Url.Action("StockDemandItemWiseDetails", "DemandManagement")",
+                type: "POST",
+                data: dataobject,
+                dataType: "json",
+                success: function (data) {
+                    $('#tblItemDetails tbody').empty();
+                    $.each(data.poList, function (i, item) {
+                        var rows = "<tr>" +
+                            "<td>" + item.ItemName + "</td>" +
+                            "<td>" + item.HSNCode + "</td>" +
+                            "<td>" + item.Quantity + "</td>" +
+                            "<td>" + item.TrfQuantity + "</td>" +
+                            "<td>" + item.PendingQuantity + "</td>" +
+                            "<td>" + item.Rate + "</td>" +
+                            "<td>" + item.Payablegst + "</td>" +
+                            "<td>" + item.NetTotal + "</td>" +
+                            "</tr>";
+                        $('#tblItemDetails tbody').append(rows);
+                    });
+                },
+                error: function () {
+
+                }
+            });
+        });
+
+        $("body").on("click", "#tblItemSaleBill .details1", function () {
+            var dataobject = {
+                InvoiceNo: $(this).attr('id')
+            };
+            $.ajax({
+                url: "@Url.Action("SaleBillItemWiseDetails", "Sales")",
+                type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (data) {
+                $('#tblItemDetails1 tbody').empty();
+                $.each(data.poList, function (i, item) {
+                    var rows = "<tr>" +
+                        "<td>" + item.ItemName + "</td>" +
+                        "<td>" + item.Quantity + "</td>" +
+                        "<td>" + item.Rate + "</td>" +
+                        "<td>" + item.DiscPer + "</td>" +
+                        "<td>" + item.DiscAmt + "</td>" +
+                        "<td>" + item.GrossPayable + "</td>" +
+                        "<td>" + item.Payablegst + "</td>" +
+                        "<td>" + item.NetTotal + "</td>" +
+                        "</tr>";
+                    $('#tblItemDetails1 tbody').append(rows);
+                });
+            },
+            error: function () {
+
+            }
+        });
+
+    });
+    });
+
+
+    function ActiveDeActiveAccount(st) {
+        if ($("#hduserCode").val() == "") {
+            alert("Super Stockist Not Found !!!");
+            return;
+        }
+
+        var dataobject = {
+            UserName: $("#hduserCode").val(),
+            Mtype: "SS",
+            Status: st,
+
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/SuperStockiest/UpdateAccountStatus",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r != '0') {
+                    alert(r);
+                    location.reload();
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+</script>
+
+<input type="hidden" id="hduserCode" value="@Model.SSCode" />
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    @if (Convert.ToString(Session["Role"]) == "1")
+                    {
+                        if (Model.Mtype == "OutLet")
+                        {
+                            <li class="breadcrumb-item"><a href="javascript: void(0);">Warehouse</a></li>
+                            <li class="breadcrumb-item"><a href="../OutLet/OutLetList">Warehouse List</a></li>
+                            <li class="breadcrumb-item active">My Profile</li>
+                        }
+                        else
+                        {
+                            <li class="breadcrumb-item"><a href="javascript: void(0);">Super Stokist</a></li>
+                            <li class="breadcrumb-item"><a href="../SuperStockiest/SuperStockiestList">Super Stokist List</a></li>
+                            <li class="breadcrumb-item active">My Profile</li>
+                        }
+                    }
+
+                </ol>
+            </div>
+            @if (Convert.ToString(Session["Role"]) == "1")
+            {
+                <h4 class="page-title">@if (Model.Mtype == "OutLet")
+                {
+                    <b>Warehouse Profile</b>
+                }
+                else
+                {
+                    <b>@Model.Mtype Profile</b>
+                }
+             </h4>
+            }
+            else
+            {
+                <h4 class="page-title">My Profile</h4>
+            }
+
+        </div>
+    </div>
+</div>
+<!-- end page title -->
+<div class="row">
+    <div class="col-lg-4 col-xl-4">
+        <div class="card-box text-center">
+            <img src="../assets/images/users/UserIco.png" class="rounded-circle avatar-lg img-thumbnail"
+                 alt="profile-image">
+            <h4 class="mb-0">@Model.SSName</h4>
+            <p class="text-muted">@if (Model.Mtype == "OutLet")
+            {
+                <b>Warehouse</b>
+            }
+            else
+            {
+                <b>@Model.Mtype</b>
+            }
+            </p>
+            @if (Convert.ToString(Session["Role"]) == "1")
+            {
+                <button type="button" class="btn btn-info btn-xs waves-effect mb-2 waves-light">Send Mail</button>
+                if (Model.ActiveStatus == "Active")
+                {
+                    <button type="button" class="btn btn-danger btn-xs waves-effect mb-2 waves-light" onclick="ActiveDeActiveAccount('D')">DeActivate Account</button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-success btn-xs waves-effect mb-2 waves-light" onclick="ActiveDeActiveAccount('A')">Activate Account</button>
+                }
+            }
+
+            <p class="text-muted">
+                Account Status:
+                @if (Model.ActiveStatus == "Active")
+                {
+                    <span class="badge badge-success"><i class="fa fa-check"></i> @Model.ActiveStatus</span>
+                }
+                else
+                {
+                    <span class="badge badge-danger"><i class="fa fa-times"></i> @Model.ActiveStatus</span>
+                }
+            </p>
+            @if (Model.Mtype == "OutLet")
+            {
+                <p class="text-muted">
+                    Super Stockist: <span class="badge badge-info"><i class="fa fa-store"></i> @Model.StockistName</span>
+                </p>
+            }
+
+        </div> <!-- end card-box -->
+
+    </div> <!-- end col-->
+    <div class="col-lg-8 col-xl-8">
+        <div class="card-box">
+            <div class="text-left mt-3">
+                <p class="text-muted mb-2 font-13">
+                    <strong>Full Name :</strong> <span class="ml-2">
+                        @Model.SSName
+                    </span>
+                </p>
+                <p class="text-muted mb-2 font-13">
+                    <strong>Mobile :</strong><span class="ml-2">
+                        @Model.ContactNo
+                    </span>
+                </p>
+                <p class="text-muted mb-2 font-13"><strong>Email :</strong> <span class="ml-2 ">@Model.EmailAddress</span></p>
+                <p class="text-muted mb-1 font-13"><strong>Location :</strong> <span class="ml-2">@Model.Address</span></p>
+                <p class="text-muted mb-2 font-13">
+                    <strong>Contact Person :</strong> <span class="ml-2">
+                        @Model.ContactPerson
+                    </span>
+                </p>
+                <p class="text-muted mb-2 font-13">
+                    <strong>State Name :</strong><span class="ml-2">
+                        @Model.StateName
+                    </span>
+                </p>
+                <p class="text-muted mb-2 font-13"><strong>GSTIN :</strong> <span class="ml-2 ">@Model.GstNo</span></p>
+                <p class="text-muted mb-1 font-13"><strong>PAN No :</strong> <span class="ml-2">@Model.PanNo</span></p>
+
+                @*<h4 class="font-13 text-uppercase">About Me :</h4>
+                    <p class="text-muted font-13 mb-3">
+                        Hi I'm Johnathn Deo,has been the industry's standard dummy text ever since the
+                        1500s, when an unknown printer took a galley of type.
+                    </p>*@
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 col-xl-12">
+        <div class="card-box">
+            <ul class="nav nav-pills navtab-bg nav-justified">
+                <li class="nav-item">
+                    <a href="#aboutme" data-toggle="tab" aria-expanded="false" class="nav-link active">
+                        My Demands
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#timeline" data-toggle="tab" aria-expanded="true" class="nav-link">
+                        My Sale Bills
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#settings" data-toggle="tab" aria-expanded="false" class="nav-link">
+                        Stock Report
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane show active" id="aboutme">
+                    <h5 class="mb-4 text-uppercase">
+                        <i class="mdi mdi-briefcase mr-1"></i>
+                        Demand List
+                    </h5>
+                    <div class="table-responsive">
+                        <table class="table table-borderless mb-0" id="tblDemandList">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Demand Code</th>
+                                    <th>StockiestName Name</th>
+                                    <th>Demand Date</th>
+                                    <th>Total Amount</th>
+                                    <th>Status</th>
+                                    <th>Party Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                                {
+                                    int i = 0;
+                                    foreach (DataRow dr in Model.dt.Rows)
+                                    {
+                                        i++;
+                                        <tr>
+                                            <td>1</td>
+                                            <td><a href="javascript:void(0);" class="details" data-toggle="modal" data-target="#full-width-modal" id="@dr["DemandCode"]"> @dr["DemandCode"] </a></td>
+                                            <td>@dr["StockiestName"]</td>
+                                            <td>@dr["demandDate"]</td>
+                                            <td>@dr["TotalAmount"]</td>
+                                            <td>
+                                                @if (dr["Status"].ToString() == "Pending")
+                                                {
+                                                    <span class="badge badge-warning">@dr["Status"]</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-success">@dr["Status"]</span>
+                                                }
+                                            </td>
+                                            <td>@dr["PartyName"]</td>
+                                        </tr>
+                                    }
+                                }
+
+                            </tbody>
+                            <tfoot>
+                                <tr style="color:#8e0707">
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>Total: </td>
+                                    <td>@Model.NetTotal</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div> <!-- end tab-pane -->
+                <!-- end about me section content -->
+                <div class="tab-pane" id="timeline">
+                    <h5 class="mb-4 text-uppercase">
+                        <i class="mdi mdi-briefcase mr-1"></i>
+                        My Sale Bills
+                    </h5>
+                    <div class="table-responsive">
+                        <table id="tblItemSaleBill" class="table table-centered mb-0">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Sr.No</th>
+                                    <th>Invoice No</th>
+                                    <th>Customer Name</th>
+                                    <th>Sale By</th>
+                                    <th>Voucher No</th>
+                                    <th>Invoice Date</th>
+                                    <th>Sub Total</th>
+                                    <th>GST Payable</th>
+                                    <th>Roundoff Amt.</th>
+                                    <th>Net Total</th>
+                                    <th>View</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.dt2 != null && Model.dt2.Rows.Count > 0)
+                                {
+                                    int i = 0;
+                                    foreach (DataRow dr in Model.dt2.Rows)
+                                    {
+                                        i++;
+                                        <tr>
+                                            <td>@i</td>
+                                            <td>
+                                                @dr["InvoiceNo"]
+                                            </td>
+                                            <td>
+                                                @dr["CustomerName"]
+                                            </td>
+                                            <td>
+                                                @dr["CompanyName"]
+                                            </td>
+                                            <td> <span class="badge bg-soft-warning text-success">@dr["VoucherId"]</span></td>
+                                            <td>@dr["InvoiceDate"]</td>
+                                            <td>@dr["GrossPayable"]</td>
+                                            <td>@dr["Totaltax"]</td>
+                                            <td>@dr["RoundOffAmt"]</td>
+                                            <td>@dr["NetTotal"]</td>
+                                            <td><a href="#" class="details1" data-toggle="modal" data-target="#full-width-modal1" id="@dr["InvoiceNo"]">View Items</a></td>
+                                        </tr>
+                                    }
+                                }
+
+                            </tbody>
+                            <tfoot>
+                                <tr style="color:#8e0707">
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td style="font-weight:bold">Total:</td>
+                                    <td>@Model.GrossPayable</td>
+                                    <td>@Model.Payablegst</td>
+                                    <td></td>
+                                    <td>@Model.PaidAmount</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <!-- end timeline content-->
+                <div class="tab-pane" id="settings">
+                    <h5 class="mb-4 text-uppercase">
+                        <i class="mdi mdi-briefcase mr-1"></i>
+                        Stock Details
+                    </h5>
+                    <div class="table-responsive">
+                        <table class="table table-borderless mb-0" id="tblStockDetail">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Sr.No</th>
+                                    <th>Item Name</th>
+                                    <th>HSN Code</th>
+                                    <th>Total Stock</th>
+                                    <th>Transfered Stock</th>
+                                    <th>Sold Stock</th>
+                                    <th>Available Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+                                {
+                                    int i = 0;
+                                    foreach (DataRow dr in Model.dt1.Rows)
+                                    {
+                                        i++;
+                                        <tr>
+                                            <td>@i</td>
+                                            <td>
+                                                @dr["ItemName"]
+                                            </td>
+                                            <td>@dr["HSNCode"]</td>
+                                            <td>@dr["TotalStock"]</td>
+                                            <td>@dr["TrfStock"]</td>
+                                            <td>@dr["SoldStock"]</td>
+                                            <td>@dr["AvlStock"]</td>
+                                        </tr>
+                                    }
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- end settings content-->
+            </div> <!-- end tab-content -->
+        </div> <!-- end card-box-->
+    </div> <!-- end col -->
+</div>
+
+<div id="full-width-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="full-width-modalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="full-width-modalLabel">Stock Demand Item Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <table id="tblItemDetails" class="table table-centered mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Item</th>
+                            <th>HSN Code</th>
+                            <th>Req.Qty</th>
+                            <th>Trf.Qty</th>
+                            <th>Pending Qty</th>
+                            <th>Rate</th>
+                            <th>GST Payable</th>
+                            <th>Net Total</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div id="full-width-modal1" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="full-width-modalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="full-width-modalLabel">Sales Bill Item Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <table id="tblItemDetails1" class="table table-centered mb-0">
+                    <thead class="thead-light">
+                        <tr>
+
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Rate</th>
+                            <th>Discount%</th>
+                            <th>Discount Amt.</th>
+                            <th>Gross Amount</th>
+                            <th>GST Payable</th>
+                            <th>Net Total</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>

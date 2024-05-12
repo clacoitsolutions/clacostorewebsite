@@ -1,0 +1,476 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Manage Order";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+
+    function UpdateOrderStatus() {
+        if ($('#ddlOrderStatus').val() == "cancelled") {
+            $('#customCheck1').attr('disabled', 'disabled');
+
+            $('#divDelDate').hide();
+            $('#divCollBy').hide();
+            $('#divReason').show();
+        }
+        else {
+            $('#customCheck1').removeAttr('disabled');
+
+            $('#divDelDate').show();
+            $('#divCollBy').hide();
+            $('#divReason').hide();
+        }
+    }
+    function OpenHideColl(obj) {
+
+        if ($(obj).is(':checked')) {
+            $('#divCollBy').fadeIn("slow").toggleClass("hidden");
+        } else {
+            $('#divCollBy').fadeOut("slow").toggleClass("hidden");
+        }
+    }
+    function OpenHidePanel(obj) {
+
+        if ($(obj).is(':checked')) {
+            $('#panel1').fadeIn("slow").toggleClass("hidden");
+        } else {
+            $('#panel1').fadeOut("slow").toggleClass("hidden");
+        }
+    }
+
+    function UpdateStatus() {
+        if ($("#hdOrderid").val() == "") {
+            alert("Order Id not found !!!");
+            return;
+        }
+
+        if ($('#ddlOrderStatus').val() == 'ontheway') {
+            if ($("#ddlDeliverBoy").val() == "") {
+                alert("Please Enter Delivery Boy !!!");
+                $("#ddlDeliverBoy").focus();
+                return;
+            }
+        }
+
+
+
+
+
+        if ($('#ddlOrderStatus').val() == 'Delivered') {
+            if ($("#txtDelDate").val() == "") {
+                alert("Please Enter Delivery Date !!!");
+                $("#txtDelDate").focus();
+                return;
+            }
+        }
+
+            var paystatus = "pending";
+            paystatus = '@Model.paystatus';
+
+        if (paystatus == "pending") {
+            if ($("#customCheck1").prop('checked') == false) {
+                alert("please Upload Payment First");
+                return false;
+            }
+            else {
+                paystatus = "success";
+            }
+        }
+        if ($('#ddlOrderStatus').val() == 'cancelled') {
+            if ($("#txtCancelReason").val() == "") {
+                alert("Please Enter Reason !!!");
+                $("#txtCancelReason").focus();
+                return;
+            }
+        }
+        if ($('#customCheck1').is(':checked')) {
+            if ($("#txtCollectedBy").val() == "") {
+                alert("Please Enter Payment Collecter Name !!!");
+                $("#txtCollectedBy").focus();
+                return;
+            }
+        }
+        var dataobject = {
+            OrderId: $("#hdOrderid").val(),
+            Description: $("#txtCancelReason").val(),
+            mDate: $("#txtDelDate").val(),
+            Status: $("#ddlOrderStatus").val(),
+            deliveryboy: $("#ddlDeliverBoy").val(),
+            deliveryboyReason: $("#txtDeliveryReason").val(),
+            DeliveryTo: null,
+            SupplierAccCode: $("#txtCollectedBy").val(),
+            paystatus: paystatus,
+            Action: "2"
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Ecommarce/updateOrderStatus",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r.strId == '1') {
+                    alert(r.msg);
+                    var url = '../ecommarce/OnlineOrderReport';
+                    window.location.href = url;
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+</script>
+
+
+@using System.Data;
+<input type="hidden" id="hdOrderid" value="@Model.OrderId" />
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Orders</a></li>
+                    <li class="breadcrumb-item active">Manage Order</li>
+                </ol>
+            </div>
+            <h4 class="page-title">Manage Order</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="header-title">Order Id: #@Model.OrderId</h4>
+                <p class="sub-header">
+                    <strong>Name:  @Model.SSName</strong><br />
+                    <span>
+                        Address:   @Model.Address
+                    </span><br />
+                    <span>Mobile No: @Model.ContactNo</span>
+                </p>
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group mb-3">
+                            <label>
+                                Order Status:
+                                @if (Model.Status == "cancelled")
+                                {
+                                    <span style="color:red">@Model.Status</span>
+                                    <p class="sub-header">
+                                        <strong>@Model.eDate</strong> @Model.Description
+                                    </p>
+                                }
+                                else if (Model.Status == "Delivered")
+                                {
+                                    <span style="color:green">@Model.Status</span><br />
+                                    <span class="sub-header">@Model.EwayBillNo</span>
+                                }
+                                @if (Model.Status == "Returned")
+                                {
+                                    <span style="color:red">@Model.Status</span>
+                                    <p class="sub-header">
+                                        <strong>@Model.ReturnDate</strong> @Model.ReturnReasondes
+                                    </p>
+                                }
+                                else
+                                {
+                                    <span>@Model.Status</span><br />
+                                }
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group mb-3">
+                            <label>Sale Price: @Model.GrossPayable </label>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group mb-3">
+                            <label>Promo Code: @Model.CoupenAmount </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Mode of Payment: @Model.PayMode</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Delivery Charges: @Model.deliverycharges</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group ">
+                            <label>Discount: @Model.DiscAmt</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group ">
+                            <label>Gst Amount: @Model.gstamount</label>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group mb-0">
+                            <label>Order Date: @Model.mDate</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group mb-0">
+                            <label>Total Bill Amount: @Model.NetTotal</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <label style="font-size: 16px;color: #e67c24;">Order Items: </label>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="table-responsive">
+                            <table id="tblItemHead" class="table table-centered table-borderless table-hover mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Sr.No</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Unit Rate</th>
+                                        <th>Gst Amount</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+                                    {
+                                        int i = 0;
+                                        foreach (DataRow dr in Model.dt1.Rows)
+                                        {
+                                            i++;
+                                            <tr>
+                                                <td>@i</td>
+                                                <td class="table-user" nowrap>
+                                                    <img src="@dr["MainImage"]" alt="@dr["ProductName"]" class="mr-2 rounded-circle">
+                                                    <a href="../Ecommarce/update_Product?ProductId=@dr["ItemCode"]" class="text-body font-weight-semibold" target="_blank">@dr["ProductName"]</a><br />
+                                                    @if (Convert.ToString(dr["VarriationName"]) != "")
+                                                    {
+                                                        <span class="badge badge-success">@dr["VarriationName"]</span>
+                                                    }
+                                                </td>
+                                                <td>@dr["Quantity"]</td>
+                                                <td>@dr["UnitRate"]</td>
+                                                <td>@dr["GstAmount"]</td>
+                                                <td>@dr["TotalAmount"]</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                @if (Model.dtcombooffer != null && Model.dtcombooffer.Rows.Count > 0)
+                {
+                    int i = 0;
+                    <hr />
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <label style="font-size: 16px;color: #e67c24;">Free Items: </label>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="table-responsive">
+                                <table id="tblItemHead" class="table table-centered table-borderless table-hover mb-0">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Sr.No</th>
+                                            <th>Product</th>
+                                            <th>Quantity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+
+                                        @foreach (DataRow dr in Model.dtcombooffer.Rows)
+                                        {
+                                            i++;
+                                            <tr>
+                                                <td>@i</td>
+                                                <td class="table-user" nowrap>
+                                                    <img src="@dr["MainImage"]" alt="@dr["ProductName"]" class="mr-2 rounded-circle">
+                                                    <a class="text-body font-weight-semibold">@dr["ProductName"]</a><br />
+                                                    @if (Convert.ToString(dr["VarriationName"]) != "")
+                                                    {
+                                                        <span class="badge badge-success">@dr["VarriationName"]</span>
+                                                    }
+                                                </td>
+                                                <td>@dr["qty"]</td>
+                                            </tr>
+                                        }
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <hr />
+                @if (Model.Status != "cancelled" && Model.Status != "Delivered")
+                {
+                    <div class="row">
+                        <div class="mt-3">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="customCheck2" onchange="OpenHidePanel(this)">
+                                <label class="custom-control-label" for="customCheck2">Update Order Status</label>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+
+<div class="row" id="panel1" style="display:none">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="header-title">Update Order Status</h4>
+                        <p class="sub-header">
+                            Order Status will reflect order <code>tracking timeline</code> in customer account.
+                        </p>
+
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label>Status</label>
+                                <select class="custom-select" id="ddlOrderStatus" onchange="UpdateOrderStatus()">
+                                    @if (Convert.ToString(Session["Role"]) == "9")
+                                    {
+                                        <option value="Delivered">Delivered</option>
+
+                                    }
+                                    else
+                                    {
+                                        <option value="">Select</option>
+                                        <option value="ontheway">On the way</option>
+                                        <option value="Delivered">Delivered</option>
+                                        <option value="cancelled">Cancelled</option>
+                                        <option value="Returned">Returned</option>
+                                    }
+
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+                                <div id="divDelDate">
+                                    <label>Delivery Date</label>
+                                    <input type="date" class="form-control" placeholder="Payment Collected By" id="txtDelDate" />
+                                </div>
+
+                            </div>
+                            @*<div class="col-sm-4">
+
+                                        <label>Delivery Boy</label>
+                                        <input type="text" class="form-control" id="ddlDeliverBoy"placeholder="Delivery Boy Name"/>
+
+
+                                </div>*@
+
+                            <div class="col-sm-4">
+
+                                <label>Delivery Boy</label>
+                                @if (Convert.ToString(Session["Role"]) == "9")
+            {
+                                    <input type="text" class="form-control" disabled id="ddlDeliverBoy" value="@Convert.ToString(Session["CompanyCode"])" />
+                                }
+                                else
+                                {
+                                    @Html.DropDownList("ddlDeliverBoy", (List<SelectListItem>)ViewBag.DeliverBoy, new { @id = "ddlDeliverBoy", @class = "form-control" })
+                                    @*<input type="text" class="form-control" id="ddlDeliverBoy" placeholder="Delivery Boy Name" />*@
+
+                                }
+
+                            </div>
+                        </div>
+
+
+
+                        <div class="mt-3">
+                            <label>Reason</label>
+                            <textarea type="text" class="form-control" id="txtDeliveryReason"></textarea>
+                        </div>
+                    </div>
+
+
+
+                    <div class="mt-3" id="divReason" style="display:none">
+                        <label>Cancel Reason</label>
+                        <input type="text" class="form-control" placeholder="Enter Reason" id="txtCancelReason" />
+                    </div>
+                </div>
+                <div class="col-md-12" style="margin-top:2%;">
+                    <h4 class="header-title mt-5 mt-sm-0">Payment Option</h4>
+                    @if (Model.paystatus == "pending")
+                    {
+                        <div class="mt-3">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="customCheck1" onchange="OpenHideColl(this)">
+                                <label class="custom-control-label" for="customCheck1">Is Payment Confirmed</label>
+                            </div>
+                        </div>
+                        <div class="mt-3" id="divCollBy" style="display:none">
+                            <label>Payment Collected By</label>
+                            <input type="text" class="form-control" placeholder="Payment Collected By" id="txtCollectedBy" />
+                        </div>
+                    }
+                    else
+                    {
+                        <h4 class="header-title mt-5 mt-sm-0"><span style="color:green">Success</span></h4>
+                    }
+                </div> <!-- end col -->
+            </div> <!-- end row -->
+            <hr />
+            <div class="row">
+                <div class="col-md-12" style="text-align:right">
+                    <input type="submit" id="btnUpdateStatus" class="btn btn-warning btn-sm" value="Update Order Status" onclick="UpdateStatus()" />
+                </div>
+            </div>
+
+        </div> <!-- end card-body-->
+    </div> <!-- end card -->
+</div> <!-- end col -->
+</div>

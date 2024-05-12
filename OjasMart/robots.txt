@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+Allow: sitemap.xml
+
+sitemap: https://www.claco.in/sitemap.xml

@@ -1,0 +1,505 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "All Products";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+
+@*<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
+<script>
+    $(document).ready(function () {
+        $("#tblItemHead").DataTable({
+            dom: 'Bfrtip',
+            pageLength: 50,
+            lengthMenu: [[5, 10, 20, 50, 100, 500, -1], [5, 10, 20, 50, 100, 500, "All"]],
+            buttons: [
+               'pageLength',
+           {
+               extend: 'excelHtml5', footer: true
+           },
+           { extend: 'csvHtml5', footer: true },
+           {
+               extend: 'pdfHtml5', footer: true, orientation: 'landscape',
+               pageSize: 'LEGAL',
+               text: '<i class="fa fa-file-pdf-o"> PDF</i>',
+               titleAttr: 'PDF'
+           }
+            ]
+        });
+
+
+
+        var RoleId = '@Request.RequestContext.HttpContext.Session["Role"]';
+        if (RoleId == '') {
+            window.location.href = "../Account/Index"
+        }
+        if (RoleId != "1") {
+            $("#ddlBillBy").val($("#UCode").val());
+            $("#ddlBillBy").attr("disabled", "disabled");
+        }
+    });
+
+    function getDetails() {
+        $("#showSpinner").show();
+        $.ajax({
+            url: "../Ecommarce/AllEcommarceProducts",
+            type: "POST",
+            data: { 'StartDate': $.trim($('#txtStartDate').val()), 'EndDate': $.trim($('#txtEndDate').val()), 'Searchkey': $.trim($("#txtSearch").val()) },
+            datatype: "json",
+            success: function (data1) {
+                $("#tblItemHead").DataTable().destroy();
+                var htmlNew = data1;
+                $('#divDetails').html($(htmlNew).find('#tblItemHead'));
+                //$("#tblItemHead").DataTable();
+
+                // $('#divtable').html($(htmlNew).find('#divcnt'));
+
+                $("#tblItemHead").DataTable({
+                    dom: 'Bfrtip',
+                    pageLength: 50,
+                    lengthMenu: [[5, 10, 20, 50, 100, 500, -1], [5, 10, 20, 50, 100, 500, "All"]],
+                    buttons: [
+                       'pageLength',
+                   {
+                       extend: 'excelHtml5', footer: true
+                   },
+                   { extend: 'csvHtml5', footer: true },
+                   {
+                       extend: 'pdfHtml5', footer: true, orientation: 'landscape',
+
+                       pageSize: 'LEGAL',
+                       text: '<i class="fa fa-file-pdf-o"> PDF</i>',
+                       titleAttr: 'PDF'
+                   }
+                    ]
+                });
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function updateFetured(pCode, st) {
+        var mm = confirm('are you sure to perform this action?');
+        if (mm) {
+            var data = new FormData;
+            data.append("Action", '1');
+            data.append("ItemCode", pCode);
+            data.append("Status", st);
+            $.ajax({
+                url: "../Ecommarce/UpdateProductFeatureStatus",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: data,
+                success: function (r) {
+                    if (r.strId == "1") {
+                        alert(r.msg);
+                        location.reload();
+                    }
+                    else {
+                        alert(r.msg);
+                        $("#showSpinner").hide();
+                    }
+                }
+            });
+        }
+    }
+
+    function DeleteProduct(pCode) {
+        var mm = confirm('are you sure to delete this product?');
+        if (mm) {
+            var data = new FormData;
+            data.append("Action", '1');
+            data.append("ItemCode", pCode);
+            $.ajax({
+                url: "../Ecommarce/DeleteProductDetails",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: data,
+                success: function (r) {
+                    if (r.strId == "1") {
+                        alert(r.msg);
+                        location.reload();
+                    }
+                    else {
+                        alert(r.msg);
+                        $("#showSpinner").hide();
+                    }
+                }
+            });
+        }
+    }
+
+    function ChangeStatus(pCode) {
+        var mm = confirm('are you sure you want to change the status?');
+        if (mm) {
+            var data = new FormData;
+            data.append("Action", '4');
+            data.append("ItemCode", pCode);
+            $.ajax({
+                url: "../Ecommarce/DeleteProductDetails",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: data,
+                success: function (r) {
+                    if (r.strId == "1") {
+                        alert("Status changed successfully!!");
+                        getDetails();
+                    }
+                    else {
+                        alert(r.msg);
+                        $("#showSpinner").hide();
+                    }
+                }
+            });
+        }
+    }
+
+
+    //vandana
+
+
+
+    function DeleteProduct() {
+        debugger
+        var array = [];
+        $("tr.item").each(function () {
+            //alert($('input[class="rdblstStatus"]:checked').val())
+            if ($(this).find('input[name="ClsCheck"]').is(":checked")) {
+                array.push({
+                    ItemCode: $(this).find('.PCode').val()
+                });
+            }
+        });
+        var mm = confirm('are you sure to delete this product?');
+        if (mm) {
+            if (array.length > 0) {
+                var dataobject = {
+                    Action: "1",
+                    VarLists: array,
+                };
+                //var data = new FormData;
+                //data.append("Action", '1');
+                //data.append("ItemCode", pCode);
+                $.ajax({
+                    url: "../Ecommarce/DeleteProductDetails",
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    data: JSON.stringify(dataobject),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (r) {
+                        alert("succuss");
+                        if (r.strId == "1") {
+                            alert(r.msg);
+                            location.reload();
+                        }
+                        else {
+                            alert(r.msg);
+                            $("#showSpinner").hide();
+                        }
+                    }
+                });
+            }
+            else {
+                alert("Please select rows");
+            }
+        }
+    }
+    function ChangeStatuss() {
+        debugger
+        var array = [];
+        $("tr.item").each(function () {
+            //alert($('input[class="rdblstStatus"]:checked').val())
+            if ($(this).find('input[name="ClsCheck"]').is(":checked")) {
+                array.push({
+                    ItemCode: $(this).find('.PCode').val()
+                });
+            }
+        });
+
+
+        console.log(array);
+     
+
+        var mm = confirm('are you sure you want to change the status?');
+        if (mm) {
+            if (array.length > 0) {
+                var dataobject = {
+                    Action: "5",
+                    VarLists: array,
+                };
+                //var data = new FormData;
+                //data.append("Action", '4');
+                //data.append("ItemCode", pCode);
+                $.ajax({
+                    url: "../Ecommarce/DeleteProductDetails",
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    data: JSON.stringify(dataobject),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (r) {
+                        alert("succuss");
+                        if (r.strId=="1") {
+                            alert(r.msg);
+                          
+                        }
+                        else {
+                            alert(r.msg);
+                            $("#showSpinner").hide();
+                        }
+                    }
+                });
+            }
+            else {
+                alert("Please select rows");
+            }
+        }
+       
+    }
+
+
+
+    function AChangeStatuss() {
+        debugger
+  
+        var array = [];
+        $("tr.item").each(function () {
+            //alert($('input[class="rdblstStatus"]:checked').val())
+            if ($(this).find('input[name="ClsCheck"]').is(":checked")) {
+                array.push({
+                    ItemCode: $(this).find('.PCode').val()
+                });
+            }
+        });
+
+
+        console.log(array);
+
+
+        var mm = confirm('are you sure you want to change the status?');
+        if (mm) {
+            if (array.length > 0) {
+                var dataobject = {
+                    Action: "6",
+                    VarLists: array,
+                };
+           
+                //var data = new FormData;
+                //data.append("Action", '4');
+                //data.append("ItemCode", pCode);
+                $.ajax({
+                    url: "../Ecommarce/DeleteProductDetails",
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    data: JSON.stringify(dataobject),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (r) {
+                      
+                        if (r.strId == "1") {
+                            alert(r.msg);
+
+                        }
+                        else {
+                            alert(r.msg);
+                            $("#showSpinner").hide();
+                        }
+                    }
+                      
+                });
+            }
+            else {
+                alert("Please select rows");
+            }
+        }
+
+    }
+    //end
+
+</script>
+
+<input type="hidden" id="UCode" value="@Model.UserName" />
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+            </div>
+            <h4 class="page-title">All Products</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Start Date </label>
+                        <input class="form-control" id="txtStartDate" placeholder="Start Date" type="date">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputPassword4" class="col-form-label">End Date</label>
+                        <input class="form-control" id="txtEndDate" placeholder="End Date" type="date">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="txtSearch" class="col-form-label">Product name/Main Category Name</label>
+                        <input type="text" placeholder="Search keywords..." class="autosearch-input form-control" id="txtSearch">
+                    </div>
+                  
+                        <div class="form-group col-md-4" style="margin-top:3%;">
+                            <button type="submit" style="width:100%;background:#eb7e21;" class="btn btn-primary waves-effect waves-light" onclick="getDetails()">Filter Record</button>
+                        </div>
+
+                        <div class="form-group col-md-4" style="margin-top:3%;">
+                            <button type="submit" style="width:100%;background:#eb7e21;" class="btn btn-primary waves-effect waves-light" onclick="ChangeStatuss()">Deactivate</button>
+                        </div>
+                        <div class="form-group col-md-4" style="margin-top:3%;">
+                            <button type="submit" style="width:100%;background:#eb7e21;" class="btn btn-primary waves-effect waves-light" onclick="AChangeStatuss()">Activate</button>
+                        </div>
+                        <div class="form-group col-md-4" style="margin-top:3%;">
+                            <button type="submit" style="width:50%;background:#eb7e21;" class="btn btn-primary waves-effect waves-light" onclick="DeleteProduct()">Delete Product</button>
+                        </div>
+                      
+                    </div>
+
+
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <div class="table-responsive" id="divDetails">
+                <table id="tblItemHead" class="table table-centered table-borderless table-hover mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sr.No</th>
+                            <th><input id="CheckAll" type="checkbox" onclick="ClickToCheckAll()" class="form-control-sm" /></th>
+                            <th>Action</th>
+                            <th>Image</th>
+                            <th>Category</th>
+                            <th>Sub Category</th>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Product Type</th>
+                            <th>Purchase Price</th>
+                            <th>MRP</th>
+                            <th>Discount</th>
+                            <th>Gst (%)</th>
+                            <th>Tax Type</th>
+                            <th>Gst Amount</th>
+                            <th>Sale Price</th>
+                            @*<th>ColorName</th>
+                            <th>SizeName</th>*@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                i++;
+                               <tr class="item">
+                            <td>@i</td>
+                                   <td style="width: 11px !important;"><input type="checkbox" name="ClsCheck" class="form-control-sm ClsCheck" /></td>
+                            <td nowrap>
+                                <a href="../Ecommarce/update_Product?ProductId=@dr["ProductCode"]" title="Edit" class="action-icon"> <i class="mdi mdi-square-edit-outline" style="color:#51bfd0"></i></a>
+                                | <a href="javascript:void(0);" title="Delete" class="action-icon" onclick="DeleteProduct('@dr["ProductCode"]')"> <i class="mdi mdi-delete" style="color:red"></i></a>
+                                |
+                                @if (Convert.ToString(dr["ProductIsFetured"]) == "F")
+                                {
+                                    <a href="javascript:void(0);" onclick="updateFetured('@dr["ProductCode"]','0')" title="Featured Product" style="color:silver"><span class="mdi mdi-star text-warning"></span></a>
+                                }
+                                else
+                                {
+                                    <a href="javascript:void(0);" onclick="updateFetured('@dr["ProductCode"]','1')" title="Click to make Featured" style="color:silver"><span class="mdi mdi-star"></span></a>
+                                }
+                                |
+                                @if (dr["IsActive"].ToString() == "True")
+                                {
+                                    <a href="javascript:void(0);" title="Inactive" class="action-icon" onclick="ChangeStatus('@dr["ProductCode"]')">
+                                        <i class="fa fa-check" aria-hidden="true" style="color:green;"></i>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a href="javascript:void(0);" title="Inactive" class="action-icon" onclick="ChangeStatus('@dr["ProductCode"]')">
+                                        <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                    </a>
+                                }
+                            </td>
+
+                            <td><img src="@dr["MainImg"]" class="mr-2 rounded-circle" style="height:30px;"></td>
+                            <td>@dr["MainCategory"]</td>
+                            <td>@dr["SubCategory"]</td>
+                            <td><input type="hidden" class="PCode" value="@dr["ProductCode"]" />@dr["ProductCode"]</td>
+                            <td>@dr["ProductName"]</td>
+                            <td>@dr["ProductType"]</td>
+                            <td>@dr["PurchaseRate"]</td>
+                            <td>@dr["RegularPrice"]</td>
+                            <td>@dr["Disocunt"]</td>
+                            <td>@dr["GSTRate"]</td>
+                            <td>@dr["Taxstatus"]</td>
+                            <td>@dr["GstAmount"]</td>
+                            <td>@dr["SalePrice"]</td>
+                             @*<td>@dr["ColorName"]</td>
+                             <td>@dr["Size_Name"]</td>*@
+                        </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#txtSearch").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Ecommarce/AutofillItems",
+                    type: "POST",
+                    dataType: "json",
+                    data: { Prefix: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item.Found, value: item.Found };
+                        }))
+                    }
+                })
+            },
+            messages: {
+                noResults: "No Records", results: "No Records"
+            }
+        });
+    });
+    function ClickToCheckAll() {
+        var checkBox = document.getElementById("CheckAll")
+        if (checkBox.checked == true) {
+            $('tr.item').find('input[name=ClsCheck]').prop('checked', true)
+        }
+        else {
+            $('tr.item').find('input[name=ClsCheck]').prop('checked', false)
+        }
+    }
+</script>

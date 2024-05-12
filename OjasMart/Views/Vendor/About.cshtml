@@ -1,0 +1,632 @@
+﻿
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+    .item-list {
+        padding: 15px 10px 15px 10px;
+    }
+
+        .item-list:hover {
+            background: none;
+            font-size: 17px;
+            font-weight: bold;
+            color: #ff006e
+        }
+
+    .active {
+        background: none;
+        font-size: 17px;
+        font-weight: bold;
+        color: #ff006e
+    }
+
+    .active {
+        border: 1px solid #ff006e;
+        border-radius: 10px;
+    }
+
+    .Berder-design {
+        border: 1px solid white;
+        border-radius: 10px;
+    }
+
+    .position {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 15%;
+        height: 50%
+    }
+
+    .fa {
+        font-size: 45px;
+        color: deeppink;
+    }
+
+
+    .section-title {
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .section-content {
+        margin-bottom: 20px;
+    }
+
+    .list-item {
+        margin-bottom: 10px;
+    }
+
+    .dskt {
+        display: block;
+    }
+
+    .phn {
+        display: none;
+    }
+
+    @@media only screen and (max-width:767px) {
+        .position {
+            display: none;
+        }
+
+        .dskt {
+            display: none;
+        }
+
+        .phn {
+            display: block;
+        }
+
+        .hde {
+            display: none;
+        }
+    }
+</style>
+
+<script>
+    // Function to hide the <h1> element
+    function hideHeading() {
+        document.querySelector('#create-account8 h1').style.display = 'none';
+        document.querySelector('#create-account11 h1').style.display = 'none';
+        document.querySelector('#create-account10 h1').style.display = 'none';
+        document.querySelector('#create-account3 h1').style.display = 'none';
+        document.querySelector('#create-account4 h1').style.display = 'none';
+        document.querySelector('#create-account5 h1').style.display = 'none';
+    }
+
+    // Function to show the <h1> element
+    function showHeading() {
+        document.querySelector('#create-account8 h1').style.display = 'block';
+        document.querySelector('#create-account11 h1').style.display = 'block';
+        document.querySelector('#create-account10 h1').style.display = 'block';
+        document.querySelector('#create-account3 h1').style.display = 'block';
+        document.querySelector('#create-account4 h1').style.display = 'block';
+        document.querySelector('#create-account5 h1').style.display = 'block';
+    }
+
+    // Function to update the active state based on scroll position
+    function updateActiveState() {
+        // Get all sections
+        const sections = document.querySelectorAll('.row > div[id]');
+
+        // Get current scroll position
+        const scrollPosition = window.scrollY;
+
+        // Loop through each section
+        sections.forEach(section => {
+            const top = section.offsetTop; // Top position of the section
+            const bottom = top + section.offsetHeight;
+
+            // Check if the current scroll position is within the section with a 100px margin from the top
+            if (scrollPosition >= (top - 100) && scrollPosition < bottom) {
+                // Remove active class from all list items
+                document.querySelectorAll('.item-list').forEach(item => {
+                    item.classList.remove('active');
+                    item.classList.remove('Border-design'); // Remove Border-design from all items
+                });
+
+                // Add active class and Border-design to the corresponding list item
+                const itemId = section.getAttribute('id');
+                const correspondingListItem = document.querySelector(`a[href="#${itemId}"]`);
+                if (correspondingListItem) {
+                    correspondingListItem.querySelector('.item-list').classList.add('active');
+                    if (itemId.startsWith('create-account8')) { // Apply Border-design to all create-account sections
+                        correspondingListItem.querySelector('.item-list').classList.add('Border-design');
+                    }
+                }
+            }
+        });
+    }
+
+    // Add event listener for scroll event
+    window.addEventListener('scroll', updateActiveState);
+
+    // Call the function initially to set the correct active state
+    updateActiveState();
+
+    // Add click event listeners to navigation buttons
+    document.querySelectorAll('.item-list').forEach(item => {
+        item.addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent default link behavior
+            const sectionId = this.getAttribute('href').substr(1); // Get section ID from href attribute
+            scrollToSection(sectionId);
+        });
+    });
+
+    // Function to handle smooth scrolling to section with a margin from the top
+    // Add click event listener to the "Create Account" button to show the <h1> element and scroll to the section
+    document.addEventListener('DOMContentLoaded', function () {
+        hideHeading(); // Hide the <h1> element initially
+
+        // Function to handle smooth scrolling to section with a margin from the top
+        function scrollToSection(sectionId) {
+            debugger;
+            const section = document.getElementById(sectionId);
+            if (section) {
+                const topOffset = section.offsetTop - 100; // Adjusted top position with margin
+                window.scrollTo({
+                    top: topOffset,
+                    behavior: 'smooth'
+                });
+
+                // Remove active class and Border-design from all list items
+                document.querySelectorAll('.item-list').forEach(item => {
+                    item.classList.remove('active');
+                    item.classList.remove('Border-design');
+                });
+
+                // Add active class and Border-design to the clicked list item
+                const correspondingListItem = document.querySelector(`a[href="#${sectionId}"]`);
+                if (correspondingListItem) {
+                    correspondingListItem.querySelector('.item-list').classList.add('active');
+                    if (sectionId.startsWith('create-account8')) { // Apply Border-design to all create-account sections
+                        correspondingListItem.querySelector('.item-list').classList.add('Border-design');
+                    }
+                }
+            }
+        }
+
+        document.querySelector('#create-account-button8').addEventListener('click', function () {
+            showHeading(); // Show the <h1> element when the button is clicked
+            scrollToSection('create-account8'); // Scroll to the corresponding section
+        });
+
+        document.querySelector('#create-account-button11').addEventListener('click', function () {
+            debugger;
+            showHeading(); // Show the <h1> element when the button is clicked
+            scrollToSection('create-account11'); // Scroll to the corresponding section
+        });
+
+        document.querySelector('#create-account-button10').addEventListener('click', function () {
+            showHeading(); // Show the <h1> element when the button is clicked
+            scrollToSection('create-account10'); // Scroll to the corresponding section
+        });
+        document.querySelector('#create-account-button3').addEventListener('click', function () {
+            debugger;
+            showHeading(); // Show the <h1> element when the button is clicked
+            scrollToSection('create-account3'); // Scroll to the corresponding section
+        });
+        document.querySelector('#create-account-button4').addEventListener('click', function () {
+            showHeading(); // Show the <h1> element when the button is clicked
+            scrollToSection('create-account4'); // Scroll to the corresponding section
+        });
+        document.querySelector('#create-account-button5').addEventListener('click', function () {
+            showHeading(); // Show the <h1> element when the button is clicked
+            scrollToSection('create-account5'); // Scroll to the corresponding section
+        });
+
+
+        // Add event listener for scroll event
+        window.addEventListener('scroll', updateActiveState);
+
+        // Call the function initially to set the correct active state
+        updateActiveState();
+    });
+
+
+    // Add click event listener to the "Create Account" button to show the <h1> element and scroll to the section
+    document.addEventListener('DOMContentLoaded', function () {
+        hideHeading(); // Hide the <h1> element initially
+        document.querySelector('#create-account-button8').addEventListener('click', function () {
+            showHeading(); // Show the <h1> element when the button is clicked
+            scrollToSection('create-account8'); // Scroll to the corresponding section
+        });
+        document.querySelector('#create-account-button11').addEventListener('click', function () {
+            showHeading(); // Show the <h1> element when the button is clicked
+            scrollToSection('create-account11'); // Scroll to the corresponding section
+        });
+        document.querySelector('#create-account-button10').addEventListener('click', function () {
+            showHeading(); // Show the <h1> element when the button is clicked
+            scrollToSection('create-account10'); // Scroll to the corresponding section
+        });
+        document.querySelector('#create-account-button3').addEventListener('click', function () {
+            showHeading(); // Show the <h1> element when the button is clicked
+            scrollToSection('create-account3'); // Scroll to the corresponding section
+        });
+        document.querySelector('#create-account-button4').addEventListener('click', function () {
+            showHeading(); // Show the <h1> element when the button is clicked
+            scrollToSection('create-account4'); // Scroll to the corresponding section
+        });
+        document.querySelector('#create-account-button5').addEventListener('click', function () {
+            showHeading(); // Show the <h1> element when the button is clicked
+            scrollToSection('create-account5'); // Scroll to the corresponding section
+        });
+
+    });
+</script>
+
+
+
+
+
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+    /* Add Border-design to the active button */
+    .item-list.Border-design {
+        border: 2px solid #ff006e;
+    }
+</style>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            <div class="row">
+                <div class="col-sm-4 position">
+                    <div class="list-group">
+                        <span class="Berder-design">
+                            <a href="#create-account8" id="create-account-button8">
+                                <button type="button" class="item-list list-group-item-action active " aria-current="true">
+                                    @*<img src="~/img/G_logo.png" height="20" style="width:20px;float:left" />*@Create Account
+                                </button>
+                            </a>
+                        </span>
+                        <span class="Berder-design">
+                            <a href="#create-account11" id="create-account-button11"><button type="button" class=" item-list list-group-item-action">List Products</button></a>
+                        </span>
+                        <span class="Berder-design">
+                            <a href="#create-account10" id="create-account-button10"><button type="button" class=" item-list list-group-item-action">Storage & Shipping</button></a>
+                        </span>
+                        <span class="Berder-design">
+                            <a href="#create-account3" id="create-account-button3"><button type="button" class=" item-list list-group-item-action">Receive Payments</button></a>
+                        </span>
+                        <span class="Berder-design">
+                            <a href="#create-account4" id="create-account-button4"><button type="button" class=" item-list list-group-item-action">Grow Faster</button></a>
+                        </span>
+                        <span class="Berder-design">
+                            <a href="#create-account5" id="create-account-button5"><button type="button" class=" item-list list-group-item-action">Help Support</button></a>
+                        </span>
+
+
+
+                    </div>
+
+                </div>
+                <div class="col-sm-8 ">
+
+
+                    <div class="row">
+                        <div id="create-account8" style="min-height:300px;">
+                            <h1 style="height:150px"></h1>
+                            <h4><b>Create Account on Claco Vendor Platform</b></h4>
+                            <div style="height:5px;width:60px; background:#ff006e;border-radius:9px"></div>
+                            <h2></h2>
+                            <div class="row" style="padding:10px">
+                                <div style="">
+                                    Creating your Claco vendor account is a simple process that allows you to start selling your products online. With just a few steps, you can become a part of our growing community of sellers.
+                                </div>
+                                <p>To create your account, you'll need to provide some basic information about yourself and your business. Once your account is set up, you'll have access to a range of tools and features to help you manage your online store.</p>
+                                <p>If you have any questions or need assistance during the account creation process, our support team is available to help.</p>
+                            </div>
+                            <div class="row" style="border-radius:10px;border:1px solid #ede3e3;min-height:100px;margin:20px">
+                                <div id="gst-registration-steps" style="padding: 20px;">
+                                    <p style="font-weight: bold; padding:20px">Don’t have a GSTIN? Follow these steps:</p>
+                                    <div class="row" style="flex-wrap:wrap">
+                                        <div style="display:flex;">
+                                            <div style="flex:1; text-align:center;">
+                                                <span>
+                                                    <i class="fa fa-user" style="display:block;"></i>
+                                                    <p class="mt-2"> Register or login to <a href="https://www.gst.gov.in" target="_blank">www.gst.gov.in</a>.</p>
+                                                </span>
+                                            </div>
+                                            <div style="flex:1; text-align:center;">
+                                                <span>
+                                                    <i class="fa fa-file" style="display:block;"></i>
+                                                    <p class="mt-2">Fill in the GST Enrolment Application Form.</p>
+                                                </span>
+                                            </div>
+                                            <div style="flex:1; text-align:center;">
+                                                <span>
+                                                    <i class="fa fa-paper-plane" style="display:block;"></i>
+                                                    <p class="mt-2">Submit the Enrolment Application.</p>
+                                                </span>
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            <div class="row" style="margin:20px">
+                                Explore a vast selection of categories, totaling over thousands, ideal for showcasing your products.
+                                With such a wide variety, you'll have ample opportunities to connect with a diverse range of customers.
+                                Whether you're selling electronics, fashion, home goods, or more, there's a category for you.
+                                Take advantage of these diverse options to maximize your online selling potential.
+                                Dive into our popular categories below and start reaching more customers today!
+                            </div>
+                            <div class="" style="border-radius:20px;border:1px solid #ede3e3;min-height:250px;margin:30px;box-shadow:0px 0px 3px 3px #faccec">
+                                <p class="m-4" style="font-weight:bold">Popular categories to sell across India</p>
+                                <table class="table table-borderless m-3" style="border:0px!important">
+                                    <tr>
+                                        <td>Sell Clothes Online</td>
+                                        <td>Sell Sarees Online</td>
+                                        <td>Sell Women Clothes Online</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sell Jewellery Online</td>
+                                        <td>Sell T-Shirts Online</td>
+                                        <td>Sell Watch Online</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>Sell Kurtis Online</td>
+                                        <td>Sell Toys Online</td>
+                                        <td>Sell Home Products Online</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>Sell Beauty Products Online</td>
+                                        <td>Sell Kids Clothes Online</td>
+                                        <td>Sell Women Suits Online</td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td>Sell Grocery Online</td>
+                                        <td>Sell Shirts Online</td>
+                                        <td>Sell Decoration Products Online</td>
+
+                                    </tr>
+                                </table>
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                            <div id="create-account11" style="min-height:300px;">
+                                <h1 style="height:100px"></h1>
+                                <div style="background-color: rgba(200, 60, 60, 0.1);min-height:400px">
+                                    <h4 class="m-3 mt-5 pt-5"><b>List Products</b></h4>
+                                    <div class="m-3" style="height:5px;width:50px; background:#ff006e;border-radius:9px"></div>
+                                    <div class="row">
+                                        <div class="col-sm-6" style="padding:25px;">
+                                            <!-- Text content -->
+                                            A listing registers your product on our platform, making it visible for potential
+                                            customers to explore and purchase. It involves creating a detailed product page
+                                            with key details like title, description, images, pricing, and more. Crafting
+                                            an effective listing is crucial for attracting interested buyers and ensuring
+                                            successful sales on our platform.
+                                        </div>
+                                        <div class="col-sm-6 mt-4 mr-3">
+                                            <!-- Image content -->
+                                            <img src="~/Content/showdetail.PNG" style="width:98%;" />
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                            <h1></h1>
+                            <h1></h1>
+
+                        </div>
+                        <div class="row">
+                            <div id="create-account10" style="min-height:600px">
+                                <h1 style="height:100px"></h1>
+                                <div style=";min-height:400px">
+                                    <h4 class="m-3 mt-5 pt-5"><b>Storage & Shipping</b></h4>
+                                    <div class="m-3" style="height:5px;width:50px; background:#ff006e;border-radius:9px"></div>
+                                    <div style="flex-wrap: wrap; display: flex;">
+                                        <div style="flex:1;padding:25px">
+                                            Exciting news on your first order! When it comes to shipping your products to customers,
+                                            Claco acknowledges the crucial importance of ensuring prompt and dependable delivery in
+                                            secure packaging.<br /><br />
+                                            <span>We provide two fulfilment options for you to choose from</span><br /><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Fulfilment by Claco (FBC)</span><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Non Fulfilment by Claco (NFBC)</span><br /><br />
+                                            <span>
+                                                Select the fulfillment option that aligns with your requirements and preferences to
+                                                guarantee prompt and secure delivery of your products to Flipkart customers.
+                                            </span><br />
+                                            <br />
+                                            <span style="font-weight:bold">Fulfillment by Claco (FBC)</span><br /><br />
+                                            <span>
+                                                Wave goodbye to the headaches of storage, packing, shipping,
+                                                and delivery with Claco's Fulfillment by Claco (FBC) service.
+                                                FBC offers a comprehensive solution that manages all your shipping needs seamlessly.
+                                                Entrust Claco to expertly handle the entire process,
+                                                from storing your products to meticulously packing and shipping them to customers.
+                                                Enjoy a stress-free experience and concentrate on expanding your business
+                                                while Claco takes care of the logistics.
+                                            </span><br /><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Convenient pick-up</span><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Quality assurance</span><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Swift delivery</span><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Streamlined processing</span><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Hassle-free returns</span><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Extensive warehouse space</span><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Personalized recommendations</span><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Stringent quality checks</span><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Premium packaging materials</span>
+                                            <h1></h1>
+                                            <h1></h1><br />
+                                            <span style="font-weight:bold">Non Fulfillment by Claco (NFBC)</span><br /><br />
+                                            <span>
+                                                Opt for Non-Fulfillment by Claco (NFBC) to benefit from hassle-free delivery of your
+                                                products directly from your location to the customer's doorstep. With NFBC,
+                                                sellers maintain control over the packaging process while leveraging Claco's robust
+                                                logistics network for efficient and reliable delivery.
+                                            </span><br /><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Delivery to 19,000+ pin codes</span><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Easy tracking throughout delivery</span><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Dedicated returns support</span><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Community warehouse logistics</span><br />
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row dskt">
+                            <div id="create-account3" style="min-height:500px">
+                                <h1 style="height:100px"></h1>
+                                <div style="min-height: 350px; background-color: rgba(200, 60, 60, 0.1)">
+
+                                    <div style="flex-wrap: wrap; display: flex;width:100%;float:left">
+                                        <div style="padding: 25px; width: 35%; float: left;">
+                                            <img src="~/Content/7 Days.png" style="height: 330px;width:100%" />
+
+                                        </div>
+                                        <div style="flex: 1; width: 65%; float: left;margin-top:50px">
+                                            <h4 class="mb-2"><b>Receive Payments</b></h4>
+                                            <div style="height:5px;width:50px; background:#ff006e;border-radius:9px"></div><br />
+                                            <span class="pt-3">
+                                                With a customer base exceeding 45 crore+ on Claco,
+                                                you can anticipate orders pouring in from customers nationwide.
+                                                To enhance your convenience, Claco ensures prompt payments directly
+                                                to your registered bank account, which you provided during the Claco account setup.
+                                                You can expect to receive your payments in as little as 7 days* from the date of dispatch,
+                                                empowering you to manage your cash flow effectively and concentrate on scaling your business.
+                                            </span><br /><br />
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!---For phone view-->
+                        <div class="row phn">
+                            <div id="create-account3" style="min-height:500px">
+                                <h1 style="height:100px"></h1>
+                                <div style="min-height: 350px;width:100%">
+                                    <h4 class="mb-2"><b>Receive Payments</b></h4>
+                                    <div style="height:5px;width:50px; background:#ff006e;border-radius:9px"></div><br />
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <img src="~/Content/7 Days.png" />
+
+                                        </div>
+                                        <div class="col-sm-6">
+
+                                            <span class="pt-3">
+                                                With a customer base exceeding 45 crore+ on Claco,
+                                                you can anticipate orders pouring in from customers nationwide.
+                                                To enhance your convenience, Claco ensures prompt payments directly
+                                                to your registered bank account, which you provided during the Claco account setup.
+                                                You can expect to receive your payments in as little as 7 days* from the date of dispatch,
+                                                empowering you to manage your cash flow effectively and concentrate on scaling your business.
+                                            </span><br /><br />
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--End-->
+
+                        <div class="row">
+                            <div id="create-account4" style="min-height:800px">
+                                <h1 style="height:100px"></h1>
+                                <h4 class="mb-2"><b>Grow Faster</b></h4>
+                                <div style="height:5px;width:50px; background:#ff006e;border-radius:9px"></div><br />
+                                <div style="min-height: 350px;">
+
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <span>
+                                                At Claco, we understand that there are moments when you may need extra support for your online venture.
+                                                That's why, with your Claco seller account,
+                                                you unlock access to an array of tools and support features crafted to nurture business expansion.
+                                                These encompass:
+                                            </span><br /><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Price Optimization Tool: Empowers you to establish the most competitive pricing for your products.</span><br /><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Product Discovery Tool: Recommends sought-after and trending items to diversify your product range.</span><br /><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Claco Ads: Facilitates product promotion and broadens your customer reach through targeted advertising.</span><br /><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Dedicated Account Management: Offers personalized support from experienced account managers to guide your business growth.</span><br /><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Catalog Management and Photography: Assists in crafting visually appealing product catalogs and images to enhance your online presence.</span><br /><br />
+                                            <span><i class="fa fa-check" style="font-size:15px">&nbsp;&nbsp;</i>Seasonal Sales and Special Events: Engage in captivating promotional activities and sales extravaganzas to boost your sales and visibility.</span><br />
+
+
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="row hde" style="min-height:300px"></div>
+                                            <img src="~/Content/grow.png" />
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div id="create-account5" style="height:600px">
+                                <h1 style="height:100px"></h1>
+                                <h4 class="mb-2"><b>Help Support</b></h4>
+                                <div style="height:5px;width:50px; background:#ff006e;border-radius:9px"></div><br />
+                                <div style="min-height: 350px;">
+
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <span>
+                                                At Claco, what sets us apart is our unparalleled seller support assistance.
+                                                We prioritize your needs and are dedicated to providing you with swift assistance,
+                                                whether you have inquiries, uncertainties, or require any form of support for your business.
+                                                Our committed team is here to guide you every step of the way,
+                                                ensuring a seamless and prosperous selling journey on Claco.
+                                                Don't hesitate to reach out to us whenever you need assistance - we're always here
+                                                to back you up.
+                                            </span><br /><br />
+                                            <span>
+                                                Discover more about the assistance we offer.
+                                                You can download a comprehensive, step-by-step guide to aid in your Claco account creation from here.
+                                            </span>
+
+
+
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="row hde" style="min-height:100px"></div>
+                                            <img src="~/Content/help_Support.png" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2"></div>
+        </div>
+    </div>
+</div>
+
+
+
+<h1></h1>
+<h1></h1>

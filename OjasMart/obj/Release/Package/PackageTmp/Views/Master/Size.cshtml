@@ -1,0 +1,303 @@
+﻿
+@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Size";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using System.Data;
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#tblItemHead").DataTable();
+    });
+    // save
+    function SaveUpdate_Size() {
+
+        var Action = '1';
+
+        if ($("#txt_Size_Name").val() == "") {
+            alert("Please enter size name!!");
+            $("#txt_Size_Name").focus();
+        }
+        else if ($("#txt_Size_Value").val() == "") {
+            alert("Please enter size value!!");
+            $("#txt_Size_Value").focus();
+        }
+        else {
+
+            var Id = 0;
+            if ($("#hd_Id").val() != "") {
+                Action = '2';
+                Id = $("#hd_Id").val();
+            }
+
+            var dataobject = {
+                Action: Action,
+                Size_Name: $("#txt_Size_Name").val(),
+                Size_Value: $("#txt_Size_Value").val(),
+                Id: Id,
+            };
+
+            $.ajax({
+
+                url: "/Master/Insert_size",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                //data: dataobject,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    if (r.Id == '1') {
+
+
+                        alert(r.msg);
+                        location.reload();
+
+                    }
+
+                    if (r.Id == "0") {
+
+                        alert(r.msg);
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("Please Check values Entered by you!");
+                }
+            });
+
+
+        }
+    }
+
+    // get
+    function GetsizeDetails(Id) {
+
+
+
+        var dataobject = {
+            Id: Id
+        };
+
+        $.ajax({
+            url: "/Master/GetsizeDetails",
+            type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (data) {
+                if (data != null) {
+                    $("#hd_Id").val(data.Id);
+                    $("#txt_Size_Name").val(data.Size_Name);
+                    $("#txt_Size_Value").val(data.Size_Value);
+                    $("#btnSize").text('Update Size');
+
+                }
+            },
+
+            error: function () {
+
+            }
+        });
+
+
+    }
+
+    // Change Status
+    function ChangeStatus_Size(Id) {
+        var r = confirm("Are you sure you want to change the status?");
+        if (r == true) {
+
+            var dataobject = {
+                Action: '5',
+                Id: Id,
+            };
+
+            $.ajax({
+
+                url: "/Master/Insert_size",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                //data: dataobject,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    if (r.Id == '1') {
+
+                        alert(r.msg);
+                        location.reload();
+
+                    }
+
+                    if (r.Id == "0") {
+
+                        alert(r.msg);
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("Please Check values Entered by you!");
+                }
+            });
+
+
+        }
+    }
+
+    // Exists
+
+    function Exists_Size() {
+
+
+        var dataobject = {
+            Action: '4',
+            Id: $("#hd_Id").val(),
+            Size_Name: $("#txt_Size_Name").val(),
+        };
+
+        $.ajax({
+
+            url: "/Master/Insert_size",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+
+                if (r.Id == "1") {
+                    $("#txt_Size_Name").val('');
+                    alert(r.msg);
+                }
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("Please Check values Entered by you!");
+            }
+        });
+
+
+
+    }
+
+</script>
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Create Color</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col-sm-4" style="margin-top: 3px">
+                        <label>Size Name:</label>
+                    </div>
+                    <div class="col-sm-6" style="margin-top: 3px">
+                        <input type="text" class="form-control" id="txt_Size_Name" maxlength="100" placeholder="Your size name here" onchange="Exists_Size()" />
+                        <input type="hidden" id="hd_Id" />
+                    </div>
+
+                    <div class="col-sm-4" style="margin-top: 3px">
+                        <label>Size Value:</label>
+                    </div>
+                    <div class="col-sm-6" style="margin-top: 3px">
+                        <input type="text" class="form-control" id="txt_Size_Value" maxlength="100" placeholder="Your size value here" />
+
+                    </div>
+
+
+
+                </div>
+
+
+                <a class="btn btn-primary" id="btnSize" style="color:white;" onclick="SaveUpdate_Size()">Save Size</a>
+
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <h4 class="header-title">Size Details</h4>
+            <div class="table-responsive">
+                <table id="tblItemHead" class="table table-borderless table-hover table-centered m-0">
+                    <thead>
+                        <tr>
+                            <th>Sr.No.</th>
+                            <th> Action </th>
+                            <th> Size Name </th>
+                            <th> Size Value </th>
+                            <th> Generated Date </th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.dtSize != null && Model.dtSize.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow item in Model.dtSize.Rows)
+                            {
+                                i++;
+                                <tr>
+                                    <td>@i </td>
+                                    <td>
+                                        <a style='color:red;font-size:20px;' onclick="GetsizeDetails(@item["Id"])" data-toggle="modal" data-target="#exampleModal" id="example1"><i class='fa fa-pencil'></i> </a>
+
+                                        |
+
+
+                                        @if (item["IsActive"].ToString() == "True")
+                                        {
+                                            <a href="javascript:void(0);" title="Inactive" class="action-icon" onclick="ChangeStatus_Size('@item["Id"]')">
+                                                <i class="fa fa-toggle-on" aria-hidden="true" style="color:green;font-size:20px;"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="javascript:void(0);" title="Inactive" class="action-icon" onclick="ChangeStatus_Size('@item["Id"]')">
+                                                <i class="fa fa-toggle-off" aria-hidden="true" style="color:red;font-size:20px;"></i>
+                                            </a>
+                                        }
+
+
+
+                                    </td>
+                                    <td>@item["Size_Name"]</td>
+                                    <td>@item["Size_Value"]</td>
+                                    <td>@item["GenerateDate"]</td>
+
+                                </tr>
+
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>
+

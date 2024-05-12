@@ -1,0 +1,24 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    Layout = null;
+}
+
+@using System.Data;
+
+@if (Model.dt != null && Model.dt.Rows.Count > 0)
+{
+    if (Convert.ToDecimal(Model.dt.Rows[0]["Discper"]) > 0)
+    {
+        <span>&#8377;@Model.dt.Rows[0]["RegularPrice"] &nbsp; &nbsp;</span>
+        <label>
+            &#8377; @Model.dt.Rows[0]["SalePrice"]
+        </label>
+    }
+    else
+    {
+        <label>
+            &#8377;@Model.dt.Rows[0]["SalePrice"]
+        </label>
+    }
+
+}

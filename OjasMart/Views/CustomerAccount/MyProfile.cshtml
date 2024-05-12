@@ -1,0 +1,336 @@
+@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "MyProfile";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+@using System.Data;
+
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<style>
+    @@media only screen and (max-width: 768px) {
+        #hide2 {
+            display: none;
+        }
+    }
+
+    @@media only screen and (max-width: 1000px) {
+        #hide2 {
+            display: none;
+        }
+    }
+
+    .w3-container {
+        border: none;
+        height: 35px;
+        width: max-content;
+    }
+
+    .btnSubmit {
+        height: 40px;
+    }
+    #alertMessage {
+        position: fixed;
+        bottom: 1%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        height: 50px;
+        background: black;
+        display: none;
+        text-align: center; /* Center the text horizontally */
+        color: white;
+    }
+</style>
+<script>
+    function UpdateCustomerprofile() {
+        debugger;
+
+        var data = new FormData;
+        data.append("CustomerId", $('#Customerid').val());
+        data.append("ContactNo", $('#ContactNo').val());
+        data.append("EmailAddress", $('#EmailAddress').val());
+        data.append("Address", $('#Address').val());
+        data.append("SSName", $('#SSName').val());
+
+        $.ajax({
+            type: 'Post',
+            url: '/CustomerAccount/UpdateCustomerprofile',
+            contentType: false,
+            processData: false,
+            data: data,
+
+            success: function (data) {
+                $("#iconSuccess").show();
+                $("#iconError").hide();
+                $("#message").text(data); // Display the message returned from the server
+                $("#alertMessage").show(); // Show the alert message
+
+                // Set a timeout of 4 seconds before reloading the page
+                setTimeout(function () {
+                    window.location.reload();
+                }, 4000); // 4000 milliseconds = 4 seconds
+
+            },
+            error: function (ex) {
+                $("#iconError").show();
+                $("#iconSuccess").hide();
+                $("#message").text('Server error!'); // Display error message
+                $("#alertMessage").show(); // Show the alert message
+            }
+        });
+
+    }
+
+    function Showedit() {
+        debugger;
+        $("#persondata").hide();
+        $("#editdata").show();
+    }
+
+    function Showdata() {
+        $("#persondata").show();
+        $("#editdata").hide();
+    }
+
+</script>
+
+
+@*Profile data box*@
+<style>
+    .tittle-text {
+        font-size: 18px;
+        font-weight: bold;
+        opacity: 0.5
+    }
+
+    .SPACE {
+        margin: 0px 0px 15px 0px;
+    }
+
+    .boxs-space {
+        padding: 25px !important;
+        background: none !important
+    }
+</style>
+
+
+<!-- code by shailja Tiwari -->
+<div class="gambo-Breadcrumb" style="background:#eef5fa;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mt-5">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="../WebHome/Index">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">My Profile</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="" style="background:#eef5fa;padding-bottom:40PX">
+
+    <div class="container" style="background:#eef5fa;">
+        <span id="hide2">@Html.Action("_pUserSideMenu", "CustomerAccount")</span>
+        <div class="row" style="">
+
+            <div id="content" class="col-lg-12 px-lg-5">
+                <div class="products-category">
+
+
+                    <div id="persondata" class="products-list nopadding-xs bg-white shadow p-4">
+                        <section>
+
+                            <div class="row SPACE" style="">
+                                <div class="col-sm-7">
+
+                                </div>
+                                <div class="col-sm-5 " style="">
+                                    <span class="tittle-text ">Customer Id:<span style="margin-left:2%;color:#ef0966;font-size:13px !important">@Model.CustomerId</span> </span>
+                                    <input type="hidden" id="Customerid" value="@Model.CustomerId" />
+
+                                </div>
+                            </div>
+
+                            <div class=" p-2">
+
+                                <div class="row SPACE">
+                                    <div class="col-sm-12 pb-3">
+                                        <span class="tittle-text"> Personal Information</span>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <input type="text" name="name" value="@Model.SSName" class="form-control boxs-space " readonly />
+                                    </div>
+                                    <div class="col-sm-4 ">
+
+                                    </div>
+
+                                </div>
+
+                                <div class="row SPACE">
+                                    <div class="col-sm-12 pb-3">
+                                        <span class="tittle-text">Contact No.</span>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <input type="text" name="name" value="@Model.ContactNo" class="form-control boxs-space" readonly />
+                                    </div>
+                                    <div class="col-sm-4 ">
+
+                                    </div>
+
+                                </div>
+                                <div class="row SPACE">
+                                    <div class="col-sm-12 pb-3">
+                                        <span class="tittle-text">Email Id.</span>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <input type="text" name="name" value="@Model.EmailAddress" class="form-control boxs-space" readonly />
+                                    </div>
+                                    <div class="col-sm-4 ">
+
+                                    </div>
+
+                                </div>
+
+                                <div class="row SPACE" style="display:none">
+                                    <div class="col-sm-12 pb-3 ">
+                                        <span class="tittle-text">Address</span>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <input type="text" name="name" value="@Model.Address" class="form-control" readonly />
+                                    </div>
+                                    <div class="col-sm-4 ">
+
+                                    </div>
+
+                                </div>
+                                <div class="p-5">
+                                    <button class="w3-container w3-pink" onclick="Showedit()" style="float: right;">Profile Update</button>
+                                </div>
+
+                            </div>
+
+                        </section>
+                    </div>
+
+
+
+                    <div id="editdata" class="products-list   nopadding-xs   bg-white shadow p-4" style=" display:none">
+                        <section style="">
+
+                            <div class="row SPACE" style="">
+                                <div class="col-sm-7">
+
+                                </div>
+                                <div class="col-sm-5 " style="">
+                                    <span class="tittle-text">Customer Id:<span style="margin-left:2%;color:#ef0966;font-size:13px">@Model.CustomerId</span> </span>
+                                    <input type="hidden" id="Customerid" value="@Model.CustomerId" />
+
+                                </div>
+                            </div>
+
+                            <div class=" p-2">
+
+
+
+                                <div class="row SPACE">
+                                    <div class="col-sm-12 pb-3">
+                                        <span class="tittle-text"> Personal Information</span>
+                                    </div>
+                                    <div class="col-sm-5">
+
+
+                                        @Html.TextBoxFor(m => m.SSName, new { @class = "form-control boxs-space", @required = "required", @Autocomplete = "off" })
+                                    </div>
+                                    <div class="col-sm-4 ">
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="row SPACE">
+                                    <div class="col-sm-12  pb-3">
+                                        <span class="tittle-text">Contact No.</span>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        @Html.TextBoxFor(m => m.ContactNo, new { @class = "form-control boxs-space", @required = "required", @Autocomplete = "off" })
+                                    </div>
+                                    <div class="col-sm-4 ">
+
+                                    </div>
+
+                                </div>
+                                <div class="row SPACE">
+                                    <div class="col-sm-12  pb-3">
+                                        <span class="tittle-text">Email Id.</span>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        @Html.TextBoxFor(m => m.EmailAddress, new { @class = "form-control boxs-space", @type = "email", @required = "required", @Autocomplete = "off" })
+                                    </div>
+                                    <div class="col-sm-4 ">
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="row SPACE" style="display:none">
+                                    <div class="col-sm-12  pb-3 ">
+                                        <span class="tittle-text">Address</span>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        @Html.TextAreaFor(m => m.Address, new { @class = "form-control", @placeholder = "", @type = "text", @Autocomplete = "off" })
+                                    </div>
+                                    <div class="col-sm-4 ">
+
+                                    </div>
+
+                                </div>
+                                <div class="p-5">
+                                    <button class=" btn btn-secondary" onclick="Showdata()" style="float: right;">Cancle</button><p style="float:right;color:white">!!</p>
+                                    <button onclick="UpdateCustomerprofile()" class=" w3-container w3-pink " id="btnSubmit" type="button" name="submit" value="Update Profile" style="float: right;">Profile Update</button>
+
+
+                                </div>
+
+                            </div>
+
+                        </section>
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="alertMessage" style="height:50px;background:black;">
+        <div style="margin:10px;">
+            <span id="iconSuccess" style="display: none;"><img src="~/img/sucessicon-removebg-preview.png" alt="Success" height="30" width="30"></span>
+            <span id="iconError" style="display: none;"><img src="/img/erroricon.png" alt="Error" height="30" width="30"></span>
+            <span id="message" style="color:white;font-weight:bold"></span>
+        </div>
+    </div>
+</div>
+@*<div class="">
+        <div class="container">
+            <div class="row">
+                @Html.Action("_pUserSideMenu", "CustomerAccount")
+                <div class="col-lg-9 col-md-8" id="div">
+                    <div class="dashboard-right" id="div1">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="main-title-tab">
+                                    <h4><i class="uil uil-box"></i>My Orders</h4>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@

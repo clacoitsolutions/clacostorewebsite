@@ -1,0 +1,18 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+
+    Layout = null;
+}
+@using System.Data;
+
+@if (Model.dtSStockist != null && Model.dtSStockist.Rows.Count > 0)
+{
+        foreach (DataRow dr in Model.dtSStockist.Rows)
+        {
+            <div class="item channel_item">
+                <i class="uil uil-location-point"></i>
+                <a href="../WebHome/Index?StoreName=@dr["SSName"]&&StockistId=@dr["SSCode"]" style="color:#2b2f4c">@dr["SSName"]</a>
+            </div>
+        }
+
+}

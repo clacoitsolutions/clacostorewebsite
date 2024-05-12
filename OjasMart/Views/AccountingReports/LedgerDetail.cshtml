@@ -1,0 +1,170 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Ledger Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$("#txtStartDate").val($.datepicker.formatDate("dd-MM-yy", new Date()));
+        //$("#txtEndDate").val($.datepicker.formatDate("dd-MM-yy", new Date()));
+
+        $('#txtStartDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+        $('#txtEndDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+
+        //getDetails();
+
+        $("#tblItemHead").DataTable({
+            dom: 'Bfrtip',
+            pageLength: 50,
+            lengthMenu: [[5, 10, 20, 50, 100, 500, -1], [5, 10, 20, 50, 100, 500, "All"]],
+            buttons: [
+               'pageLength',
+           {
+               extend: 'excelHtml5', footer: true
+           },
+           { extend: 'csvHtml5', footer: true },
+           {
+               extend: 'pdfHtml5', footer: true, orientation: 'landscape',
+
+               pageSize: 'LEGAL',
+               text: '<i class="fa fa-file-pdf-o"> PDF</i>',
+               titleAttr: 'PDF'
+           }
+            ]
+        });
+    });
+
+    function getDetails() {
+        $("#showSpinner").show();
+        $.ajax({
+            url: "../AccountingReports/TrialBalanceReport",
+            type: "POST",
+            data: { 'StartDate': $.trim($('#txtStartDate').val()), 'EndDate': $.trim($('#txtEndDate').val()), 'CompanyCode': null },
+            datatype: "json",
+            success: function (data1) {
+                $("#tblItemHead").DataTable().destroy();
+                var htmlNew = data1;
+                $('#divDetails1').html($(htmlNew).find('#div1'));
+                $("#tblItemHead").DataTable({
+                    dom: 'Bfrtip',
+                    pageLength: 50,
+                    lengthMenu: [[5, 10, 20, 50, 100, 500, -1], [5, 10, 20, 50, 100, 500, "All"]],
+                    buttons: [
+                       'pageLength',
+                   {
+                       extend: 'excelHtml5', footer: true
+                   },
+                   { extend: 'csvHtml5', footer: true },
+                   {
+                       extend: 'pdfHtml5', footer: true, orientation: 'landscape',
+
+                       pageSize: 'LEGAL',
+                       text: '<i class="fa fa-file-pdf-o"> PDF</i>',
+                       titleAttr: 'PDF'
+                   }
+                    ]
+                });
+                $("#showSpinner").hide();
+            }
+        });
+    }
+</script>
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Ledger Detail</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row" style="margin-bottom:-34px">
+                    <div class="col-md-12" style="text-align:right"><span style="font-size: 11px;color: #1a6359;font-weight: bold;"> Dated: @DateTime.Now.ToString("dd-MMM-yyyy hh:mm:ss tt")</span></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <a href="../AccountingReports/TrialBalanceReport" class="btn btn-primary btn-sm">GO BACK</a>
+                    </div>
+                    <div class="form-group col-md-8" style="text-align:center;margin:0px">
+                        <p style="font-size: 24px;font-weight: bold;color: #631a38;margin:0px">Ledger Report</p>
+                        <p style="font-size: 13px;font-weight: bold;margin:0px">Ledger Details from <span style="color:red">@Model.mDate</span> to <span style="color:red">@Model.eDate</span></p>
+                        <p style="font-size: 13px;font-weight: bold;margin:0px"><span>Account Code: @Model.AccountCode</span> <span style="margin-left:17px">Account Name: @Model.AccountName</span></p>
+                    </div>
+                    <div class="form-group col-md-2">
+                    </div>
+                </div>
+                <hr />
+                <div class="form-row" id="divDetails1">
+                    <div class="form-group col-md-12" id="divDetails1">
+                        <div class="table-responsive">
+                            <table id="tblItemHead" class="table table-borderless table-hover table-centered m-0" style="font-size: 11px;font-weight: bold;">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Sr.No</th>
+                                        <th nowrap>Date</th>
+                                        <th nowrap>Narration</th>
+                                        <th nowrap>A/C</th>
+                                        <th nowrap>Voucher No.</th>
+                                        <th nowrap>Received(Dr.)</th>
+                                        <th nowrap>Payment(Cr.)</th>
+                                        <th nowrap>Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                                    {
+                                        int i = 0;
+                                        foreach (DataRow dr in Model.dt.Rows)
+                                        {
+                                            i++;
+                                            <tr>
+                                                <td>@i</td>
+                                                <td nowrap>@dr["TxnDate"]</td>
+                                                <td nowrap>@dr["Narration"]</td>
+                                                <td nowrap>@dr["accName"]</td>
+                                                <td nowrap>@dr["VoucherNo"]</td>
+                                                <td nowrap>@dr["DrAmount"]</td>
+                                                <td nowrap>@dr["CrAmount"]</td>
+                                                <td nowrap>@dr["BalanceAmt"]</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr style="font-weight:bold">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Total:</td>
+                                        <td style="color:red">@Model.DrBal</td>
+                                        <td style="color:red">@Model.CrBal</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>

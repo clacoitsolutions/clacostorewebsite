@@ -1,0 +1,273 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Create OutLet";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using System.Data;
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var RoleId = '@Request.RequestContext.HttpContext.Session["Role"]';
+        var UserId = '@Request.RequestContext.HttpContext.Session["UserName"]';
+        if (RoleId == '') {
+            window.location.href = "../Account/Index"
+        }
+        if (RoleId == "2") {
+            $("#ddlSS").val(UserId);
+            $("#ddlSS").attr('disabled', 'disabled');
+            $("#ddlSS").hide();
+            $("#lblSS").hide();
+        }
+
+        //$('#ddlState').select2();
+
+        if ($("#hdOutLetCode").val() != "") {
+            $("#btnUpdate").show();
+            $("#btnCancel").show();
+            $("#btnSave").hide();
+            $("#ddlState").val($("#hdStateCode").val());
+            $("#ddlSS").val($("#hdSSCode").val());
+        }
+    });
+
+
+    function calcRate() {
+        var PurchRate = $("#txtPurchaseRate").val() != "" ? parseFloat($("#txtPurchaseRate").val()) : 0;
+        var MRP = $("#txtMRP").val() != "" ? parseFloat($("#txtMRP").val()) : 0;
+        var IGST = $("#txtIGSt").val() != "" ? parseFloat($("#txtIGSt").val()) : 0;
+
+        var cgst = IGST / 2;
+        var sgst = IGST / 2;
+        var Rate = (MRP / ((100 + IGST) / 100));
+        $("#txtcgst").val(cgst.toFixed(2));
+        $("#txtsgst").val(sgst.toFixed(2));
+        $("#txtRate").val(Rate.toFixed(2));
+
+    }
+
+    function InsertOutlet() {
+        
+        if ($("#txtOutLetName").val() == "") {
+            alert("Enter OutLet Name !!!");
+            $("#txtOutLetName").focus();
+            return;
+        }
+        if ($("#txtContactPerson").val() == "") {
+            alert("Enter Contact Person !!!");
+            $("#txtContactPerson").focus();
+            return;
+        }
+        if ($("#txtContactNo").val() == "") {
+            alert("Enter Contact No !!!");
+            $("#txtContactNo").focus();
+            return;
+        }
+        if ($("#ddlState").val() == "") {
+            alert("Select State Name !!!");
+            $("#ddlState").focus();
+            return;
+        }
+
+        var dataobject = {
+            SSCode: $("#ddlSS").val(),
+            SSName: $("#txtOutLetName").val(),
+            ContactPerson: $("#txtContactPerson").val(),
+            ContactNo: $("#txtContactNo").val(),
+            EmailAddress: $("#txtEmailAddress").val(),
+            PinCode: $("#txtPinCode").val(),
+            Address: $("#txtAddress").val(),
+            StateId: $("#ddlState").val(),
+            CityName: $("#txtCityName").val(),
+            GstNo: $("#txtGstNo").val(),
+            PanNo: $("#txtPanNo").val(),
+            Action: "1",
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/OutLet/InsertUpdateOutLets",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r != '0') {
+                    alert(r);
+                    location.reload();
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+
+    function UpdateOutlet() {
+        if ($("#hdOutLetCode").val() == "") {
+            alert("OutLet Code Not Found !!!");          
+            return;
+        }
+        if ($("#txtOutLetName").val() == "") {
+            alert("Enter OutLet Name !!!");
+            $("#txtOutLetName").focus();
+            return;
+        }
+        if ($("#txtContactPerson").val() == "") {
+            alert("Enter Contact Person !!!");
+            $("#txtContactPerson").focus();
+            return;
+        }
+        if ($("#txtContactNo").val() == "") {
+            alert("Enter Contact No !!!");
+            $("#txtContactNo").focus();
+            return;
+        }
+        if ($("#ddlState").val() == "") {
+            alert("Select State Name !!!");
+            $("#ddlState").focus();
+            return;
+        }
+        var dataobject = {
+            OutLetCode: $("#hdOutLetCode").val(),
+            SSCode: $("#ddlSS").val(),
+            SSName: $("#txtOutLetName").val(),
+            ContactPerson: $("#txtContactPerson").val(),
+            ContactNo: $("#txtContactNo").val(),
+            EmailAddress: $("#txtEmailAddress").val(),
+            PinCode: $("#txtPinCode").val(),
+            Address: $("#txtAddress").val(),
+            StateId: $("#ddlState").val(),
+            CityName: $("#txtCityName").val(),
+            GstNo: $("#txtGstNo").val(),
+            PanNo: $("#txtPanNo").val(),
+            Action: "2",
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/OutLet/InsertUpdateOutLets",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r != '0') {
+                    alert(r);
+                    window.location.href = "../OutLet/OutLetList";
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+
+    function CancelUpdate() {
+        window.location.href = "../OutLet/OutLetList";
+    }
+</script>
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                <a href="../OutLet/OutLetList" class="btn btn-primary waves-effect waves-light mb-2"><i class="mdi mdi-plus-circle mr-1"></i>Go to Warehouse List</a>
+            </div>
+            <h4 class="page-title">Create Warehouse</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row" id="divSSDDl">
+                    <div class="form-group col-md-8">
+                        <label for="inputEmail4" class="col-form-label" id="lblSS">Select Super Stockiest </label>
+                        @Html.DropDownList("ddlSS", (List<SelectListItem>)ViewBag.SuperStocksList, new { @id = "ddlSS", @class = "form-control" })
+                        <input type="hidden" id="hdOutLetCode" value="@Model.OutLetCode" />
+                        <input type="hidden" id="hdStateCode" value="@Model.StCode" />
+                        <input type="hidden" id="hdSSCode" value="@Model.SSCode" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-8">
+                        <label for="inputEmail4" class="col-form-label">Warehouse Name <span style="color:red">*</span> </label>
+                        <input type="text" class="form-control" id="txtOutLetName" placeholder="Enter OutLet Name" value="@Model.SSName">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputPassword4" class="col-form-label">Contact Person <span style="color:red">*</span></label>
+                        <input type="text" class="form-control" id="txtContactPerson" placeholder="Enter Contact Person" value="@Model.ContactPerson">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress" class="col-form-label">Contact No <span style="color:red">*</span></label>
+                        <input type="text" class="form-control" id="txtContactNo" maxlength="10" placeholder="Enter Contact No" value="@Model.ContactNo">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2" class="col-form-label">e-Mail Address</label>
+                        <input type="text" class="form-control" id="txtEmailAddress" placeholder="Enter e-Mail Address" value="@Model.EmailAddress">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2" class="col-form-label">Pin Code</label>
+                        <input type="text" class="form-control" id="txtPinCode" maxlength="6" placeholder="Enter 6 digit Pin Code" value="@Model.PinCode">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="inputAddress" class="col-form-label">Compelete Address</label>
+                        <textarea id="txtAddress" class="form-control" placeholder="Enter Compelete Address" rows="5">@Model.Address</textarea>
+
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputAddress2" class="col-form-label">Select State <span style="color:red">*</span></label>
+                        @Html.DropDownList("ddlState", (List<SelectListItem>)ViewBag.StateList, new { @id = "ddlState", @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="inputAddress2" class="col-form-label">City Name </label>
+                        <input type="text" class="form-control" id="txtCityName" placeholder="Enter City Name" value="@Model.CityName">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputAddress2" class="col-form-label">GST No.</label>
+                        <input type="text" class="form-control" id="txtGstNo" placeholder="Enter GST No." value="@Model.GstNo">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="inputAddress2" class="col-form-label">PAN No. </label>
+                        <input type="text" class="form-control" id="txtPanNo" placeholder="Enter PAN No." value="@Model.PanNo">
+                    </div>
+                </div>
+                <button type="submit" id="btnSave" class="btn btn-primary waves-effect waves-light" onclick="InsertOutlet()">Save Record</button>
+                <button type="submit" id="btnUpdate" style="display:none" class="btn btn-warning waves-effect waves-light" onclick="UpdateOutlet()">Update Record</button>
+
+                <button type="submit" id="btnCancel" style="display:none" class="btn btn-danger waves-effect waves-light" onclick="CancelUpdate()">Cancel</button>
+
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+

@@ -1,0 +1,245 @@
+﻿
+@{
+    ViewBag.Title = "ProductReplaceandRefund";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+
+<h2 style="min-height:80px"></h2>
+
+<div class="row">
+
+    <div class="col-sm-4"></div>
+    <div class="col-sm-4 p-5 shadow">
+        <div class="">
+            <center>
+                <select id="order-type" class="form-control">
+                    <option value="">-select -</option>
+                    <option value="replace-order">Replace Order</option>
+                    <option value="refund-order">Refund Order</option>
+                </select>
+            </center>
+        </div>
+        <br />
+        <div id="replace-order" class="order-form" style="display: none;">
+            <form action="#" method="post">
+
+                <input type="text" name="replace-reason" class="form-control" value="" placeholder="Reason*" /> <br />
+
+                <textarea name="replace-comments" class="form-control" placeholder="Comments*"></textarea><br />
+                <div class="file-upload-container">
+                    <label for="replace-image" class="file-upload">
+                        <input type="file" id="replace-image" name="replace-image" class="form-control" style="display: none;" accept="image/*" multiple />
+                        <div class="upload-icon">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                    </label>
+                </div>
+
+                <button class="form-control" style="background:#ff006e;color:white !important">Replace Order</button>
+            </form>
+        </div>
+        <div id="refund-order" class="order-form" style="display: none;">
+            <form id="refund-form" action="" method="post">
+
+                <input type="text" name="refund-reason" class="form-control" value="" placeholder="Reason*" /><br />
+                <input type="text" name="OderId" class="form-control" value="@ViewBag.OrderId" placeholder="" readonly /><br />
+                <textarea name="refund-comments" class="form-control" placeholder="Comments*"></textarea><br />
+                <input type="number" name="account-number" class="form-control" value="" placeholder="Account Number*" /><br />
+                <input type="text" name="ifsc-code" class="form-control" value="" placeholder="IFSC Code*" /><br />
+                <div class="file-upload-container-refund">
+                    <label for="replace-image-refund" class="file-upload">
+                        <input type="file" id="replace-image-refund" name="replace-image-refund" class="form-control" style="display: none;" accept="image/*" multiple />
+                        <div class="upload-icon">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                    </label>
+                    <div class="uploaded-images-container"></div> <!-- Container for uploaded images -->
+                </div>
+                <button id="refund-button" class="form-control" style="background:#ff006e;color:white !important">Refund Order</button>
+            </form>
+            <button id="get-data-button">Get Data</button>
+
+        </div>
+
+    </div>
+
+    <script>
+        document.getElementById('order-type').addEventListener('change', function () {
+            var selectedOption = this.value;
+            var orderForms = document.querySelectorAll('.order-form');
+
+            orderForms.forEach(function (form) {
+                form.style.display = 'none';
+            });
+
+            if (selectedOption) {
+                document.getElementById(selectedOption).style.display = 'block';
+            }
+        });
+
+
+        // Optional: If you want to display the selected file name
+        document.getElementById('replace-image').addEventListener('change', function () {
+            var fileName = this.files[0].name;
+            // Display file name somewhere if needed
+            console.log('Selected file:', fileName);
+
+
+        });
+
+        document.getElementById('replace-image').addEventListener('change', function () {
+            var files = this.files;
+            var container = document.querySelector('.file-upload-container');
+
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    var image = document.createElement('img');
+                    image.src = e.target.result;
+                    image.classList.add('uploaded-image');
+
+                    var imageContainer = document.createElement('div');
+                    imageContainer.classList.add('image-container');
+                    imageContainer.appendChild(image);
+
+                    container.appendChild(imageContainer);
+                };
+
+                reader.readAsDataURL(file);
+            }
+        });
+        document.getElementById('replace-image-refund').addEventListener('change', function () {
+            var files = this.files;
+            var container = document.querySelector('.file-upload-container-refund');
+
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    var image = document.createElement('img');
+                    image.src = e.target.result;
+                    image.classList.add('uploaded-image');
+
+                    var imageContainer = document.createElement('div');
+                    imageContainer.classList.add('image-container');
+                    imageContainer.appendChild(image);
+
+                    container.appendChild(imageContainer);
+                };
+
+                reader.readAsDataURL(file);
+            }
+        });
+
+
+
+
+        document.getElementById('get-data-button').addEventListener('click', function () {
+            // Get form data
+            var formData = new FormData(document.getElementById('refund-form'));
+
+            // Send AJAX request
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/CustomerAccount/ProductReplaceandRefund', true);
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    // Request was successful, handle response here
+                    console.log(xhr.responseText);
+                } else {
+                    // Error handling
+                    console.error('Request failed with status:', xhr.status);
+                }
+            };
+            xhr.onerror = function () {
+                // Error handling
+                console.error('Request failed');
+            };
+            xhr.send(formData);
+        });
+
+
+
+    </script>
+
+    <div class="col-sm-4"></div>
+
+</div>
+
+<style>
+    .file-upload-container {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .file-upload {
+        position: relative;
+        width: 80px; /* Set width as needed */
+        height: 80px; /* Set height as needed */
+        border: 2px dashed #ccc;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-right: 20px; /* Adjust spacing between each file upload box */
+        margin-bottom: 20px; /* Adjust spacing between rows of file upload boxes */
+    }
+
+    .upload-icon {
+        font-size: 50px;
+        color: #ccc;
+        cursor: pointer;
+        text-align: center
+    }
+
+    .uploaded-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .image-container {
+        width: 80px; /* Set width to match the file upload box */
+        height: 80px; /* Set height to match the file upload box */
+        margin-right: 20px; /* Adjust spacing between each image container */
+        margin-bottom: 20px; /* Adjust spacing between rows of image containers */
+        overflow: hidden;
+    }
+
+
+    .file-upload-container-refund {
+        display: flex;
+        align-items: flex-start; /* Align items to the top of the container */
+    }
+
+    .file-upload {
+        position: relative;
+        width: 80px; /* Set width as needed */
+        height: 80px; /* Set height as needed */
+        border: 2px dashed #ccc;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-right: 20px; /* Adjust spacing between plus box and images */
+    }
+
+    .upload-icon {
+        font-size: 50px;
+        color: #ccc;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    .uploaded-images-container {
+        display: flex;
+        flex-direction: column; /* Stack images in a column */
+    }
+
+    .uploaded-image {
+        width: 80px; /* Set width to match the file upload box */
+        height: 80px; /* Set height to match the file upload box */
+        margin-right: 20px; /* Adjust spacing between each image container */
+        margin-bottom: 20px; /* Adjust spacing between rows of image containers */
+        overflow: hidden;
+    }
+</style>

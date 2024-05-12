@@ -1,0 +1,656 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Category Search";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+@using System.Data;
+@using OjasMart.Models;
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<!-- start cODE BY MUSKAN SAVITA-->
+<style>
+    span {
+        font-size: 15px;
+        font-weight: bold;
+        color: grey;
+        display: inline;
+    }
+
+
+    .search_items {
+        min-height: 40px;
+        padding-left: 15px;
+        padding-top: 10px;
+    }
+    .ttp {
+        position: absolute;
+        margin-left: 57% !important;
+        color: green;
+        bottom: 12%;
+        font-weight: bold;
+        font-size: 15px;
+    }
+    /*like icon code*/
+    span.like-icon {
+        color: #808080;
+        /*color: rgb(246, 151, 51);*/
+        font-size: 25px;
+        position: absolute;
+        z-index: 101;
+        right: 13px;
+        top: 0px;
+        cursor: pointer;
+        display: block;
+        height: 35px;
+        width: 35px;
+        line-height: 37px;
+        /*border-radius: 30px;*/
+        transition: all 0.4s ease 0s;
+        background: none !important;
+    }
+
+    .like-icon::before, .like-icon::after {
+        transition: opacity 0.3s ease 0s, transform 0.4s cubic-bezier(0, -0.41, 0.19, 2.5) 0s;
+        font-family: "Font Awesome 5 Free";
+        position: absolute;
+        right: 0px;
+        left: 0px;
+        text-align: center;
+        top: 0px;
+        background: none !important;
+    }
+
+    .like-icon::before {
+        content: "";
+        transform: scale(0.95);
+        background: none !important;
+    }
+
+    .like-icon::after {
+        content: "";
+        opacity: 0;
+        transform: scale(0.3);
+        font-weight: 900;
+    }
+
+    .like-icon.liked::after {
+        opacity: 1;
+        transform: scale(0.95);
+        background: none !important;
+    }
+
+    .like-icon:hover, .like-icon.liked {
+        /*background-color: rgb(237 26 99);*/
+        color: #fa2365;
+        background: none;
+    }
+
+        .like-icon.liked::before {
+            opacity: 0;
+            background: none !important;
+        }
+
+    @@media only screen and (max-width:767px) {
+        .ttp {
+            position: absolute;
+            font-size: 14px;
+            color: green;
+            right: 7% !important;
+            font-weight: bold;
+            margin-top: -30% !important;
+        }
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        // Add click event listener to search items
+        $('.search_items').click(function () {
+            // Get the value of the clicked search item
+            var value = $(this).attr('value');
+            // Update the text inside the span with the value
+            $('#items').text(value);
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $(".fa-angle-down,.fa-angle-up").css("cursor", "pointer");
+        $(".sort-by, .clr, .ctg, .gdr").click(function () {
+            $(this).find('i').toggleClass('fa-angle-down fa-angle-up');
+        });
+
+        $(".sort-by").click(function () {
+            $("#demo").collapse('toggle');
+        });
+
+        $(".clr").click(function () {
+            $("#color").collapse('toggle');
+        });
+
+        $(".ctg").click(function () {
+            $("#category").collapse('toggle');
+        });
+
+        $(".gdr").click(function () {
+            $("#gender").collapse('toggle');
+        });
+
+    });
+</script>
+<!--- ends code by muskan-->
+<script>
+
+    $(document).ready(function () {
+          $("#lowhigh").val(@Model.Sort);
+    });
+    function AddItemInCart(pId, obj, AttrId, varId) {
+        var clas = ".sp_" + pId;
+        var Qty = $(obj).parent().find('input[type=number]').val();
+        if (Qty > 0) {
+            if (varId > 0) {
+                var _varId = $(clas).val();
+                AdditemToCart(pId, Qty, AttrId, _varId);
+            }
+            else {
+                AdditemToCart(pId, Qty, AttrId, varId);
+            }
+        }
+        else {
+            $.notify("Please at least add one quantity", "error");
+            return false;
+        }
+    }
+
+    function myFunction() {
+
+        var min = $("#min").val();
+        var Max = $("#high").val();
+        var CatName = $("#CatName").val();
+        var CatId = $("#CatId1").val();
+        var SubCatId = $("#SubCatId1").val();
+        var search = $("#Namewisesearch").val();
+        var lowhigh = $("#lowhigh").val();
+        window.location.href = '../ProductDetail/SearchCategory?CatName=' + CatName + '&&CatId=' + CatId + '&&SubCatId=' + SubCatId + '&&Search='+search+'&&Sort='+lowhigh+'&&Min='+min+'&&Max='+Max+'';
+  }
+    function Alphabetically()
+    {
+        var min = $("#min").val();
+        var Max = $("#high").val();
+        var CatName = $("#CatName").val();
+        var CatId = $("#CatId1").val();
+        var SubCatId = $("#SubCatId1").val();
+        var search = $("#Namewisesearch").val();
+        var lowhigh = $("#lowhigh").val();
+        window.location.href = '../ProductDetail/SearchCategory?CatName=' + CatName + '&&CatId=' + CatId + '&&SubCatId=' + SubCatId + '&&Search='+search+'&&Sort='+lowhigh+'&&Min=' + min+'&&Max='+Max+'';
+   }
+    
+    //PRIZE LOW TO HIGH AND HIGH TO LOW START
+    function sortByPriceLowToHigh() {
+        var CatName = $("#CatName").val();
+        var CatId = $("#CatId1").val();
+        var SubCatId = $("#SubCatId1").val();
+        var lowhigh = 1; // 1 for low to high
+        var min = $("#min").val();
+        var Max = $("#high").val();
+        window.location.href = '../ProductDetail/SearchCategory?CatName=' + CatName + '&CatId=' + CatId + '&SubCatId=' + SubCatId + '&Sort=' + lowhigh + '&Min=' + min + '&Max=' + Max;
+    }
+
+
+    function sortByPriceHighToLow() {
+        var CatName = $("#CatName").val();
+        var CatId = $("#CatId1").val();
+        var SubCatId = $("#SubCatId1").val();
+        var lowhigh = 2; // 2 for high to low
+        var min = $("#min").val();
+        var Max = $("#high").val();
+        window.location.href = '../ProductDetail/SearchCategory?CatName=' + CatName + '&CatId=' + CatId + '&SubCatId=' + SubCatId + '&Sort=' + lowhigh + '&Min=' + min + '&Max=' + Max;
+    }
+    //min max value
+    function minmax() {
+        var min = $("#minRange").val();
+        var Max = $("#highRange").val();
+        var CatName = $("#CatName").val();
+        var CatId = $("#CatId1").val();
+        var SubCatId = $("#SubCatId1").val();
+        var search = $("#Namewisesearch").val();
+        var lowhigh = $("#lowhigh").val();
+        window.location.href = '../ProductDetail/SearchCategory?CatName=' + CatName + '&&CatId=' + CatId + '&&SubCatId=' + SubCatId + '&&Search=' + search + '&&Sort=' + 2 + '&&Min=' + min + '&&Max=' + Max + '';
+    }
+    function SizeFilter(obj) {
+        var sizeval = obj;
+        var min = $("#minRange").val();
+        var Max = $("#highRange").val();
+        var CatName = $("#CatName").val();
+        var CatId = $("#CatId1").val();
+        var SubCatId = $("#SubCatId1").val();
+        var search = $("#Namewisesearch").val();
+        var lowhigh = $("#lowhigh").val();
+        window.location.href = '../ProductDetail/SearchCategory?CatName=' + CatName + '&&CatId=' + CatId + '&&SubCatId=' + SubCatId + '&&Search=' + search + '&&Sort=' + 2 + '&&Min=' + min + '&&Max=' + Max + '&&SizeValue=' + sizeval + '';
+    }
+
+</script>
+
+@*Filter mobile view hide*@
+<style>
+    @@media only screen and (max-width:768px)
+    {
+        .pno-hide
+        {
+            display:none !important;
+        }
+    }
+    .pno-hide {
+        display: block;
+    }
+</style>
+
+
+<div class="gambo-Breadcrumb">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="../WebHome/index">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@Model.MainCategoryName</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="all-product-grid">
+    <!---start code by muskan-->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-1"></div>
+
+            <div class="col-lg-2 col-md-5  pno-hide">
+                <div class="product-top-dt">
+                    <div class="product-left-title">
+                        <h2 id="CatName">@Model.MainCategoryName</h2>
+                    </div>
+                </div>
+
+                <div class="pdpt-bg-left mt-0" style="min-height:50px;">
+                    <div class="blog-search-widget">
+                        <div class="form-group blog-from mb-0 row" data-toggle="collapse" data-target="#demo">
+                            <div class="col-sm-5 ">  <span clas="span">Sort by &nbsp;</span> </div>
+                            <div class="col-sm-5 px-0"><b id="items"></b> </div>
+                            <div class="col-sm-1"><i class="fa fa-angle-down"></i> </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pdpt-bg-left mt-0" style="border:none;">
+                    <div class="collapse" style="overflow-x: hidden; overflow-y: scroll; " id="demo">
+                        <input name="search" value="@Model.search" id="Namewisesearch" type="hidden" placeholder="Search here..." class="form-control input-md uil uil-search">
+                        <input type="hidden" id="CatName" value="@Model.CatName1" />
+                        <input type="hidden" id="CatId1" value="@Model.CatId1" />
+                        <input type="hidden" id="SubCatId1" value="@Model.SubCatId1" />
+                        <input name="search" type="hidden" id="min" value="1" placeholder="1.00" class="form-control input-md">
+                        <input name="search" type="hidden" id="high" value="50000" placeholder="10000.00" class="form-control input-md">
+                        <a href="#" style="color:black!important"><div class="search_items" value="Revance">Revance</div></a>
+                        <a href="#" style="color:black!important" onclick="sortByPriceLowToHigh()"><div class="search_items" value="Low to High">Low to high</div></a>
+                        <a href="#" style="color:black!important" onclick="sortByPriceHighToLow()"> <div class="search_items" value="High to Low">High to low</div>    </a>
+                        <a href="#" style="color:black!important"> <div class="search_items" value="New Arrival">New Arrival</div> </a>
+                        <a href="#" style="color:black!important"> <div class="search_items" value="Rating">Rating</div></a>
+
+                    </div>
+                </div>
+
+                <div class="pdpt-bg-left">
+                    <div class="blog-search-widget" style="min-height:50px;padding:6px;">
+                        <h5 style="padding-left:15px; font-size:15px; font-weight:bold;padding-bottom:0px; ">FILTERS</h5>
+                        <p style="padding-left:15px;padding-top:0px;font-size:12px;">1000+ products</p>
+
+                    </div>
+
+                    <div class="blog-search-widget ctg" style="min-height:50px;padding:0px;" data-toggle="collapse" data-target="#category">
+                        <hr style="margin-left:10px;" width="90%" />
+                        <h5 style="padding-left:15px; font-size:15px; font-weight:bold;padding-bottom:0px; ">Category<i class="fa fa-angle-down" style="padding-left:60%;font-weight:bold;"></i></h5>
+
+                        <div id="category" class="blog-search-widget collapse" style="min-height:100px;  color:black !important;">
+                            @if (ViewBag.MainCategoryCode == "0")
+                            {
+                                @Html.Action("BindMainMenu", "WebHome")
+                            }
+                            else
+                            {
+                                @Html.Action("BindCatMenuSub", "WebHome", new { PId = ViewBag.MainCategoryCode })
+                            }
+
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="blog-search-widget clr" style="min-height:50px;padding:0px;" data-toggle="collapse" data-target="#color">
+                        <hr style="margin-left:10px;" width="90%" />
+                        <h5 style="padding-left:15px; font-size:15px; font-weight:bold;padding-bottom:0px; ">Color<i class="fa fa-angle-down" style="padding-left:69%;font-weight:bold;"></i></h5>
+
+                        <div id="color" class="blog-search-widget collapse" style="min-height:100px;">
+                            <button class="btn" style="height:30px; width:50px;border-radius:10px;border:1px solid grey"><a href="#" style="font-size:13px;font-weight:bold;color:BLACK!important">Blue</a></button>
+                            <button class="btn" style="height:30px; width:50px;border-radius:10px;border:1px solid grey;margin:9px"><a href="#" style="font-size: 13px; font-weight: bold; color: BLACK !important">Black</a></button>
+                            <button class="btn" style="height:30px; width:50px;border-radius:10px;border:1px solid grey"><a href="#" style="font-size: 13px; font-weight: bold; color: BLACK !important">Grey</a></button>
+                        </div>
+                    </div>
+
+                    <div class="blog-search-widget" style="min-height:50px;padding:0px;">
+                        <hr style="margin-left:10px;" width="90%" />
+                        <h5 style="padding-left:15px; font-size:15px; font-weight:bold;padding-bottom:0px;" data-toggle="collapse" data-target="#size">Size<i class="fa fa-angle-down" style="padding-left:72%;font-weight:bold;"></i></h5>
+                        <div id="size" class="blog-search-widget collapse" style="height:100px;">
+                            @if (Model.dtSize != null && Model.dtSize.Rows.Count > 0)
+                            {
+                                foreach (DataRow item in Model.dtSize.Rows)
+                                {
+                                    <button class="btn" style="height:30px; width:50px;border-radius:10px;border:1px solid grey" onclick=" SizeFilter('@item["Size_Name"]')">@item["Size_Name"]</button>
+
+                                }
+                            }
+
+
+                        </div>
+
+                    </div>
+                    <div class="blog-search-widget" style="min-height:50px;padding:0px;">
+                        <hr style="margin-left:10px;" width="90%" />
+                        <h5 style="padding-left:15px; font-size:15px; font-weight:bold;padding-bottom:0px; ">Price<i class="fa fa-angle-down" style="padding-left:70%;font-weight:bold;"></i></h5>
+                        <div class="pdpt-bg-left mt-0 ">
+
+                            <div class="pdpt-bg-left mt-0 hidden">
+                                <div class="blog-search-widget">
+                                    <div class="form-group blog-from mb-0">
+                                        <input name="search" onkeyup="myFunction()" value="@Model.search" id="Namewisesearch" type="hidden" placeholder="Search here..." class="form-control input-md uil uil-search">
+                                        <i class="uil uil-search"></i>
+                                        <input type="hidden" id="CatName" value="@Model.CatName1" />
+                                        <input type="hidden" id="CatId1" value="@Model.CatId1" />
+                                        <input type="hidden" id="SubCatId1" value="@Model.SubCatId1" />
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pdpt-bg-left mt-0">
+                                <div class="blog-search-widget">
+                                    <div class="form-group blog-from mb-0">
+                                        <button type="submit" class="uil uil-search blog-search-btn" onclick="minmax()" value="Filter ">
+                                        </button>
+                                    </div>
+                                    <p>Min Value: <span id="min"></span></p>
+                                    <input type="range" min="1" max="5000" value="1" class="slider" id="minRange">
+                                    <p>Max Value: <span id="high"></span></p>
+                                    <input type="range" min="1" max="5000" value="5000" class="slider" id="highRange">
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="blog-search-widget" style="min-height:50px;padding:0px;">
+                        <hr style="margin-left:10px;" width="90%" />
+                        <h5 style="padding-left:15px; font-size:15px; font-weight:bold;padding-bottom:0px; ">Rating<i class="fa fa-angle-down" style="padding-left:66%;font-weight:bold;"></i></h5>
+
+                    </div>
+
+                    <div class="blog-search-widget" style="min-height:50px;padding:0px;">
+                        <hr style="margin-left:10px;" width="90%" />
+                        <h5 style="padding-left:15px; font-size:15px; font-weight:bold;padding-bottom:0px; ">Discount<i class="fa fa-angle-down" style="padding-left:58%;font-weight:bold;"></i></h5>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!--  end code by muskan-->
+
+            <div class="col-lg-8">
+                <div class="bggw">
+                    <div class="product-top-dt">
+                        <div class="product-left-title">
+                            <h2 id="CatName">@Model.MainCategoryName</h2>
+                        </div>
+                    </div>
+                    <div class="product-list-view">
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            <div class="row">
+                                @foreach (DataRow dr in Model.dt.Rows)
+                                {
+                                    <div class="col-lg-3 col-md-6">
+                                        <div class="product-item mb-30">
+                                            @if (Convert.ToString(dr["ProductType"]) == "Attribute Product")
+                                            {
+                                                <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]&&VarId=@dr["VarId"]" target="_blank" class="product-img">
+                                                    <img src="@dr["ProductMainImageUrl"]" alt="">
+                                                    <div class="product-absolute-options">
+                                                        @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                                        {
+                                                            <span class="ttp">@dr["Discper"]% off</span>
+                                                        }
+                                                        
+                                                        <span class="like-icon" title="wishlist" onclick="AddToWhishlist('@dr["ProductCode"]')"></span>
+                                                                                                            </div>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" target="_blank" class="product-img">
+                                                    <img src="@dr["ProductMainImageUrl"]" alt="">
+                                                    
+                                                </a>
+                                            }
+                                        <div class="product-text-dt">
+                                            <p>Available<span>(In Stock)</span></p>
+                                            <h4>@dr["pName"]</h4>
+
+                                            <div class="product-price">
+
+                                                @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                                {
+                                                    <span class="regularprice">&#8377;@dr["RegularPrice"] &nbsp; &nbsp;</span>
+                                                    <label class="salepice"style="color:black;font-size:14px;font-weight:bold;">
+                                                        &#8377; @dr["SaleValue"]
+                                                    </label>
+                                                }
+                                                else
+                                                {
+                                                    if (Convert.ToDecimal(dr["RegularPrice"]) == Convert.ToDecimal(dr["SaleValue"]))
+                                                    {
+                                                        <label class="salepice"style="color:black;font-size:14px;font-weight:bold;">
+                                                            &#8377;@dr["SaleValue"]
+                                                        </label>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="regularprice">&#8377;@dr["RegularPrice"] &nbsp; &nbsp;</span>
+                                                        <label class="salepice"style="color:black;font-size:14px;font-weight:bold;">
+                                                            &#8377; @dr["SaleValue"]
+                                                        </label>
+                                                    }
+                                                }
+
+
+                                                @*else if (!string.IsNullOrEmpty(Convert.ToString(dr["VarId"])))
+            {
+                @Html.Action("VariationPrice", "ProductDetail", new { VariationId = dr["VarId"], discount = dr["Discper"] })
+            }*@
+
+                                                @if (Convert.ToString(dr["ProductType"]) == "Attribute Product")
+                                                {
+                                                    LogicClass objL = new LogicClass();
+                                                    DataTable dt = objL.Proc_GetProductDetail_Varaiation(Convert.ToString(dr["ProductCode"]), "Proc_GetProductDetail_Varaiation");
+                                                    if (dt != null && dt.Rows.Count > 0)
+                                                    {
+                                                        <div>
+                                                            <select class="form-control ddl_PVariation sp_@dr["ProductCode"]">
+                                                                @foreach (DataRow drvariation in dt.Rows)
+                                                                {
+                                                                    <option value="@drvariation["VarId"]" RegularPrice="@drvariation["RegularPrice"]" SalePrice="@drvariation["SalePrice"]"> @drvariation["VarriationName"]</option>
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <div class="form-control" style="border: none;"> </div>
+                                                }
+
+                                            </div>
+                                            <div class="product-absolute-options">
+                                                @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                                {
+                                                    <span class="ttp">@dr["Discper"]% off</span>
+                                                }
+                                                <span class="like-icon" title="wishlist" onclick="AddToWhishlist('@dr["ProductCode"]')"style="margin-left:-20%"></span>
+                                            </div>
+
+                                            @*<div class="qty-cart">
+                                                <div class="quantity buttons_added">
+                                                    <input type="button" value="-" class="minus minus-btn">
+                                                    <input type="number" step="1" name="quantity" value="0" class="input-text qty text">
+                                                    <input type="button" value="+" class="plus plus-btn">
+                                                </div>
+                                                <span class="cart-icon" onclick="AddItemInCart('@dr["ProductCode"]',this,'@dr["AttrId"]','@dr["VarId"]')"><i class="uil uil-shopping-cart-alt"></i></span>
+                                            </div>*@
+                                        </div>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="col-md-12" style="display:none">
+                                    <div class="more-product-btn">
+                                        <button class="show-more-btn hover-btn" onclick="window.location.href = '#';">Show More</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <div class="col-md-12" style="text-align:center">
+                                    <img src="~/img/no-item-found-here.png" style="width: 32%;" /><br />
+
+                                    <a href="../WebHome/index" class="btn btn-warning">Countinue Shopping</a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+
+                </div>
+
+            </div>
+            <!--start code by muskan-->
+            <div class="col-sm-1"></div>
+            <!--end -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function AddToWhishlist(obj) {
+        debugger;
+        var data;
+        data = new FormData();
+        data.append("ProductId", obj);
+
+        $.ajax({
+            url: "../ProductDetail/AddToWhishlist",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                // Create a new element for the message container
+                var messageContainer = $('<div>').addClass('alertMessage');
+
+                // Create icon element for success
+                var successIcon = $('<i>').addClass('fa fa-check-circle').css('color', 'green');
+
+                // Append success icon and message to the message container
+                messageContainer.append(successIcon).append($('<span>').text(r.msg));
+
+                // Append the message container to the body
+                $('body').append(messageContainer);
+
+                // Set timeout to remove the message after 3 seconds
+                setTimeout(function () {
+                    messageContainer.remove();
+                }, 3000);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                // Create a new element for the message container
+                var messageContainer = $('<div>').addClass('alertMessage');
+
+                // Create icon element for error
+                var errorIcon = $('<i>').addClass('fa fa-exclamation-circle').css('color', 'red');
+
+                // Append error icon and message to the message container
+                messageContainer.append(errorIcon).append($('<span>').text('An error occurred.'));
+
+                // Append the message container to the body
+                $('body').append(messageContainer);
+
+                // Set timeout to remove the message after 3 seconds
+                setTimeout(function () {
+                    messageContainer.remove();
+                }, 3000);
+
+                // Handle error
+                $("#showSpinner").hide();
+            }
+        });
+
+        /*  end code by muskan*/
+    }
+    $(document).on('change', '.ddl_PVariation', function () {
+        var pvarid = $('option:selected', this).attr('value');
+        var RegularPrice = $('option:selected', this).attr('RegularPrice');
+        var SalePrice = $('option:selected', this).attr('SalePrice');
+        if (pvarid > 0) {
+            $(this).closest(".product-price").children(".regularprice").text(RegularPrice);
+            $(this).closest(".product-price").children(".salepice").text(SalePrice);
+        }
+    });
+
+</script>
+
+<script>
+    // Get the range slider elements
+    var minSlider = document.getElementById("minRange");
+    var highSlider = document.getElementById("highRange");
+
+    // Get the output elements
+    var minValueDisplay = document.getElementById("min");
+    var maxValueDisplay = document.getElementById("high");
+
+    // Display the default slider values
+    minValueDisplay.innerHTML = minSlider.value;
+    maxValueDisplay.innerHTML = highSlider.value;
+
+    // Update the current slider values (each time you drag the slider handle)
+    minSlider.oninput = function () {
+        if (parseInt(this.value) >= parseInt(highSlider.value)) {
+            this.value = parseInt(highSlider.value) - 1;
+        }
+        minValueDisplay.innerHTML = this.value;
+    };
+
+    highSlider.oninput = function () {
+
+        if (parseInt(this.value) <= parseInt(minSlider.value)) {
+            this.value = parseInt(minSlider.value) + 1;
+        }
+        maxValueDisplay.innerHTML = this.value;
+    };
+</script>
+
+
+
+

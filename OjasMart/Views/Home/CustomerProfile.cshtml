@@ -1,0 +1,456 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Customer Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#tblDemandList").DataTable();
+        $("#tblStockDetail").DataTable();
+
+        $("#ddlState").val($("#hdStateCode").val());
+
+        $("body").on("click", "#tblDemandList .details", function () {
+            var dataobject = {
+                InvoiceNo: $(this).attr('id')
+            };
+            $.ajax({
+                url: "@Url.Action("StockDemandItemWiseDetails", "DemandManagement")",
+                type: "POST",
+                data: dataobject,
+                dataType: "json",
+                success: function (data) {
+                    $('#tblItemDetails tbody').empty();
+                    $.each(data.poList, function (i, item) {
+                        var rows = "<tr>" +
+                            "<td>" + item.ItemName + "</td>" +
+                            "<td>" + item.HSNCode + "</td>" +
+                            "<td>" + item.Quantity + "</td>" +
+                            "<td>" + item.TrfQuantity + "</td>" +
+                            "<td>" + item.PendingQuantity + "</td>" +
+                            "<td>" + item.Rate + "</td>" +
+                            "<td>" + item.Payablegst + "</td>" +
+                            "<td>" + item.NetTotal + "</td>" +
+                            "</tr>";
+                        $('#tblItemDetails tbody').append(rows);
+                    });
+                },
+                error: function () {
+
+                }
+            });
+        });
+
+        $("body").on("click", "#tblItemHead .details1", function () {
+            var dataobject = {
+                InvoiceNo: $(this).attr('id')
+            };
+            $.ajax({
+                url: "@Url.Action("SaleBillItemWiseDetails", "Sales")",
+                type: "POST",
+                data: dataobject,
+                dataType: "json",
+                success: function (data) {
+                    $('#tblItemDetails tbody').empty();
+                    $.each(data.poList, function (i, item) {
+                        var rows = "<tr>" +
+                            "<td>" + item.ItemName + "</td>" +
+                            "<td>" + item.Quantity + "</td>" +
+                            "<td>" + item.Rate + "</td>" +
+                            "<td>" + item.DiscPer + "</td>" +
+                            "<td>" + item.DiscAmt + "</td>" +
+                            "<td>" + item.GrossPayable + "</td>" +
+                            "<td>" + item.Payablegst + "</td>" +
+                            "<td>" + item.NetTotal + "</td>" +
+                            "</tr>";
+                        $('#tblItemDetails tbody').append(rows);
+                    });
+                },
+                error: function () {
+
+                }
+            });
+
+        });
+    });
+
+
+    function ActiveDeActiveAccount1(st) {
+        if ($("#hduserCode").val() == "") {
+            alert("Super Stockist Not Found !!!");
+            return;
+        }
+
+        var dataobject = {
+            UserName: $("#hduserCode").val(),
+            Mtype: "SS",
+            Status: st,
+
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/SuperStockiest/UpdateAccountStatus",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r != '0') {
+                    alert(r);
+                    location.reload();
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function ApproveAccount(st) {
+        var x = confirm("Are you sure you want to Approve this Profile?");
+        if (x) {
+            if ($("#hduserCode").val() == "") {
+                alert("Customer Code Not Found !!!");
+                return;
+            }
+
+            var dataobject = {
+                OutLetCode: $("#hduserCode").val(),
+                Status: st,
+
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Home/ApproveAccount",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                //data: dataobject,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    if (r != '0') {
+                        alert(r);
+                        location.reload();
+                    }
+                    else {
+                        alert('Server not Responding !!!');
+                        $("#showSpinner").hide();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });
+        }
+        else {
+            return false;
+        }
+    }
+    function UpdateCustomerProfile() {
+        if ($("#hduserCode").val() == "") {
+            alert("Customer Code Not Found !!!");
+            return;
+        }
+        if ($("#ddlState").val() == "") {
+            alert("Please Select State !!!");
+            $("#ddlState").focus();
+            return;
+        }
+        var dataobject = {
+            SSName: $("#txtFullName").val(),
+            EmailAddress: $("#txtEmailAddress").val(),
+            Address: $("#txtAddress").val(),
+            CityName: $("#txtCityName").val(),
+            StCode: $("#ddlState").val(),
+            GstNo: $("#txtGSTINNo").val(),
+            PanNo: $("#txtPanoNo").val()
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Home/UpdateCustomerProfile",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r != '0') {
+                    alert(r);
+                    location.reload();
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function OpenDivEdit() {
+        $("#divEdit").show();
+        $("#btnEdit").hide();
+        $("#cancelEdit").show();
+    }
+    function HideDivEdit() {
+        $("#divEdit").hide();
+        $("#btnEdit").show();
+        $("#cancelEdit").hide();
+        location.reload();
+    }
+</script>
+
+<input type="hidden" id="hduserCode" value="@Model.SSCode" />
+<input type="hidden" id="hdStateCode" value="@Model.StCode" />
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                @if (Convert.ToString(Session["Role"]) == "1")
+                {
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Customer</a></li>
+                        <li class="breadcrumb-item"><a href="../Home/CustomerReport">Customer List</a></li>
+                        <li class="breadcrumb-item active">My Profile</li>
+                    </ol>
+                }
+
+            </div>
+            @if (Convert.ToString(Session["Role"]) == "1")
+            {
+                <h4 class="page-title">Customer Profile</h4>
+            }
+            else
+            {
+                <h4 class="page-title">My Profile</h4>
+            }
+
+        </div>
+    </div>
+</div>
+<!-- end page title -->
+<div class="row">
+    <div class="col-lg-4 col-xl-4">
+        <div class="card-box text-center">
+            <img src="../assets/images/users/UserIco.png" class="rounded-circle avatar-lg img-thumbnail"
+                 alt="profile-image">
+            <h4 class="mb-0">@Model.SSName</h4>
+            <p class="text-muted">@Model.Mtype</p>
+            @if (Convert.ToString(Session["Role"]) == "1")
+            {
+                @*<button type="button" class="btn btn-info btn-xs waves-effect mb-2 waves-light">Send Mail</button>*@
+            if (Model.ActiveStatus == "A")
+            {
+                @*<button type="button" class="btn btn-danger btn-xs waves-effect mb-2 waves-light" onclick="ActiveDeActiveAccount('D')">DeActivate Account</button>*@
+            }
+            else
+            {
+                @*<button type="button" class="btn btn-success btn-xs waves-effect mb-2 waves-light" onclick="ActiveDeActiveAccount('A')">Activate Account</button>*@
+
+                <button type="button" class="btn btn-primary btn-xs waves-effect mb-2 waves-light" onclick="ApproveAccount('A')">Approve Account</button>
+                }
+            }
+
+            <p class="text-muted">
+                Account Status:
+                @if (Model.ActiveStatus == "A")
+                {
+                    <span class="badge badge-success"><i class="fa fa-check"></i> Activated</span>
+                }
+                else
+                {
+                    <span class="badge badge-danger"><i class="fa fa-times"></i> DeActivated</span>
+                    <hr />
+                }
+            </p>
+
+        </div> <!-- end card-box -->
+
+    </div> <!-- end col-->
+    <div class="col-lg-8 col-xl-8">
+        <div class="card-box">
+            <div class="text-left mt-3">
+                <p class="text-muted mb-2 font-13">
+                    <strong>Full Name :</strong> <span class="ml-2">
+                        @Model.SSName
+                    </span>
+                </p>
+                <p class="text-muted mb-2 font-13">
+                    <strong>Mobile :</strong><span class="ml-2">
+                        @Model.ContactNo
+                    </span>
+                </p>
+                <p class="text-muted mb-2 font-13"><strong>Email :</strong> <span class="ml-2 ">@Model.EmailAddress</span></p>
+                <p class="text-muted mb-1 font-13"><strong>Location :</strong> <span class="ml-2">@Model.Address</span></p>
+                <p class="text-muted mb-2 font-13">
+                    <strong>State Name :</strong><span class="ml-2">
+                        @if (Model.StateName == "")
+                        {
+                            <span style="color:red">State is Mandatory.</span>
+                        }
+                        else
+                        {
+                            @Model.StateName
+                        }
+
+                    </span>
+                </p>
+                <p class="text-muted mb-2 font-13"><strong>GSTIN :</strong> <span class="ml-2 ">@Model.GstNo</span></p>
+                @*<p class="text-muted mb-1 font-13"><strong>PAN No :</strong> <span class="ml-2">@Model.PanNo</span></p>*@
+            </div>
+            <hr />
+            @if (Convert.ToString(Session["Role"]) == "4")
+            {
+                <a href="javascript: void(0);" onclick="OpenDivEdit()" id="btnEdit"><i class="far fa-edit"></i> Update Profile</a>
+            }
+            <a href="javascript: void(0);" onclick="HideDivEdit()" id="cancelEdit" style="display:none"><i class="fa fa-times" aria-hidden="true"></i> Cancel Edit</a>
+            <div class="text-left mt-3" id="divEdit" style="display:none">
+                <hr />
+                <p class="text-muted mb-2 font-13">
+                    <strong>Full Name :</strong> <span class="ml-2">
+                        <input type="text" id="txtFullName" class="form-control" value="@Model.SSName" />
+                    </span>
+                </p>
+                <p class="text-muted mb-2 font-13">
+                    <strong>Mobile No :</strong> <span class="ml-2">
+                        <input type="text" id="txtMobileNo" class="form-control" disabled value="@Model.ContactNo" />
+                    </span>
+                </p>
+                <p class="text-muted mb-2 font-13">
+                    <strong>Email Address :</strong> <span class="ml-2">
+                        <input type="text" id="txtEmailAddress" class="form-control" value="@Model.EmailAddress" />
+                    </span>
+                </p>
+                <p class="text-muted mb-2 font-13">
+                    <strong>Address :</strong> <span class="ml-2">
+                        <textarea id="txtAddress" class="form-control">@Model.Address</textarea>
+                    </span>
+                </p>
+                <p class="text-muted mb-2 font-13">
+                    <strong>State :</strong> <span class="ml-2">
+                        @Html.DropDownList("ddlState", (List<SelectListItem>)ViewBag.StateList, new { @id = "ddlState", @class = "form-control" })
+                    </span>
+                </p>
+                <p class="text-muted mb-2 font-13">
+                    <strong>City Name :</strong> <span class="ml-2">
+                        <input type="text" id="txtCityName" class="form-control" value="@Model.CityName" />
+                    </span>
+                </p>
+                <p class="text-muted mb-2 font-13">
+                    <strong>GSTIN No :</strong> <span class="ml-2">
+                        <input type="text" id="txtGSTINNo" class="form-control" value="@Model.GstNo" />
+                    </span>
+                </p>
+                <p class="text-muted mb-2 font-13">
+                    <strong>PAN No :</strong> <span class="ml-2">
+                        <input type="text" id="txtPanoNo" class="form-control" value="@Model.PanNo" />
+                    </span>
+                </p>
+                <button type="submit" id="btnSave" class="btn btn-success waves-effect waves-light" onclick="UpdateCustomerProfile()">Update Profile</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<div class="row">
+        <div class="col-lg-12 col-xl-12">
+            <div class="card-box">
+                <ul class="nav nav-pills navtab-bg nav-justified">
+                    <li class="nav-item">
+                        <a href="#aboutme" data-toggle="tab" aria-expanded="false" class="nav-link active">
+                            Add-on Members
+                        </a>
+                    </li>
+                    <li class="nav-item" style="display:none">
+                        <a href="#timeline" data-toggle="tab" aria-expanded="true" class="nav-link">
+                            My Sale Bills
+                        </a>
+                    </li>
+                    <li class="nav-item" style="display:none">
+                        <a href="#settings" data-toggle="tab" aria-expanded="false" class="nav-link">
+                            Stock Report
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane show active" id="aboutme">
+                        <h5 class="mb-4 text-uppercase">
+                            <i class="fa fa-users mr-1"></i>
+                            Add-on Members
+                        </h5>
+                        <div class="table-responsive">
+                            <table class="table table-borderless mb-0" id="tblDemandList">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Mobile No</th>
+                                        <th>Relation</th>
+                                        <th>Added on</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                                    {
+                                        int i = 0;
+                                        foreach (DataRow dr in Model.dt.Rows)
+                                        {
+                                            i++;
+                                            <tr>
+                                                <td>1</td>
+                                                <td>@dr["MemberName"]</td>
+                                                <td>@dr["MobileNo"]</td>
+                                                <td>@dr["Relation"]</td>
+                                                <td>@dr["AddedDate"]</td>
+                                            </tr>
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> <!-- end tab-pane -->
+                    <!-- end about me section content -->
+                    <div class="tab-pane" id="timeline" style="display:none">
+                        <h5 class="mb-4 text-uppercase">
+                            <i class="mdi mdi-briefcase mr-1"></i>
+                            My Sale Bills
+                        </h5>
+                        <div class="table-responsive">
+
+                        </div>
+                    </div>
+                    <!-- end timeline content-->
+                    <div class="tab-pane" id="settings" style="display:none">
+                        <h5 class="mb-4 text-uppercase">
+                            <i class="mdi mdi-briefcase mr-1"></i>
+                            Stock Details
+                        </h5>
+                        <div class="table-responsive">
+
+                        </div>
+                    </div>
+                    <!-- end settings content-->
+                </div> <!-- end tab-content -->
+            </div> <!-- end card-box-->
+        </div> <!-- end col -->
+    </div>*@

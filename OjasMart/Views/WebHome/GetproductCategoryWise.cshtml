@@ -1,0 +1,439 @@
+﻿@model OjasMart.Models.PropertyClass
+@using System.Data;
+@using OjasMart.Models;
+
+<!---product design for mobile view-->
+<style>
+    .cts {
+        display: none;
+    }
+
+    #ct {
+        display: none;
+    }
+
+
+    @@media only screen and (max-width:767px) {
+        .cts {
+            display: block;
+            float: left;
+        }
+
+        #ct {
+            display: block;
+            clear: none;
+        }
+
+        .product-item {
+            height: 400px;
+            width: 180px;
+        }
+
+        .occ {
+            display: none;
+        }
+    }
+</style>
+
+
+<style>
+    /*  product categoery box*/
+    #sdo:hover {
+        box-shadow: 0px 0px 15px #cec5c5;
+        border-radius: 10px;
+        transition: 0.5s
+    }
+    /*  product categoery box shadow*/
+    #sdo {
+        margin: 20px 5px 20px 10px;
+        transition: 0.5s
+    }
+
+    @@media only screen and (max-width: 767px) {
+        #sdo:hover {
+            box-shadow: none;
+            margin: 0px;
+        }
+    }
+
+    @@media only screen and (max-width:767px) {
+        #sdo {
+            margin-left: -15px;
+            border: 1px solid gray;
+        }
+    }
+
+    span.like-icon {
+        color: #808080;
+        /*color: rgb(246, 151, 51);*/
+        font-size: 25px;
+        position: absolute;
+        z-index: 101;
+        right: 0px;
+        top: 0px;
+        cursor: pointer;
+        display: block;
+        height: 35px;
+        width: 35px;
+        line-height: 37px;
+        /*border-radius: 30px;*/
+        transition: all 0.4s ease 0s;
+        background: none !important;
+        margin-left: -40% !important;
+    }
+
+    .like-icon::before, .like-icon::after {
+        transition: opacity 0.3s ease 0s, transform 0.4s cubic-bezier(0, -0.41, 0.19, 2.5) 0s;
+        font-family: "Font Awesome 5 Free";
+        position: absolute;
+        right: 0px;
+        left: 0px;
+        text-align: center;
+        top: 0px;
+        background: none !important;
+    }
+
+    .like-icon::before {
+        content: "";
+        transform: scale(0.95);
+        background: none !important;
+    }
+
+    .like-icon::after {
+        content: "";
+        opacity: 0;
+        transform: scale(0.3);
+        font-weight: 900;
+    }
+
+    .like-icon.liked::after {
+        opacity: 1;
+        transform: scale(0.95);
+        background: none !important;
+    }
+
+    .like-icon:hover, .like-icon.liked {
+        /*background-color: rgb(237 26 99);*/
+        color: #fa2365;
+        background: none;
+    }
+
+        .like-icon.liked::before {
+            opacity: 0;
+            background: none !important;
+        }
+    /*.offer-badge-1 {
+        position: absolute;
+        bottom: 0px;
+        font-size: 12px;
+        color: green;
+        background:none!important;
+        padding: 3px 10px;*/
+    /*border-radius: 3px;*/
+    /*line-height: 0px;
+        text-transform: uppercase;
+        margin-top: 100%;
+        float:right;
+        font-weight:bold;
+    }
+
+    @@media only screen and (max-width:767px) {
+        .offer-badge-1 {
+            position: absolute;
+            bottom: 0px;
+            font-size: 12px;
+            font-weight:bold;
+            color: green;
+            background:none!important;
+            padding:3px 10px;*/
+    /*border-radius: 3px;*/
+    /*text-transform: uppercase;
+         float:right!important;
+            margin-top: 100% !important;
+            margin-left:60%!important;
+        }
+    }*/
+
+    label.salepice {
+        display: inline-block;
+        float: left;
+        margin-right: 6px;
+        margin-bottom: 0;
+        color: black;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .ttp {
+        position: absolute;
+        right: 3%;
+        color: green;
+        bottom: 10%;
+        font-weight: bold;
+        font-size: 15px;
+    }
+
+    @@media only screen and (max-width:767px) {
+        .ttp {
+            position: absolute;
+            font-size: 14px;
+            color: green;
+            right: 1% !important;
+            font-weight: bold;
+            margin-top: -30% !important;
+        }
+    }
+</style>
+
+@if (Model.dtCatProduct != null && Model.dtCatProduct.Rows.Count > 0)
+{
+    <div class="col-md-12 occ">
+        <div class="owl-carousel featured-slider owl-theme">
+            @foreach (DataRow dr in Model.dtCatProduct.Rows)
+            {
+                <div class="item" id="sdo">
+                    <div class="product-item">
+                        @if (Convert.ToString(dr["ProductType"]) == "Attribute Product")
+                        {
+                            <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]&&VarId=@dr["VarId"]" target="_blank" class="product-img" style="left:0px;">
+                                <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]">
+                                @*<div class="product-absolute-options">
+                                        @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                        {
+                                            <span class="offer-badge-1">@dr["Discper"]% off</span>
+                                        }
+                                        <span class="like-icon" title="wishlist" onclick="AddToWhishlist()"></span>
+                                    </div>*@
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" target="_blank" class="product-img">
+                                <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]">
+                                <div class="product-absolute-options">
+
+                                    <span class="like-icon" title="wishlist" onclick="AddToWhishlist('@dr["ProductCode"]')"></span>
+                                </div>
+                            </a>
+                        }
+                        <div class="product-text-dt">
+                            <p>Available<span>(In Stock)</span></p>
+                            <h4>@dr["pName"]</h4>
+                            <div class="product-price">
+
+                                @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                {
+
+                                    <span class="regularprice">&#8377;@dr["RegularPrice"] &nbsp; &nbsp;</span>
+                                    <label class="salepice">
+                                        &#8377; @dr["SaleValue"]
+                                    </label>
+                                }
+                                else
+                                {
+                                    if (Convert.ToDecimal(dr["RegularPrice"]) == Convert.ToDecimal(dr["SaleValue"]))
+                                    {
+                                        <label class="salepice">
+                                            &#8377;@dr["SaleValue"]
+                                        </label>
+
+                                    }
+                                    else
+                                    {
+                                        <span class="regularprice">&#8377;@dr["RegularPrice"] &nbsp; &nbsp;</span>
+                                        <label class="salepice">
+                                            &#8377; @dr["SaleValue"]
+                                        </label>
+                                    }
+                                }
+
+
+                                @*else if (!string.IsNullOrEmpty(Convert.ToString(dr["VarId"])))
+                                    {
+                                        @Html.Action("VariationPrice", "ProductDetail", new { VariationId = dr["VarId"], discount = dr["Discper"] })
+                                    }*@
+
+                                @if (Convert.ToString(dr["ProductType"]) == "Attribute Product")
+                                {
+                                    LogicClass objL = new LogicClass();
+                                    DataTable dt = objL.Proc_GetProductDetail_Varaiation(Convert.ToString(dr["ProductCode"]), "Proc_GetProductDetail_Varaiation");
+                                    if (dt != null && dt.Rows.Count > 0)
+                                    {
+                                        <div>
+                                            <select class="form-control ddl_PVariation sp_@dr["ProductCode"]">
+                                                @foreach (DataRow drvariation in dt.Rows)
+                                                {
+                                                    <option value="@drvariation["VarId"]" RegularPrice="@drvariation["RegularPrice"]" SalePrice="@drvariation["SalePrice"]"> @drvariation["VarriationName"]</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="form-control" style="border: none;"> </div>
+                                }
+
+                            </div>
+                            <div style="display:none">
+                                <select style="width:67%">
+                                    <option>Select</option>
+                                </select>
+                            </div>
+                            @*<div class="qty-cart">
+                                    <div class="quantity buttons_added">
+                                        <input type="button" value="-" class="minus minus-btn">
+                                        <input type="number" step="1" name="quantity" value="0" class="input-text qty text">
+                                        <input type="button" value="+" class="plus plus-btn">
+                                    </div>
+                                    <span class="cart-icon" onclick="AddItemInCart('@dr["ProductCode"]',this,'@dr["AttrId"]','@dr["VarId"]')"><i class="uil uil-shopping-cart-alt"></i></span>
+                                </div>*@
+                        </div>
+                        <div>
+                            @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                            {
+                                <span class="ttp" style="position:absolute;right:5%; color:green; bottom:10%;">@dr["Discper"]% off</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+<!-- code by muskan-->
+<div class="row cts" style="display:flex;flex-wrap:wrap;">
+    @{
+        int counter = 0;
+        int maxItems = Model.dtCatProduct.Rows.Count >= 6 ? 6 : Model.dtCatProduct.Rows.Count;
+
+        foreach (DataRow dr in Model.dtCatProduct.Rows)
+        {
+            if (counter >= maxItems)
+            {
+                break;
+            }
+
+            <div class="col-6" style="margin-left:-10px;">
+                <div class="item">
+                    <div class="product-item" id="ct">
+                        @if (Convert.ToString(dr["ProductType"]) == "Attribute Product")
+                        {
+                            <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]&&VarId=@dr["VarId"]" target="_blank" class="product-img">
+                                <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]" class="mx-3">
+                                @*<div class="product-absolute-options">
+                                        @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                        {
+                                            <span class="offer-badge-1"style="margin-top:100%!important;">@dr["Discper"]% off</span>
+                                        }
+                                        <span class="like-icon" title="wishlist" onclick="AddToWhishlist()"></span>
+                                    </div>*@
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" target="_blank" class="product-img">
+                                <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]">
+
+
+                                <span class="like-icon" title="wishlist" onclick="AddToWhishlist('@dr["ProductCode"]')" style="right:7%!important;"></span>
+
+                            </a>
+                        }
+                        <div class="product-text-dt">
+                            <p style="color:black!important;">Available<span>(In Stock)</span></p>
+
+                            <h4>@dr["pName"]</h4>
+                            <div class="product-price">
+
+                                @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                {
+                                    <span class="regularprice">&#8377;@dr["RegularPrice"] &nbsp; &nbsp;</span>
+                                    <label class="salepice">
+                                        &#8377; @dr["SaleValue"]
+                                    </label>
+                                }
+                                else
+                                {
+                                    if (Convert.ToDecimal(dr["RegularPrice"]) == Convert.ToDecimal(dr["SaleValue"]))
+                                    {
+                                        <label class="salepice">
+                                            &#8377;@dr["SaleValue"]
+                                        </label>
+                                    }
+                                    else
+                                    {
+                                        <span class="regularprice">&#8377;@dr["RegularPrice"] &nbsp; &nbsp;</span>
+                                        <label class="salepice">
+                                            &#8377; @dr["SaleValue"]
+                                        </label>
+                                    }
+                                }
+
+
+                                @*else if (!string.IsNullOrEmpty(Convert.ToString(dr["VarId"])))
+                                    {
+                                        @Html.Action("VariationPrice", "ProductDetail", new { VariationId = dr["VarId"], discount = dr["Discper"] })
+                                    }*@
+
+                                @if (Convert.ToString(dr["ProductType"]) == "Attribute Product")
+                                {
+                                    LogicClass objL = new LogicClass();
+                                    DataTable dt = objL.Proc_GetProductDetail_Varaiation(Convert.ToString(dr["ProductCode"]), "Proc_GetProductDetail_Varaiation");
+                                    if (dt != null && dt.Rows.Count > 0)
+                                    {
+                                        <div>
+                                            <select class="form-control ddl_PVariation sp_@dr["ProductCode"]">
+                                                @foreach (DataRow drvariation in dt.Rows)
+                                                {
+                                                    <option value="@drvariation["VarId"]" RegularPrice="@drvariation["RegularPrice"]" SalePrice="@drvariation["SalePrice"]"> @drvariation["VarriationName"]</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="form-control" style="border: none;"> </div>
+                                }
+
+                            </div>
+                            <div style="display:none">
+                                <select style="width:67%">
+                                    <option>Select</option>
+                                </select>
+                            </div>
+                            @*<div class="qty-cart">
+                                    <div class="quantity buttons_added">
+                                        <input type="button" value="-" class="minus minus-btn">
+                                        <input type="number" step="1" name="quantity" value="0" class="input-text qty text">
+                                        <input type="button" value="+" class="plus plus-btn">
+                                    </div>
+                                    <span class="cart-icon" onclick="AddItemInCart('@dr["ProductCode"]',this,'@dr["AttrId"]','@dr["VarId"]')"><i class="uil uil-shopping-cart-alt"></i></span>
+                                </div>*@
+                            <div class="product-absolute-options">
+                                @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                {
+                                    <span class="ttp" style="position:absolute;left:25%; color:green; bottom:90px!important;">@dr["Discper"]% off</span>
+                                }
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            counter++;
+            if (counter % 6 == 0)
+            {
+                @Html.Raw("</div>") <!-- Close the current row after six items -->
+            }
+        }
+
+    }
+
+
+
+
+</div>
+<!--code by muskan-->

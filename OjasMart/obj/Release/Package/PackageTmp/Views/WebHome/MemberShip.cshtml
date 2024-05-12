@@ -1,0 +1,376 @@
+﻿@model OjasMart.Models.ClsMemberShip
+@{
+    ViewBag.Title = "MemberShip";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        if ('@TempData["msg"]'!='') {
+            alert('@TempData["msg"]');
+            window.location.href = "../WebHome/Index";
+
+        }
+
+        if (true) {
+
+        }
+    });
+
+
+</script>
+
+<style>.radio--group-inline-container_1 li {
+    display: inline-block;
+    width: 48.333%;
+    margin-right: 10px;
+}.radio--group-inline-container_1 .radio-item_1 input[type="radio"] {
+    position: relative;
+    opacity: 1;
+    color: orange;
+}
+    .wrapper {
+        padding-top: 132px;
+        padding-bottom: 50px;
+    }
+
+    .top-posts li {
+        padding: 3px 20px;
+        border-bottom: 1px solid #fffefe;
+    }
+
+    .blog-time {
+        font-size: 12px;
+        font-weight: 500;
+        color: #3e3d3d;
+        text-align: left;
+    }
+
+    .pdpt-title h4 {
+        border-bottom: 1px solid #efefef;
+        padding: 15px 20px;
+        font-size: 16px;
+        font-weight: 600;
+        background: bisque;
+        color: #2b2f4c;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif !important;
+    }
+
+    .title129 h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-top: 0px !important;
+        color: #fff;
+        text-align: center;
+        line-height: 30px;
+    }
+
+    .life-gambo {
+        padding: 59px 0;
+        background: #fff3f3;
+    }
+</style>
+
+<div class="default-dt">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="title129">
+                    <h2>Membership</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="life-gambo">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-6">
+                <div class="contact-title">
+                    <h2>Membership</h2>
+                    <p>If you have a question about our service or have an issue to report, please send a request and we will get back to you as soon as possible.</p>
+                </div>
+                @using (Html.BeginForm())
+                {
+                    <div class="contact-form">
+                        <form>
+                            <div class="form-group mt-1">
+                                <label class="control-label">Full Name*</label>
+                                <div class="ui search focus">
+                                    <div class="ui left icon input swdh11 swdh19">
+                                        @Html.TextBoxFor(model => model.CustomerName, new {@class="form-control", @placeholder = "Your Full Name"})
+                                        @*<input class="prompt srch_explore" type="text" name="sendername" id="sendername" required="" placeholder="Your Full">*@
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-1">
+                                <label class="control-label">Contact No*</label>
+                                <div class="ui search focus">
+                                    <div class="ui left icon input swdh11 swdh19">
+                                        @*<input class="prompt srch_explore" type="text" name="emailaddress" id="mobileNo" required="" placeholder="Your Mobile No">*@
+                                        @Html.TextBoxFor(model => model.MobileNo, new { @class = "form-control", @placeholder = "Your Mobile No"})
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-1">
+                                <label class="control-label">Email Address*</label>
+                                <div class="ui search focus">
+                                    <div class="ui left icon input swdh11 swdh19">
+                                        @*<input class="prompt srch_explore" type="email" name="emailaddress" id="emailaddress" required="" placeholder="Your Email Address">*@
+                                        @Html.TextBoxFor(model => model.EmailAddress, new { @class = "form-control", @placeholder = "Your Email Address"})
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-1">
+                                <label class="control-label">Password*</label>
+                                <div class="ui search focus">
+                                    <div class="ui left icon input swdh11 swdh19">
+                                        @Html.TextBoxFor(model => model.Password, new { @class = "form-control", @placeholder = "Your Password..",@type="password"})
+                                        @*<input class="prompt srch_explore" type="password" name="emailaddress" id="emailaddress" required="" placeholder="Your Password">*@
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-1">
+                                <label class="control-label">MemberShip Type</label>
+                                <div class="ui search focus">
+                                    <div class="ui left icon input swdh11 swdh19">
+                                        @Html.DropDownListFor(model => model.MemberShip, (List<SelectListItem>)ViewBag.dtMemberShipType, "Select MemberShip", new { @id = "ddlMemberShipType", @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                                    <div class="checkout-step-body">
+                                        <label class="control-label">Payment Mode</label>
+
+                                        <div class="payment_method-checkout">
+                                            <div class="row">
+                                                
+                                                <div class="col-md-12">
+                                                    <div class="rpt100">
+                                                        <ul class="radio--group-inline-container_1">
+                                                            <li>
+                                                                <div class="radio-item_1">
+                                                                    <label for="card1" class="radio-label_1">@Html.RadioButtonFor(model => model.PaymentMode, "Online") Credit / Debit Card</label>
+                                                                </div>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    @*<div class="form-group return-departure-dts" data-method="cashondelivery1">
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <div class="pymnt_title">
+                                                                    <h4>Cash on Delivery</h4>
+                                                                    <p>Cash on Delivery will not be available if your order value exceeds &#8377;10.</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group return-departure-dts" data-method="card1">
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <div class="pymnt_title mb-4">
+                                                                    <h4>Credit / Debit Card</h4>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                                <div class="form-group mt-1">
+                                                                    <label class="control-label">Holder Name*</label>
+                                                                    <div class="ui search focus">
+                                                                        <div class="ui left icon input swdh11 swdh19">
+                                                                            <input class="prompt srch_explore" type="text" name="holdername" value="" id="holder[name]" required="" maxlength="64" placeholder="Holder Name">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                                <div class="form-group mt-1">
+                                                                    <label class="control-label">Card Number*</label>
+                                                                    <div class="ui search focus">
+                                                                        <div class="ui left icon input swdh11 swdh19">
+                                                                            <input class="prompt srch_explore" type="text" name="cardnumber" value="" id="card[number]" required="" maxlength="64" placeholder="Card Number">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4">
+                                                                <div class="form-group mt-1">
+                                                                    <label class="control-label">Expiration Month*</label>
+                                                                    <select class="ui fluid search dropdown form-dropdown" name="card[expire-month]">
+                                                                        <option value="">Month</option>
+                                                                        <option value="1">January</option>
+                                                                        <option value="2">February</option>
+                                                                        <option value="3">March</option>
+                                                                        <option value="4">April</option>
+                                                                        <option value="5">May</option>
+                                                                        <option value="6">June</option>
+                                                                        <option value="7">July</option>
+                                                                        <option value="8">August</option>
+                                                                        <option value="9">September</option>
+                                                                        <option value="10">October</option>
+                                                                        <option value="11">November</option>
+                                                                        <option value="12">December</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4">
+                                                                <div class="form-group mt-1">
+                                                                    <label class="control-label">Expiration Year*</label>
+                                                                    <div class="ui search focus">
+                                                                        <div class="ui left icon input swdh11 swdh19">
+                                                                            <input class="prompt srch_explore" type="text" name="card[expire-year]" maxlength="4" placeholder="Year">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4">
+                                                                <div class="form-group mt-1">
+                                                                    <label class="control-label">CVV*</label>
+                                                                    <div class="ui search focus">
+                                                                        <div class="ui left icon input swdh11 swdh19">
+                                                                            <input class="prompt srch_explore" name="card[cvc]" maxlength="3" placeholder="CVV">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                             
+                            <button class="next-btn16 hover-btn mt-3"  id="btnSubmit" type="button" data-btntext-sending="Sending..." onclick="Val()">Apply For MemberShip</button>
+                        </form>
+                    </div>
+                }
+            </div>
+
+            <script>
+                function Val()
+                {
+           
+                    if ($("#CustomerName").val()=="") {
+                        alert("Please Enter Member Name..");
+                        $("#CustomerName").focus();
+                        return;
+                    }
+                    if ($("#MobileNo").val() == "") {
+                        alert("Please Enter Mobile No..");
+                        $("#MobileNo").focus();
+                        return;
+                    }
+                    if ($("#EmailAddress").val() == "") {
+                        alert("Please Enter Email Address..");
+                        $("#EmailAddress").focus();
+                        return;
+                    }
+                    if ($("#Password").val() == "") {
+                        alert("Please Enter Password..");
+                        $("#Password").focus();
+                        return;
+                    }
+                    if ($("#ddlMemberShipType").val() == "") {
+                        alert("Please Select MemberShip Type..");
+                        $("#ddlMemberShipType").focus();
+                        return;
+                    }
+                    $("#btnSubmit").attr('type', 'submit');
+                }
+            </script>
+
+            <div class="col-lg-6">
+                @*<div class="about-img">
+                        <img src="/img/about.svg" alt="">
+                    </div>*@
+                <div class="pdpt-bg-left mt-0">
+                    <div class="pdpt-title">
+                        <h4>1:  TIKBASKET PRIME MEMBER CARD   RS: 110 </h4>
+                    </div>
+                    <ul class="top-posts">
+                        <li>
+                            <div class="blog-top-item">
+
+                                <span class="blog-time"> BENEFIT:  </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="blog-top-item">
+
+                                <span class="blog-time"> •	ONE YEARS 5 DELEVIRY  UPTO RS 500  IS FREE </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="blog-top-item">
+
+                                <span class="blog-time"> •	FIRST BILLING FLAT 5% OFF </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="blog-top-item">
+
+                                <span class="blog-time"> •	FESTIVAL & BUMPER SELL DISCOUNT  UPTO 5% EXTRA</span>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+
+                <div class="pdpt-bg-left mt-0">
+                    <div class="pdpt-title">
+                        <h4> 2: TIKBASKET FAIMLY MEMBER CARD RS: 4999</h4>
+                    </div>
+                    <ul class="top-posts">
+                        <li>
+                            <div class="blog-top-item">
+                                <span class="blog-time"> BENEFIT:  </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="blog-top-item">
+
+                                <span class="blog-time"> • MONEY WILL BE ADJUST IN FIRST BILLING </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="blog-top-item">
+                                <span class="blog-time"> • FIRST BILLING FLAT 10% OFF </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="blog-top-item">
+                                <span class="blog-time"> • ONE YEARS ALL DELIVERY UPTO RS 500 IS FREE</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="blog-top-item">
+
+                                <span class="blog-time"> • FESTIVAL & BUMPER SELL DISCOUNT UPTO 10% EXTRA</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+
+                @*<span style="color:red;">
+                      1:       TIKBASKET PRIME MEMBER CARD   RS: 110</span>
+                    <br /><br/>
+                    BENEFIT:<br /><br />
+                    •	ONE YEARS 5 DELIVERY  UPTO RS 500  IS FREE<br /><br />
+                    •	FIRST BILLING FLAT 5% OFF<br /><br />
+                    •	FESTIVAL & BUMPER SELL DISCOUNT  UPTO 5% EXTRA<br /><br />
+
+                    <span style="color:red;">
+                        2:  TIKBASKET FAIMLY MEMBER CARD RS: 4999</span><br /><br />
+                        BENEFIT:<br /><br />
+                        •	 MONEY WILL BE ADJUST IN FIVE BILLING<br /><br />
+                        •	 ONE YEARS ALL DELIVERY  UPTO RS 500  IS FREE<br /><br />
+                        •	 FIRST BILLING FLAT 10% OFF<br /><br />
+                        •	 FESTIVAL & BUMPER SELL DISCOUNT  UPTO 10% EXTRA<br />*@
+
+            </div>
+        </div>
+    </div>
+</div>

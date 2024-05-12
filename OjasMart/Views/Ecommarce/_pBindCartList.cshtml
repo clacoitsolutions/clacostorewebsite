@@ -1,0 +1,116 @@
+﻿@model OjasMart.Models.PropertyClass
+@using System.Data;
+
+<script>
+    function RemoveFromCart(ItemCode) {
+        var x = confirm("Are you sure you want to remove this Item?");
+        if (x) {
+            if (ItemCode == "") {
+                alert("Item Code is Empty !!!");
+                return;
+            }
+            var dataobject = {
+                ItemCode: ItemCode,
+                Quantity: 0,
+                Action: "4"
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Ecommarce/InsertToCartList",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                //data: dataobject,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    if (r.strId == '1') {
+                        alert('Item successfully Removed from the cart. !!!');
+                        //toastr.success('Item successfully added with cart.');
+                        location.reload();
+                    }
+                    else {
+                        alert('Item details not found !!!');
+                        //toastr.error('Item is not added with Cart.');
+
+                    }
+                    $("#showSpinner").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Server not Responding !!!');
+                    //toastr.error('Server not Responding.');
+                    $("#showSpinner").hide();
+                }
+            });
+        }
+        else {
+            return false;
+        }
+    }
+</script>
+
+<li class="dropdown notification-list">
+    <a class="nav-link dropdown-toggle  waves-effect waves-light" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+        <i class="fe-shopping-cart"></i>
+        <span class="badge badge-danger rounded-circle noti-icon-badge">@Model.TotStokist</span>
+    </a>
+    <div class="dropdown-menu dropdown-menu-right dropdown-lg">
+        <!-- item-->
+        <div class="dropdown-item noti-title">
+            <h5 class="m-0">
+                <span class="float-right">
+                    <a href="#" class="text-dark">
+                        <small>Clear All</small>
+                    </a>
+                </span>Cart Items
+            </h5>
+        </div>
+        <div class="slimscroll noti-scroll">
+            @if (Model.dt != null && Model.dt.Rows.Count > 0)
+            {
+                foreach (DataRow dr in Model.dt.Rows)
+                {
+                    <div class="dropdown-item notify-item">
+                        <div class="notify-icon">
+                            <img src="@dr["ProductMainImageUrl"]" alt="img-logo" style="height:32px" />
+                        </div>
+                        <p class="notify-details">
+                            @dr["ItemName"]
+                            <div class="row">
+                                <div class="col-md-8"><small style="color:red">@dr["Quantity"]*@dr["OnlinePrice"] -  &#8377;@dr["TotalPrice"] </small></div>
+                                <div class="col-md-4"><a href="#" onclick="RemoveFromCart('@dr["ProductID"]')">Remove</a> </div>
+                            </div>
+                        </p>
+                    </div>
+                }
+
+            }
+            else
+            {
+                <div class="dropdown-item notify-item">
+                    <div class="notify-icon">
+                        <small style="color:red">Currently No Item Added in the Cart...</small>
+                    </div>                   
+                </div>
+            }
+        </div>
+        <hr />
+        <div class="text-right" style="color: #f65006;">Total: &#8377;@Model.NetTotal</div>
+        <!-- All-->
+        <div class="row">
+            <div class="col-md-6">
+                <a href="../Ecommarce/ShowCartDetails" class="dropdown-item text-center text-primary notify-item notify-all">
+                    View Cart
+                    <i class="fe-arrow-right"></i>
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a href="../Ecommarce/ItemCheckout?type=C" class="dropdown-item text-center text-primary notify-item notify-all">
+                    Checkout
+                    <i class="fe-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</li>

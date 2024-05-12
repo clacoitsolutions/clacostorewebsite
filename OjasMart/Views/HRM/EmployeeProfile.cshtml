@@ -1,0 +1,168 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "EmployeeProfile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="../Payroll/EmployeeList">Employee List</a></li>
+                    <li class="breadcrumb-item active">Profile</li>
+                </ol>
+            </div>
+            <h4 class="page-title">Profile</h4>
+        </div>
+    </div>
+</div>
+<!-- end page title -->
+<div class="row">
+    <div class="col-lg-4 col-xl-4">
+        <div class="card-box text-center">
+            <p style="margin-bottom: 0px;margin-top: -17px;float: right;"><a href="/HRM/AddEmployee?Empcode=@Model.dt.Rows[0]["EmployeeCode"]"><i class="fas fa-pencil-alt" style="font-size: 15px;"></i> </a></p>
+            @if (!string.IsNullOrEmpty(Convert.ToString(Model.dt.Rows[0]["Employee_Photo"])))
+            {
+                <img src="@Model.dt.Rows[0]["Employee_Photo"]" class="rounded-circle avatar-lg img-thumbnail"
+                     alt="profile-image">
+            }
+            else
+            {
+                if (Convert.ToString(Model.dt.Rows[0]["Gender"]) == "Female")
+                {
+                    <img class="rounded-circle avatar-lg img-thumbnail" src="~/assets/images/users/female.png" alt="profile-image">
+                }
+                else
+                {
+                    <img class="rounded-circle avatar-lg img-thumbnail" src="~/assets/images/users/male.jpg" alt="profile-image">
+                }
+            }
+
+
+
+            <h4 class="mb-0">@Model.dt.Rows[0]["Employee_Name"]</h4>
+            <p class="text-muted">@Model.dt.Rows[0]["DesignationName"]</p>
+            <hr />
+            <div class="text-left mt-3">
+                <h4 class="font-13 text-uppercase">Basic INFORMATION  :</h4><hr />
+                <div class="row text-muted mb-2 font-13">
+                    <div class="col-md-5"><strong>Full Name :</strong></div>
+                    <div class="col-md-7">@Model.dt.Rows[0]["Employee_Name"]</div>
+                </div>
+                <div class="row text-muted mb-2 font-13">
+                    <div class="col-md-5"><strong>Father Name :</strong></div>
+                    <div class="col-md-7">@Model.dt.Rows[0]["Employee_Father_Name"]</div>
+                </div>
+                <div class="row text-muted mb-2 font-13">
+                    <div class="col-md-5"><strong>Gender :</strong></div>
+                    <div class="col-md-7">@Model.dt.Rows[0]["Gender"]</div>
+                </div>
+                <div class="row text-muted mb-2 font-13">
+                    <div class="col-md-5"><strong>Joining Date :</strong></div>
+                    <div class="col-md-7">@Model.dt.Rows[0]["DOJ"]</div>
+                </div>
+                <div class="row text-muted mb-2 font-13">
+                    <div class="col-md-5"><strong>Designation :</strong></div>
+                    <div class="col-md-7">@Model.dt.Rows[0]["DesignationName"]</div>
+                </div>
+                <div class="row text-muted mb-2 font-13">
+                    <div class="col-md-5"><strong>Work Email :</strong></div>
+                    <div class="col-md-7">@Model.dt.Rows[0]["WorkEmailId"]</div>
+                </div>
+                <div class="row text-muted mb-2 font-13">
+                    <div class="col-md-5"><strong>EPF No :</strong></div>
+                    <div class="col-md-7">@Model.dt.Rows[0]["EPFNo"]</div>
+                </div>
+                <div class="row text-muted mb-2 font-13">
+                    <div class="col-md-5"><strong>ESI No :</strong></div>
+                    <div class="col-md-7">@Model.dt.Rows[0]["ESINo"]</div>
+                </div>
+            </div>
+        </div> <!-- end card-box -->
+    </div> <!-- end col-->
+    <div class="col-lg-8 col-xl-8">
+        <div class="card-box">
+            <p style="margin-bottom: 0px;margin-top: -17px;float: right;"><a href="/HRM/AddEmployee?Empcode=@Model.dt.Rows[0]["EmployeeCode"]"><i class="fas fa-pencil-alt" style="font-size: 15px;"></i> </a></p>
+            <div class="text-left mt-3">
+                <h4 class="font-13 text-uppercase">Personal Information :</h4><hr />
+                <div class="row text-muted mb-2 font-13">
+                    <div class="col-md-5"><strong>Personal Email Id :</strong></div>
+                    <div class="col-md-7">@Model.dt.Rows[0]["PersonalEmailId"]</div>
+                </div>
+                <div class="row text-muted mb-2 font-13">
+                    <div class="col-md-5"><strong>Contact No :</strong></div>
+                    <div class="col-md-7">@Model.dt.Rows[0]["Contact_Number"]</div>
+                </div>
+                <div class="row text-muted mb-2 font-13">
+                    <div class="col-md-5"><strong>PAN No :</strong></div>
+                    <div class="col-md-7">@Model.dt.Rows[0]["PAN_No"]</div>
+                </div>
+                <div class="row text-muted mb-2 font-13">
+                    <div class="col-md-5"><strong>Date of Birth :</strong></div>
+                    <div class="col-md-7">@Model.dt.Rows[0]["birthdate"]</div>
+                </div>
+                <div class="row text-muted mb-2 font-13">
+                    <div class="col-md-5"><strong>City :</strong></div>
+                    <div class="col-md-7">@Model.dt.Rows[0]["City"]</div>
+                </div>
+                <div class="row text-muted mb-2 font-13">
+                    <div class="col-md-5"><strong>State :</strong></div>
+                    <div class="col-md-7">@Model.dt.Rows[0]["State"]</div>
+                </div>
+                <div class="row text-muted mb-2 font-13">
+                    <div class="col-md-5"><strong>Address :</strong></div>
+                    <div class="col-md-7">@Model.dt.Rows[0]["Address"]</div>
+                </div>
+                <div class="row text-muted mb-2 font-13">
+                    <div class="col-md-5"><strong>Pin Code :</strong></div>
+                    <div class="col-md-7">@Model.dt.Rows[0]["PinCode"]</div>
+                </div>
+            </div>
+
+        </div> <!-- end card-box-->
+
+        <div class="card-box">
+            <p style="margin-bottom: 0px;margin-top: -17px;float: right;"><a href="/HRM/AddEmployee?Empcode=@Model.dt.Rows[0]["EmployeeCode"]"><i class="fas fa-pencil-alt" style="font-size: 15px;"></i> </a></p>
+            <div class="text-left mt-3">
+                <h4 class="font-13 text-uppercase">Payment Information :</h4><hr />
+                <div class="row text-muted mb-2 font-13">
+                    <div class="col-md-5"><strong>Payment Mode :</strong></div>
+                    <div class="col-md-7">@Model.dt.Rows[0]["PaymentMode"]</div>
+                </div>
+                @if (Convert.ToString(Model.dt.Rows[0]["PaymentMode"]) == "Bank Transfer")
+                {
+                    <div id="divBank">
+                        <div class="row text-muted mb-2 font-13">
+                            <div class="col-md-5"><strong>Account Holder Name :</strong></div>
+                            <div class="col-md-7">@Model.dt.Rows[0]["AccountHolderName"]</div>
+                        </div>
+                        <div class="row text-muted mb-2 font-13">
+                            <div class="col-md-5"><strong>Bank Name :</strong></div>
+                            <div class="col-md-7">@Model.dt.Rows[0]["BankName"]</div>
+                        </div>
+                        <div class="row text-muted mb-2 font-13">
+                            <div class="col-md-5"><strong>Account Number :</strong></div>
+                            <div class="col-md-7">@Model.dt.Rows[0]["AccountNumber"]</div>
+                        </div>
+                        <div class="row text-muted mb-2 font-13">
+                            <div class="col-md-5"><strong>IFSC Code :</strong></div>
+                            <div class="col-md-7">@Model.dt.Rows[0]["IFSCCode"]</div>
+                        </div>
+                        <div class="row text-muted mb-2 font-13">
+                            <div class="col-md-5"><strong>Account Type :</strong></div>
+                            <div class="col-md-7">@Model.dt.Rows[0]["AccountType"]</div>
+                        </div>
+                    </div>
+                }
+
+
+            </div>
+
+        </div>
+    </div> <!-- end col -->
+</div>
+<!-- end row-->
+

@@ -1,0 +1,42 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <div>
+
+        @using (Html.BeginForm("Index", "Payroll", FormMethod.Post))
+        {
+            <table>
+               
+                <tr>
+                    <td>Mobile No</td>
+                    <td><input type="text" name="mobile" value="" /></td>
+                </tr>
+                <tr>
+                    <td>Email</td>
+                    <td><input type="text" name="Email" value="" /></td>
+                </tr>
+                <tr>
+                    <td>Amount</td>
+                    <td><input type="text" name="Amount" value="" /></td>
+                </tr>
+                <pre> <input type="submit" value="save" /></pre>
+            </table>
+
+
+
+        }
+
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,529 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Manage_UserAddress";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyCOejrdA6Od52MC7gbIKCGTeFJeYc6fOY4"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+@using System.Data;
+
+<script>
+    function toggleAddressFieldset() {
+        var addressFieldset = document.getElementById("addressFieldset");
+        var addAddressButton = document.getElementById("addAddressButton");
+
+        if (addressFieldset.style.display === "none") {
+            addressFieldset.style.display = "block";
+            addAddressButton.style.display = "none"; // Hide the button
+        } else {
+            addressFieldset.style.display = "none";
+            addAddressButton.style.display = "block"; // Show the button
+        }
+    }
+
+    function formSubmitted() {
+        var addAddressButton = document.getElementById("addAddressButton");
+        addAddressButton.style.display = "none"; // Hide the button when form is submitted
+    }
+
+    function InsertDeliverAddress() {
+
+        if ($("#txtName").val() == "") {
+            alert("Please Enter Name !!!");
+            $("#txtName").focus();
+            return;
+        }
+        if ($("#txtMobileNo").val() == "") {
+            alert("Please Enter Mobile No !!!");
+            $("#txtMobileNo").focus();
+            return;
+        }
+        if ($("#txtAddress").val() == "") {
+            alert("Please Select Location !!!");
+            $("#txtAddress").focus();
+            return;
+        }
+
+
+        if ($("#txtAddress2").val() == "") {
+            alert("Please Enter Address !!!");
+            $("#txtAddress2").focus();
+            return;
+        }
+
+        if ($("#txtPinCode").val() == "") {
+            alert("Please Enter Pin Code !!!");
+            $("#txtPinCode").focus();
+            return;
+        }
+        if ($("#txtCityName").val() == "") {
+            alert("Please Enter City Name !!!");
+            $("#txtCityName").focus();
+            return;
+        }
+
+        if ($("#ddlState").val() == "") {
+            alert("Please Select State !!!");
+            $("#ddlState").focus();
+            return;
+        }
+        var AddressType = $("input:radio[name=address1]:checked").val();
+        var latitude = "";
+        var longitude = "";
+
+        var geocoder = new google.maps.Geocoder();
+
+        geocoder.geocode({ 'address': $("#txtAddress").val() }, function (results, status) {
+            if (status == 'REQUEST_DENIED') {
+                latitude = $("#txtAddress").val();
+                longitude = $("#txtAddress").val();
+                var dataobject = {
+                    SSName: $("#txtName").val(),
+                    ContactNo: $("#txtMobileNo").val(),
+                    PinCode: $("#txtPinCode").val(),
+                    Address: $("#txtAddress").val(),
+                    CityName: $("#txtCityName").val(),
+                    StCode: $("#ddlState").val(),
+                    landmark: $("#txtLandmark").val(),
+                    altmobileno: $("#txtAltMobileNo").val(),
+                    Address2: $("#txtAddress2").val(),
+                    OfferType: AddressType,
+                    latitude: latitude,
+                    longitude: longitude
+                };
+                $("#showSpinner").show();
+                $.ajax({
+                    url: "/Ecommarce/InsertDeliveryAddress",
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    //data: dataobject,
+                    data: JSON.stringify(dataobject),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (r) {
+                        if (r.strId == '1') {
+                            alert('Add New Address Successfully !!!');
+                        }
+                        else {
+                            alert('Server not Responding !!!');
+                            $("#showSpinner").hide();
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert('Server not Responding !!!');
+                        $("#showSpinner").hide();
+                    }
+                });
+
+            }
+            else {
+                alert("Please Select Address ");
+                return false;
+            }
+        });
+
+    }
+
+</script>
+
+
+<style>
+
+    @*start inputbox*@ .form-group {
+        position: relative;
+        /* Adjust as needed */
+    }
+
+    .form-control {
+        /* Set initial width */
+        min-height: 45px; /* Set initial height */
+        transition: height 0.3s ease; /* Smooth transition for height change */
+
+        margin-bottom: 35px;
+    }
+
+        .form-control:focus {
+            height: 45px; /* Set expanded height when focused */
+        }
+
+    .placeholder {
+        font-size: 18px;
+        position: absolute;
+        left: 25px; /* Adjust as needed */
+        top: 30%;
+        transform: translateY(-50%);
+        color: #aaa;
+        pointer-events: none; /* Prevent interaction with placeholder */
+        transition: top 0.3s ease, font-size 0.3s ease;
+    }
+
+    .form-control:focus + .placeholder,
+    .form-control:not(:placeholder-shown) + .placeholder {
+        top: -13px;
+        left: 20PX;
+        padding-bottom: 5PX;
+        font-size: 18px;
+        color: #454545;
+        opacity: 0.8;
+        font-weight:bold
+    }
+
+
+    .form-control:focus {
+        outline: none !important;
+        box-shadow: none !important;
+        border: 1px solid rgb(237 26 99) !important;
+    }
+
+    .address-btns {
+        display: flex;
+        align-items: end;
+    }
+
+    .save-btn14 {
+        height: 40px;
+        padding: 0px 20px;
+        border: 1px solid;
+        background: transparent;
+        color: rgb(213, 92, 20);
+        border-radius: 5px;
+        font-family: Roboto, sans-serif;
+        font-weight: 500;
+    }
+
+    /* Dropdown content (hidden by default) */
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 120px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+
+        /* Links inside the dropdown */
+        .dropdown-content span {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            cursor: pointer;
+        }
+
+            /* Change color of dropdown links on hover */
+            .dropdown-content span:hover {
+                background-color: #f1f1f1;
+            }
+
+    /* Show the dropdown menu on hover */
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+    .product-now input[type="radio"]:checked + label, .Checked + label {
+        background: #e91e63;
+    }
+
+</style>
+
+<script>
+    function toggleDropdown() {
+        var dropdownContent = document.getElementById("dropdownContent");
+        if (dropdownContent.style.display === "block") {
+            dropdownContent.style.display = "none";
+        } else {
+            dropdownContent.style.display = "block";
+        }
+    }
+
+    function editItem(name, number, pincode, landmark, address, stateid, cityid, customercode) {
+
+
+        toggleAddressFieldset();
+        document.getElementById("text").innerHTML = "Update Data";
+
+        var btn = document.getElementById("savebtn");
+        btn.innerHTML = "Update Now";
+        $("#next").hide();
+
+        // Set values to input fields
+        document.getElementById("txtName").value = name;
+        document.getElementById("txtMobileNo").value = number;
+        document.getElementById("txtPinCode").value = pincode;
+        document.getElementById("txtCityName").value = cityid;
+        document.getElementById("txtAddress").value = address;
+        document.getElementById("txtLandmark").value = landmark;
+        document.getElementById("ddlState").value = stateid;
+
+
+
+
+
+        //// Bind click event to call UpdateData
+
+        document.getElementById("savebtn").onclick = function () {
+            UpdateData(customercode);
+        };
+
+    }
+
+    function UpdateData(customercode) {
+        var name = document.getElementById("txtName").value;
+        var number = document.getElementById("txtMobileNo").value;
+        var pincode = document.getElementById("txtPinCode").value;
+        var cityid = document.getElementById("txtCityName").value;
+        var address = document.getElementById("txtAddress").value;
+        var landmark = document.getElementById("txtLandmark").value;
+        var stateid = document.getElementById("ddlState").value;
+
+        debugger;
+
+        $.ajax({
+            url: '/Ecommarce/UpdateDeliveryAddress',
+            type: 'POST',
+            data: {
+                name: name,
+                number: number,
+                pincode: pincode,
+                cityid: cityid,
+                address: address,
+                stateid: stateid,
+                customercode: customercode,
+                landmark: landmark
+            },
+            dataType: 'json',
+            async: true,
+            success: function (response) {
+                location.reload();
+            },
+        });
+    }
+
+
+
+    function deleteItem(obj1, obj2, obj3) {
+
+        $.ajax({
+            url: '/Ecommarce/DeleteDeleveryAddress',
+            type: 'POST',
+            data: { data: obj1, data1: obj2, data2: obj3 },
+            dataType: 'JSON',
+            async: true,
+
+            success: function (responce) {
+                location.reload();
+            }
+        })
+    }
+
+</script>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 mt-5">
+            <div class="gambo-Breadcrumb" style="margin-top:50px">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="../WebHome/Index" style="font-weight:bold"><i class="fa fa-home"></i></a></li>
+                                    <li class="breadcrumb-item active" aria-current="page" style="font-weight:bold">Manage Address</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container">
+    <span id="hide2">@Html.Action("_pUserSideMenu", "CustomerAccount")</span>
+    <div class="row">
+        <div class="col-sm-12">
+            <h3 style="padding:20px;font-weight:bold">Manage Address</h3>
+            <div class="col-lg-12 col-md-12 ">
+                <div class="form-group">
+                    <div class="address-btns">
+                        <button id="addAddressButton" class="save-btn14 hover-btn form-control" onclick="toggleAddressFieldset()">Add New Address</button>
+
+                        @*<a class="collapsed ml-auto next-btn16 hover-btn" role="button" data-toggle="collapse" data-parent="#checkout_wizard" href="#collapseFour"> Next </a>*@
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="address-fieldset" id="addressFieldset" style="display: none;">
+                <div class="row">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-10" style="min-height:800px;border:1px solid #efe8e8;box-shadow:5px 5px 5px 5px #fcf3f3">
+                        <span style="color:rgb(237 26 99);font-size:15px;" id="text">Add A New Address</span><br />
+                        <button class="" style="margin: 30px 0px; height: 40px; background: #e91e63;color:white;border:0px;border-radius:5px;width:250px">Use My Current Location</button>
+                        <div class="form-group">
+                            @*<div class="row">
+                                    <div class="col-md-6 col-6">
+                                        <input type="text" name="" value="" id="mobileInput txtName" class="form-control " placeholder="Name" />
+                                        <label class="placeholder" for="Password lgn_icon ">Name*</label>
+                                    </div>
+                                    <div class="col-md-6 col-6">
+                                        <input type="text" name="" value="" id="mobileInput txtMobileNo" class="form-control " placeholder="Mobile No" />
+                                        <label class="placeholder" for="Password lgn_icon ">Mobile No*</label>
+                                    </div>
+                                </div>*@
+                            <div class="form-group">
+                                <div class="product-radio">
+                                    <ul class="product-now">
+                                        <li>
+                                            <input type="radio" id="ad1" value="Home" name="address1" style=" background: #e91e63" checked>
+                                            <label for="ad1">Home</label>
+                                        </li>
+                                        <li>
+                                            <input type="radio" id="ad2" value="Office" name="address1" style=" background: #e91e63">
+                                            <label for="ad2">Office</label>
+                                        </li>
+                                        <li>
+                                            <input type="radio" id="ad3" value="Other" name="address1" style=" background: #e91e63">
+                                            <label for="ad3">Other</label>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:30px">
+                                <div class="col-md-6 col-6">
+                                    <input type="text" name="" id="txtName" value="" class="form-control " placeholder="" />
+                                    <label class="placeholder">Name</label>
+                                </div>
+                                <div class="col-md-6 col-6">
+                                    <input type="text" name="" id="txtMobileNo" value="" class="form-control " placeholder="" />
+                                    <label class="placeholder">Mobile No </label>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-6 col-6">
+                                    <input id="txtPinCode" name="pincode" type="text" placeholder="" class="form-control" required="">
+                                    <label class="placeholder">Pincode</label>
+                                </div>
+                                <div class="col-lg-6 col-md-12">
+                                    <input id="txtCityName" name="locality" type="text" placeholder="" class="form-control" required="">
+                                    <label class="placeholder">City</label>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-12 col-6">
+                                    <textarea name="" value="" rows="2" id="txtAddress2" class="form-control " placeholder=""></textarea>
+                                    <label class="placeholder" for="Password lgn_icon ">Address</label>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12">
+                                    <input type="text" name="" value="" id="txtAddress" class="form-control " placeholder="" />
+                                    <label class="placeholder">Select Location</label>
+                                </div>
+                            </div>
+
+                            @*<div class="col-lg-12 col-md-12">
+                                    <div class="form-group">
+                                        <label class="control-label">Select Location</label>
+                                        <input id="txtAddress" name="flat" type="text" placeholder="Address" class="form-control input-md" required="">
+                                    </div>
+                                </div>*@
+
+                            @*<div class="col-lg-12 col-md-12">
+                                    <div class="form-group">
+                                        <label class="control-label">Address</label>
+                                        <input id="txtAddress2" name="flat" type="text" placeholder="Address" class="form-control input-md" required="">
+                                    </div>
+                                </div>*@
+
+
+
+
+
+
+                            <div class="row">
+                                <div class="col-lg-6 col-6">
+
+
+                                    <input id="txtLandmark" name="txtLandmark" type="text" placeholder="" class="form-control">
+                                    <label class="placeholder">Landmark (optional)</label>
+                                </div>
+                                <div class="col-lg-6 col-6">
+
+
+                                    @Html.DropDownList("ddlState", (List<SelectListItem>)ViewBag.StateList, new { @id = "ddlState", @class = "form-control", @placeholder = "" })
+
+                                    <label class="placeholder"></label>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-12 col-12">
+                                    <input id="Locality" name="txtAltMobileNo" type="text" placeholder="" class="form-control input-md">
+                                    <label class="placeholder">Alternate Mobile No. (optional)</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12">
+                                <div class="form-group">
+                                    <div class="address-btns">
+                                        <button class="save-btn14 hover-btn" id="savebtn" onclick="InsertDeliverAddress()">Save & Next</button>
+                                        @*<a class="collapsed ml-auto next-btn16 hover-btn" role="button" id="next" data-toggle="collapse" data-parent="#checkout_wizard" href="#collapseFour"> Next </a>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-1"></div>
+
+
+
+                </div>
+            </div>
+
+            <div class="row">
+
+                @if (Model.dtAddress != null && Model.dtAddress.Rows.Count > 0)
+                {
+                    foreach (DataRow dr in Model.dtAddress.Rows)
+                    {
+
+                        <div class="col-sm-11" style="margin:30px 40px;border:1px solid #efe8e8">
+
+                            <h4 style="color:rgb(237 26 99)" class="uil uil-map-marker">@dr["AddressType"]</h4>
+                            <span style="font-weight:bold;float:left"> @dr["Name"] &nbsp;&nbsp; @dr["MobileNo"]</span><span class="dropdown" style="float:right;padding:20px">
+                                <span class="fas fa-ellipsis-v" onclick="toggleDropdown()"></span>
+                                <span class="dropdown-content" id="dropdownContent">
+
+                                    <span onclick="editItem('@dr["Name"]', '@dr["MobileNo"]', '@dr["PinCode"]', '@dr["LandMark"]', '@dr["Address"]', '@dr["StateId"]', '@dr["CityId"]', '@dr["CustomerCode"]')">Edit</span>
+                                    <span onclick="deleteItem('@dr["CustomerCode"]', '@dr["MobileNo"]', '@dr["PinCode"]')">Delete</span>
+                                </span>
+                            </span>
+                            <br />   @dr["Address"] ,@dr["CityId"],@dr["StateId"] ,Pincode : @dr["PinCode"]
+
+                        </div>
+                        <div class="col-sm-1"></div>
+
+                    }
+                }
+
+
+
+            </div>
+
+
+        </div>
+
+
+
+    </div>
+
+

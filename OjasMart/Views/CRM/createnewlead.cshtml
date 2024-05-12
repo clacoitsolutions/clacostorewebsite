@@ -1,0 +1,598 @@
+﻿@{
+    ViewBag.Title = "LeadReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    function Item() {
+        this.ItemName = null;
+        this.Qty = null;
+        this.unit = null;
+        this.rate = null;
+    }
+
+    $(document).ready(function () {
+
+        @*var Role = '@Request.RequestContext.HttpContext.Session["Role"]';
+        var UserId = '@Request.RequestContext.HttpContext.Session["UserName"]';*@
+        $.ajax({
+            type: 'Post',
+            url: '@Url.Action("BindState")',
+            dataType: 'json',
+            data: {},
+            success: function (list) {
+                $("#ddlState").empty();
+                $("#ddlState").append('<option value="' + '' + '">' + 'Select' + '</option>');
+                $.each(list, function (i, list) {
+                    $("#ddlState").append('<option value="' + list.StateId + '">' + list.StateName + '</option>');
+                });
+                $('#ddlState').val('9');
+            },
+            error: function (ex) {
+                alert('No data found for States');
+            }
+        });
+        $.ajax({
+            type: 'Post',
+            url: '@Url.Action("BindEmployees")',
+            dataType: 'json',
+            data: {},
+            success: function (list) {
+                $("#ddlEMployee").empty();
+                $("#ddlEMployee").append('<option value="' + '' + '">' + 'Select' + '</option>');
+                $.each(list, function (i, list) {
+                    $("#ddlEMployee").append('<option value="' + list.EmployeeCode + '">' + list.EmployeeName + '</option>');
+                });
+                if (Role != "1") {
+                    $("#ddlEMployee").val(UserId);
+                    $("#ddlEMployee").attr("disabled", "disabled");
+                }
+                else {
+                    $("#ddlEMployee").removeAttr("disabled");
+                }
+            },
+            error: function (ex) {
+                alert('No data found for States');
+            }
+        });
+
+        $("#btnAdd").click(function () {
+            debugger;
+            var UserId = '@Request.RequestContext.HttpContext.Session["UserName"]';
+            if (UserId == "") {
+                window.location.href = "../Account/Index";
+                return false;
+            }
+
+            if ($("#txtCompanyname").val() == "") {
+                alert("Please Enter Company Name");
+                $("#txtCompanyname").focus();
+                return;
+            }
+            //if ($("#txtName").val() == "") {
+            //    alert("Please Enter Customer Name");
+            //    $("#txtName").focus();
+            //    return;
+            //}
+            if ($("#txtMobile").val() == "") {
+                alert("Please Enter Mobile No.");
+                $("#txtMobile").focus();
+                return;
+            }
+            //if ($("#ddlCategory").val() == "") {
+            //    alert("Please Select Project Category");
+            //    $("#ddlCategory").focus();
+            //    return;
+            //}
+            if ($("#txtLeadTitle").val() == "") {
+                alert("Please Enter Lead Title");
+                $("#txtLeadTitle").focus();
+                return;
+            }
+            if ($("#ddlEMployee").val() == "") {
+                alert("Please Select Employee");
+                $("#ddlEMployee").focus();
+                return;
+            }
+            if ($("#txtLeadDate").val() == "") {
+                alert("Please Enter Lead Date");
+                $("#txtLeadDate").focus();
+                return;
+            }
+            if ($('#ddlStatus :selected').text() != "Not Interested") {
+                if ($('#txtNextFDate').val()=="")
+                {
+                    alert("Please Enter Next Followup Date");
+                    return;
+                }
+            }
+            //var OrderData = [];
+            //$('#tblItemDetail tbody tr').each(function () {
+            //    debugger;
+            //    var cuObj = new Item();
+            //    cuObj.ItemName = $($(this).children()[0]).attr('value');
+            //    cuObj.Qty = $($(this).children()[1]).attr('value');
+            //    cuObj.unit = $($(this).children()[2]).attr('value');
+            //    cuObj.rate = $($(this).children()[3]).attr('value');
+
+            //    OrderData.push(cuObj);
+            //});
+            //var strrawdata = JSON.stringify(OrderData);
+            var strrawdata = null;
+
+            var dataobject = {
+                SSName: $("#txtName").val(),
+                MobileNo: $("#txtMobile").val(),
+                altmobileno: $("#txtAltMobile").val(),
+                EmailId: $("#txtemailId").val(),
+                Address: $("#txtAddress").val(),
+                StateId: $("#ddlState").val(),
+                CityName: $("#txtCity").val(),
+                CompanyName: $("#txtCompanyname").val(),
+                EMPCodeNew: $("#ddlEMployee").val(),
+                LeadTitle: $("#txtLeadTitle").val(),
+                CatId: strrawdata,
+                Description: CKEDITOR.instances.txtDescription.getData(),
+                LeadDate: $("#txtLeadDate").val() != "" ? $("#txtLeadDate").val() : "01/01/1900",
+                Status: $("#ddlStatus").val(),
+                NextFollowUpDate: $("#txtNextFDate").val() != "" ? $("#txtNextFDate").val() : "01/01/1900",
+                CustType: $("#chkExistingCustomer").prop("checked") == true ? "Existing" : "New",
+                //CustomerId: $("#ddlCustomer").val()
+                CustomerId :$('#Cust_CustomerId').text()
+        };
+        $("#showSpinner").show();
+        $.ajax({
+
+            url: "/CRM/InsertLeadDetails",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r == '1') {
+
+
+                    alert("Good job!Lead Detail Successfully Saved!");
+                    //swal("Good job!", "Lead Detail Successfully Saved!,", "success");
+                    $("#txtMobile").val('');
+
+                    $("#txtCompanyname").val('');
+
+                    $("#txtName").focus();
+
+                    location.reload();
+                }
+                if (r == "0") {
+                    alert("Please Check values Entered by you!");
+
+                    //swal("Error", "Please Check values Entered by you!,", "error");
+                    //$("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("Please Check values Entered by you!");
+                //swal("Error", "Please Check values Entered by you!", "error");
+                //$("#showSpinner").hide();
+            }
+        });
+    });
+
+
+    $('#chkExistingCustomer').change(function () {
+        if ($(this).is(":checked")) {
+            $.ajax({
+                type: 'Post',
+                url: '@Url.Action("BindCustomers")',
+                dataType: 'json',
+                data: {},
+                success: function (list) {
+                    $("#ddlCustomer").empty();
+                    $("#ddlCustomer").append('<option value="' + '' + '">' + 'Select' + '</option>');
+                    $.each(list, function (i, list) {
+                        $("#ddlCustomer").append('<option value="' + list.EmployeeCode + '">' + list.FirstName + '</option>');
+                    });
+                    $("#divExisting").show();
+                },
+                error: function (ex) {
+                    alert('No data found for Employees');
+                }
+            });
+        }
+        else {
+            $("#divExisting").hide();
+            $("#txtCompanyname").val('');
+            $("#txtName").val('');
+            $("#txtMobile").val('');
+            $("#txtAltMobile").val('');
+            $("#txtemailId").val('');
+            $("#txtCity").val('');
+            $("#txtAddress").val('');
+            $("#ddlState").val('');
+            $("#ddlCustomer").val('');
+        }
+
+    });
+
+
+    $('#ddlCustomer').change(function () {
+        $.ajax({
+            type: 'Post',
+            url: '@Url.Action("BindCustomerDetailsByCustomerId")',
+            dataType: 'json',
+            data: { CustomerId: $("#ddlCustomer").val() },
+            success: function (list) {
+
+                $("#txtCompanyname").val(list.CompanyName);
+                $("#txtName").val(list.FirstName);
+                $("#txtMobile").val(list.MobileNo);
+                $("#txtAltMobile").val(list.AltMobileNo);
+                $("#txtemailId").val(list.EmailId);
+                $("#txtCity").val(list.CityName);
+                $("#txtAddress").val(list.Address);
+                $("#ddlState").val(list.StateId);
+
+                //else {
+                //    $("#txtCompanyname").val('');
+                //    $("#txtName").val('');
+                //    $("#txtMobile").val('');
+                //    $("#txtAltMobile").val('');
+                //    $("#txtemailId").val('');
+                //    $("#txtCity").val('');
+                //    $("#txtAddress").val('');
+                //}
+            },
+            error: function (ex) {
+                alert('No data found for Employees');
+            }
+        });
+
+
+
+    });
+
+    //$('#txtMobile').change(function () {
+    //    if (!($("#chkExistingCustomer").is(":checked"))) {
+    //        if ($('#txtMobile').val() == "") {
+    //            alert("Please Enter Mobile No !!!");
+    //            return;
+    //        }
+    //        $.ajax({
+    //            type: 'Post',
+    //            url: "/LeadMaster/CheckCustomerExistance",
+    //            dataType: 'json',
+    //            data: { MobileNo: $("#txtMobile").val() },
+    //            success: function (r) {
+    //                if (r == "1") {
+    //                    $('#txtMobile').val('');
+    //                    alert("This Mobile No. is already Added !!!")
+    //                    return;
+    //                }
+
+    //            },
+    //            error: function (ex) {
+    //                alert('No data found');
+    //            }
+    //        });
+    //    }
+    //});
+
+    });
+
+
+    function uploadImage(MobileNo) {
+        var fileUpload = $("#fuUpload").get(0);
+        var files = fileUpload.files;
+        var fileData = new FormData();
+        for (var i = 0; i < files.length; i++) {
+            fileData.append(files[i].name, files[i]);
+        }
+        fileData.append('MobileNo', MobileNo);
+        $.ajax({
+            url: '/EmployeeMaster/UploadImage',
+            type: "POST",
+            contentType: false, // Not to set any content header
+            processData: false, // Not to process data
+            data: fileData,
+            success: function (result) {
+
+            },
+            error: function (err) {
+            }
+        });
+    }
+
+    function GetItemRate(obj){
+        $.post("/CRM/GetItemrate", { ItemId: $(obj).val() }, function (data) {
+
+            $("#txtRate").val(data);
+            $("#txtQuantity").val('1');
+        })
+    }
+
+    function AddTableRow() {
+
+        var ItemName = $("#ddlItemHead option:selected").text();
+        var Qty = $("#txtQuantity").val();
+        var unit = $("#ddlUnit option:selected").text();
+        var price = $("#txtRate").val();
+
+        if (ItemName != "" && Qty != "" && unit != "" && price != "") {
+            var html = "";
+            html += "<tr>"
+            html += "<td value='" + $("#ddlItemHead").val() + "' ><input type=text class='form-control' value='" + ItemName + "' disabled='true' /></td>";
+            html += "<td value='" + Qty + "' ><input type=text class='form-control' value='" + Qty + "' disabled/></td>";
+            html += "<td value='" + $("#ddlUnit").val() + "' ><input class='form-control' type=text value='" + unit + "' disabled/></td>";
+            html += "<td value='" + price + "' ><input type=text class='form-control' value='" + price + "'  disabled/></td>";
+            html += "<td><button type='button'  class='del' onclick='delcolorrow(this)'><i class='fa fa-trash'></i></button></td>";
+            $("#tblItemDetail tbody").append(html);
+            $("#ddlItemHead").val('');
+            $('#txtQuantity').val('');
+            $('#ddlUnit').val('');
+            $("#txtRate").val('');
+        }
+        else {
+            alert('some fields are blank');
+        }
+
+    }
+
+    function delcolorrow(Obj) {
+        debugger
+        $(Obj).parents('tr').remove();
+    }
+
+
+</script>
+
+<script src="~/ckeditor/ckeditor.js"></script>
+<div class="row pt-2 pb-2">
+    <div class="col-sm-12">
+        <h4 class="page-title">Add New Lead</h4>
+        @*<ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javaScript:void();">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="javaScript:void();">CRM</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Add New Lead</li>
+            </ol>*@
+        <div class="page-header" style="float:right">
+            <a class="btn btn-sm btn-info" href="/CRM/LeadReport"><i class="fa fa-eye"></i>Lead Report</a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title">Add New Lead</div>
+                <hr>
+                <div class="demo-heading">Customer Detail</div><hr />
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group" style="display:none">
+                            <label for="input-1"></label>
+                            <div class="icheck-material-primary">
+                                <input type="checkbox" id="chkExistingCustomer" name="chkcust">
+                                <label for="chkExistingCustomer">Existing Customer</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="display:none" id="divExisting">
+                        <div class="form-group">
+                            <label for="input-1">Select Customer</label>
+                            <select id="ddlCustomer" class="form-control">
+                                <option>Select Customer</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="input-1">Mobile No</label>
+                            <input type="text" class="form-control" id="txtMobile" placeholder="Enter Mobile No" maxlength="10" onkeypress="return isNumber(event)" onchange="CheckLead(this)">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="input-1">Company Name</label>
+                            <input type="text" class="form-control" id="txtCompanyname" placeholder="Company Name">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="input-1">Status</label>
+                            <select class="form-control single-select" id="ddlStatus" onchange="changestuts()">
+                                <option>Not Interested</option>
+                                <option>Interested</option>
+                                <option>May be Later</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+                @*fkdlhyklfgjhklg;l*@
+
+
+
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="input-1">Customer Name</label>
+                            <input type="text" class="form-control" id="txtName" placeholder="Enter Customer Name">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="input-1">Alt. Mobile No</label>
+                            <input type="text" class="form-control" id="txtAltMobile" placeholder="Enter Alt. Mobile No (Optional)" maxlength="10" onkeypress="return isNumber(event)">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="input-1">Email Id</label>
+                            <input type="text" class="form-control" id="txtemailId" placeholder="Enter Email Id">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="input-1">Select State</label>
+                            <select class="form-control single-select" id="ddlState"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="input-1">City</label>
+                            <input type="text" value="Lucknow" class="form-control" id="txtCity" placeholder="Enter City Name">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="input-1">Address</label>
+                            <textarea type="text" class="form-control" id="txtAddress" placeholder="Enter Address"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="demo-heading">Lead Detail</div><hr />
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="input-1">Lead Title</label>
+                            <input type="text" class="form-control" id="txtLeadTitle" placeholder="Enter Lead Title">
+                        </div>
+                    </div>
+                </div>
+                @*<div class="demo-heading">Lead For</div><hr />*@
+                @*<div class="row">
+                    <div class="table-responsive">
+                        <table class="table table-borderless table-hover table-centered m-0" id="tblItemDetail">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Particulars</th>
+                                    <th>Quantity</th>
+                                    <th>Unit</th>
+                                    <th>Per Unit Rate</th>
+
+                                    <th>Add</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <td width="300px">
+
+                                        @Html.DropDownList("ddlItemHead", (List<SelectListItem>)ViewBag.ItemHeadList, new { @id = "ddlItemHead", @class = "form-control", @onchange = "GetItemRate(this)" })
+                                    </td>
+                                    <td width="120px">
+                                        <input type="text" class="form-control" id="txtQuantity" onchange="calculateAmount()" onkeypress="allowonlyDegitandDot()" />
+                                    </td>
+                                    <td width="200px">
+                                        @Html.DropDownList("ddlUnit", (List<SelectListItem>)ViewBag.Unit, "-Select Unit-", new { @id = "ddlUnit", @class = "form-control" })
+                                     
+                                    </td>
+                                    <td width="120px">
+                                        <input type="text" class="form-control" id="txtRate" onchange="calculateAmount()" onkeypress="allowonlyDegitandDot()" />
+                                   
+                                    </td>
+                                    <td>
+                                        <button type="button" onclick="AddTableRow()" class="btn btn-sm btn-success fa fa-plus-square"> Add</button>
+                                    </td>
+
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                    </div>
+                </div>*@
+                <hr />
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="input-1">Select Employee</label>
+                            <select class="form-control single-select" id="ddlEMployee">
+                                <option>Raj</option>
+                                <option>Yash</option>
+                                <option>Rahul</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="input-1">Lead Date</label>
+                            <input type="date" class="form-control" id="txtLeadDate" placeholder="Enter Lead Date">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="input-1">Next Followup Date</label>
+                            <input type="date" class="form-control" id="txtNextFDate" placeholder="Enter Next Followup Date">
+                        </div>
+                    </div>
+                </div>
+                @*<div class="row">
+
+
+                    </div>*@
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="input-1">Description</label>
+                            <textarea id="txtDescription" class="form-control" placeholder="Lead Description"></textarea>
+                            <script type="text/javascript">
+                                CKEDITOR.replace('txtDescription', {
+                                                filebrowserImageUploadUrl: '/Ticket/UploadImage'
+                                            });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary shadow-primary px-5" id="btnAdd"><i class="icon-lock"></i> Add Lead</button>
+                        </div>
+                    </div>
+                    <my-spinner>
+                        <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+                            <i class="fa fa-refresh fa-spin nexo-refresh-icon" style="color: rgb(0, 0, 0); font-size: 50px; position: absolute; top: 50%; left: 50%; margin-top: -25px; margin-left: -25px; width: 44px; height: 50px;">
+                            </i>
+                        </div>
+                    </my-spinner>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

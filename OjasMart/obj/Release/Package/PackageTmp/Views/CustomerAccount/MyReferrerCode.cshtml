@@ -1,0 +1,78 @@
+﻿
+@{
+    ViewBag.Title = "MyReferrerCode";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+<div class="gambo-Breadcrumb">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="../WebHome/Index">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">My Referral</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="dashboard-group">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                @Html.Action("_pUserHeader", "CustomerAccount")
+            </div>
+        </div>
+    </div>
+</div><div class="">
+    <div class="container">
+        <div class="row">
+            @Html.Action("_pUserSideMenu", "CustomerAccount")
+            <div class="col-lg-9 col-md-8" id="div">
+                <div class="dashboard-right" id="div1">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="main-title-tab">
+                                <h4><i class="uil uil-box"></i>My Referral</h4>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12" style="text-align:center">
+                            <img src="~/img/referal.jpg" class="img-fluid" >
+                            <div class="col-lg-12 col-md-12" style="text-align: center; margin-top: 3%;">
+                                <h2>Share your Referral Code</h2>
+                                <h4>Refer your friend to Anature Basket with your unique referral code. Both will get <span style="font-weight: 800; color: #542a16; font-size: 20px;"> ₹ @ViewBag.RefererAmt/-</span></h4>
+                                <button class="login-btn hover-btn" type="submit" id="share">Share</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+      <script>
+          const btn = document.getElementById("share");
+          function webShareAPI(header, description, link) {
+              navigator
+                  .share({
+                      url: link
+                  })
+                  .then(() => console.log("Successful share"))
+                  .catch((error) => console.log("Error sharing", error));
+          }
+
+          if (navigator.share) {
+              // Show button if it supports webShareAPI
+              btn.style.display = "block";
+              btn.addEventListener("click", () =>
+                  webShareAPI("", "", "http://anaturebasket.sigmasoftwares.co/CustomerAccount/SignUp?ReferCode=@ViewBag.RefererCode")
+              );
+          } else {
+              // Hide button if it supports webShareAPI
+              //  btn.style.display = "none";
+              console.error("Your Browser doesn't support Web Share API");
+          }
+
+      </script>

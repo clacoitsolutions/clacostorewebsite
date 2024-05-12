@@ -1,0 +1,241 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "LeadReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<style>
+    .cent {
+        text-align: center;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+
+        $("#example").DataTable({
+            dom: 'Bfrtip',
+            //pageLength: 5,
+            lengthMenu: [[5, 10, 20, 50, 100, 500, -1], [5, 10, 20, 50, 100, 500, "All"]],
+            buttons: [
+               'pageLength',
+           {
+               extend: 'excelHtml5', footer: true
+           },
+           { extend: 'csvHtml5', footer: true },
+           {
+               extend: 'pdfHtml5', footer: true, orientation: 'landscape',
+               pageSize: 'LEGAL',
+               text: '<i class="fa fa-file-pdf-o"> PDF</i>',
+               titleAttr: 'PDF'
+           }
+            ]
+        })
+
+        $.ajax({
+            type: 'Post',
+            url: '@Url.Action("BindEmployees")',
+            dataType: 'json',
+            data: {},
+            success: function (list) {
+                $("#ddlEMployee").empty();
+                $("#ddlEMployee").append('<option value="' + '' + '">' + 'Select' + '</option>');
+                $.each(list, function (i, list) {
+                    $("#ddlEMployee").append('<option value="' + list.EmployeeCode + '">' + list.EmployeeName + '</option>');
+                });
+                if (Role != "1") {
+                    $("#ddlEMployee").val(UserId);
+                    $("#ddlEMployee").attr("disabled", "disabled");
+                }
+                else {
+                    $("#ddlEMployee").removeAttr("disabled");
+                }
+
+            },
+            error: function (ex) {
+                alert('No data found for States');
+            }
+        });
+    });
+    function showme(obj) {
+        $("#persondata").hide();
+        $("#leaddata").show();
+        var LeadId=null;
+
+        $.post("/CRM/LeadReport",{LeadId:LeadId},function(data){
+            $("#leaddata").html($(data).find("#leaddata").html());
+        });
+    }
+    function hideme(obj,LeadId) {
+        $("#persondata").show();
+        $("#leaddata").hide();
+
+        $.post("/CRM/LeadReport",{LeadId:LeadId},function(data){
+            $("#persondata").html($(data).find("#persondata").html());
+        });
+    }
+    function getDetails() {
+        var startdate = $("#txtStartDate").val();
+        var enddate = $("#txtEndDate").val();
+        var Employee = $("#ddlEMployee").val();
+        var CompanyName = $("#txtAccNumber").val();
+        var Status = $("#ddlStatus").val();
+        $.post("/CRM/LeadReport", { EmpCode: Employee, StartDate: startdate, EndDate: enddate, Status: Status }, function (data) {
+            $("#bindme").html($(data).find("#bindme").html());
+        })
+    }
+</script>
+
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <i class="fa fa-refresh fa-spin nexo-refresh-icon" style="color: rgb(0, 0, 0); font-size: 50px; position: absolute; top: 50%; left: 50%; margin-top: -25px; margin-left: -25px; width: 44px; height: 50px;">
+        </i>
+    </div>
+</my-spinner>
+
+<div class="row pt-2 pb-2">
+    <div class="col-sm-12">
+        <h4 class="page-title">Lead's List</h4>
+        @*<ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javaScript:void();">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="javaScript:void();">CRM</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Lead List</li>
+            </ol>*@
+        <div class="page-header" style="float:right">
+            <a class="btn btn-sm btn-info" href="/CRM/createnewlead"><i class="fa fa-plus-circle"></i>Add New Lead</a>
+        </div>
+    </div>
+</div>
+<section id="leaddata">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header text-uppercase">Lead Details</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Start Date</label>
+                                <input type="date" class="form-control" id="txtStartDate" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>End Date</label>
+                                <input type="date" class="form-control" id="txtEndDate" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Employee</label>
+                                <select class="form-control single-select" id="ddlEMployee"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4" style="display:none">
+                            <div class="form-group">
+                                <label>Company Name</label>
+                                <input type="text" class="form-control" id="txtAccNumber" maxlength="30" placeholder="Enter Account Number" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select class="form-control" id="ddlStatus">
+                                    <option value="">All</option>
+                                    <option>Interested</option>
+                                    <option>Not Interested</option>
+                                    <option>May be Later</option>
+                                    <option>Closed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4" style="margin-top:25px">
+                            <button type="submit" class="btn btn-primary shadow-primary px-5" id="btnAdd" onclick="getDetails()"><i class="glyphicon-search"></i> Filtter Record</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="bindme">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header"><i class="fa fa-table"></i> Lead's List         @*<a href="@Url.Action("AddEmployee","EmployeeMaster")">Add New Employee</a>*@  </div>
+                <div class="card-header" style="float:right"><button class="btn btn-sm btn-secondary">Send Mail</button><button class="btn btn-sm btn-primary">Send Message</button></div>
+                <div class="card-body">
+                    <div class="table-responsive" id="divDetails">
+                        <table id="example" class="table table-borderless">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" /></th>
+                                    <th>Lead Info</th>
+
+                                    <th>Next FollowUp date</th>
+                                    <th>Lead Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                                {
+                                    foreach (DataRow item in Model.dt.Rows)
+                                    {
+
+                                        <tr>
+                                            <td><input type="checkbox" style="margin-top: 45px;" /></td>
+                                            <td>
+
+
+                                                <div class="media">
+                                                    @*<img class="d-flex align-self-center mr-3" src="~/assets/images/users/user-6.jpg" alt="Def-Photo" height="64">*@
+                                                    <div class="media-body">
+                                                        <h4 class="mt-0 mb-2 font-16"><a @*onclick="hideme(this,'@item["LeadId"]')"*@ style="font-weight: bold;color: #1e6c94;cursor:pointer" href="/CRM/LeadSummary?LeadId=@item["LeadId"]"> <i class="mdi mdi-briefcase-account"></i> @item["LeadTitle"] </a></h4>
+                                                        <p class="mb-1"><b>Id:</b>@item["LeadId"]</p>
+                                                        <p class="mb-1"><b>Name:</b>@item["Name"]</p>
+                                                        <p class="mb-1"><b> Mobile:</b> <span class="badge badge-primary">@item["MobileNo"]</span> <b>Company Name:</b> <span class="badge badge-primary">@item["CompanyName"]</span></p>
+                                                        <p class="mb-1"><b class="icon-mail"> Email:</b> <span class="badge badge-primary">@item["EmailId"]</span></p>
+
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td class="cent">
+                                                @if (Convert.ToString(item["Status"]) == "Closed")
+                                            {
+                                                <span class="badge badge-info" style="background-color: red;
+    padding: 5px;">@item["Status"]</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-primary">@item["NextFollowUpDate"]</span>
+                                            }
+                                        </td>
+                                        <td class="cent">@item["LeadDate"]</td>
+                                        <td class="cent">
+                                            @if (Convert.ToString(item["Status"]) == "Closed")
+                                        {
+                                            <span class="badge badge-info" style="background-color: red;
+    padding: 5px;">@item["Status"]</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-info" style="padding: 5px;">@item["Status"]</span>
+                                        }
+                                    </td>
+                                </tr>
+                                    }
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

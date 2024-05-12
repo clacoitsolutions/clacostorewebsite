@@ -1,0 +1,123 @@
+﻿@model OjasMart.Models.PropertyClass
+@using System.Data;
+@using OjasMart.Models;
+
+<style>
+    .tt {
+        -ms-flex: 0 0 20%;
+        flex: 0 0 20%;
+        max-width: 100% !important;
+    }
+
+
+
+
+    .product-name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        cursor: pointer;
+    }
+
+        .product-name:hover {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+        }
+
+    @@media only screen and (max-width:767px) {
+        .dv,
+        .tt {
+            -ms-flex: 0 0 50%;
+            flex: 0 0 50%;
+            max-width: 100% !important;
+            grid-row-gap: 10px;
+            margin-left: 3px !important;
+        }
+    }
+</style>
+
+
+
+<div class="row dv" style="min-height:250px;margin-left:2%;background:#fff;display:flex!important;flex-wrap:wrap!important;width:11%">
+    @if (Model.dtCatProduct != null && Model.dtCatProduct.Rows.Count > 0)
+    {
+        {
+            int counter = 0;
+
+            foreach (DataRow dr in Model.dtCatProduct.Rows)
+            {
+                if (counter >= 1)
+                {
+                    break;
+                }
+                <div class="col-sm-2 col-6 dv tt" style="flex:1!important;margin:0px!important;padding:0px!important;">
+                    <div class="card" style="border: 1px solid #f5e8e8; overflow: hidden !important; text-overflow: ellipsis;">
+                        <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]&&VarId=@dr["VarId"]" target="_blank" class="product-img">
+                            <img class="card-img-top" src="@dr["ProductMainImageUrl"]" alt="Card image cap" style="height:200px;width:80%;margin:10%;">
+                            <div class="card-body">
+                                <p class="card-text product-name" style="text-align: center;">@dr["ProductName"]</p>
+                                <div>
+                                    @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                    {
+                                        <p class="card-text" style="text-align:center;color:red">@dr["Discper"]% off</p>
+                                    }
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                counter++;
+            }
+        }
+    }
+</div>
+
+
+
+
+@*<div class="row" style="min-height:250px;margin-left:2%;background:#fff;display:flex!important;flex-wrap:wrap!important;width:11%">
+        @if (Model.dtCatProduct != null && Model.dtCatProduct.Rows.Count > 0)
+        {
+
+
+            {
+                int counter = 0;
+
+                foreach (DataRow dr in Model.dtCatProduct.Rows)
+                {
+                    if (counter >= 1)
+                    {
+                        break;
+                    }
+                    <div class="col-sm-2 pv" style="flex:1!important;margin:0px!important;padding:0px!important;">
+                        <div class="card" style="border: 1px solid #e2dede; overflow: hidden !important; text-overflow: ellipsis;">
+                            <img class="card-img-top" src="@dr["ProductMainImageUrl"]" alt="Card image cap" style="height:200px;width:80%;margin:10%;">
+                            <div class="card-body">
+
+                                <p class="card-text" style="text-align: center; overflow: hidden !important; text-overflow: ellipsis;">@dr["ProductName"]</p>
+                                <div>
+                                    @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                    {
+                                        <p class="card-text" style="text-align:center;color:red">@dr["Discper"]% off</p>
+                                    }
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    counter++;
+                }
+
+
+            }
+
+
+        }
+    </div>*@
+
+
+
+
+

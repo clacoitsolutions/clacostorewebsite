@@ -1,0 +1,329 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Makeproduct";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+<style>
+    .custom-control-input {
+        position: absolute;
+        z-index: 1;
+        opacity: 2;
+        height: 18px;
+        width: 18px;
+    }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('select').select2();
+        $("#tblItemHead").DataTable();
+        $("#customCheck1").on("click", function () {
+            //$(".chksms").is(":checked", true);
+            $('input:checkbox').prop('checked', this.checked);
+            //$('#example5 tbody').find('input[type=checkbox]:checked').each(function () {
+            //    var mob = $(this).parents('tr').find('.mob').text();
+
+            //});
+        });
+    });
+
+    function checkme(Obj) {
+        $(Obj).prop('checked', this.checked);
+    }
+    function valItem() {
+        debugger
+        var OrderData = [];
+        $('#tblcon tbody tr').find('input[type=checkbox]:checked').each(function () {
+            debugger;
+            var cuObj = new Item();
+            //cuObj.Rawmaterialid = $($(this).parents('tr').children()[1].find('#hdCode')).attr('value');
+            cuObj.Rawmaterialid = $(this).parents('tr').find('.item11').attr('val');
+
+            cuObj.Rawquantity = $(this).parents('tr').find('.quan').find("#txtQuantity").val();
+            cuObj.Rawuom = $(this).parents('tr').find('.uom').find("#lblunit").text();
+            cuObj.leakage = $(this).parents('tr').find('.leakage').find("#txtleakage").val();
+            OrderData.push(cuObj);
+        });
+        var Rawdata = JSON.stringify(OrderData);
+        var ddlItem = $("#ddlItem").val();
+        var ddlUOM = $("#ddlUOM").val();
+        var Quantity = $("#txtPQuantity").val();
+        var txtdate = $("#txtdate").val(); 
+        var data = new FormData;
+        data.append("ItemID", ddlItem);
+        data.append("UOM", ddlUOM);
+        data.append("Quantity", Quantity);
+        data.append("ProductionDate", txtdate); 
+        data.append("strRawdata", Rawdata);
+        
+        $.ajax({
+            url: "../Manufacturing/SaveFinalisedProduct",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                alert(r);
+                location.reload();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                //$("#showSpinner").hide();
+            }
+        });
+    }
+    function Item() {
+        this.Rawmaterialid = null;
+        this.Rawquantity = null;
+        this.Rawuom = null;
+        this.leakage = null; 
+
+    }
+    function delItemlist(obj) {
+        debugger;
+        if (confirm('Are you sure want to Delete this product')) {
+            window.location.href = "/Manufacturing/Makeproduct?Id=" + obj + "&Mode=D";
+        }
+    }
+    function GetRawMaterial1(obj)
+    {
+        var id = $(obj).val();
+        window.location.href = "/Manufacturing/Makeproduct?Id=" + id + "";
+        $("#ddlItem").val(id);
+    }
+    function GetRawMaterial(obj) {
+        debugger
+        var id = $(obj).val();
+        $.post('/Manufacturing/Makeproduct', { Id: id }, function (data) {
+            $("#Forbind").html($(data).find('#Forbind').html());
+           
+          
+        });
+    }
+    function calQuantity(obj) {
+        debugger
+        var val = $(obj).val();
+        $("#tblcon tbody tr").each(function () {
+            var oldval = $(this).find(".quan").find("#hdquan").val();
+            var newval = parseFloat(oldval) * parseFloat(val);
+            $(this).find(".quan").find("#txtQuantity").val(newval);
+        });
+    }
+
+    function GetItem(id, ProductId) {
+        debugger;
+        $('#tblPickupOrder tr[id*=tr]').hide();
+        $('#' + id).toggle(1000);
+
+        if (ProductId != "") {
+
+            $.post('/Manufacturing/GetproductItem', { ProductId: ProductId }, function (data) {
+                debugger
+                data = eval(data);
+                if (data != false) {
+                    var html = "";
+                    for (var i = 0; i < data.length; i++) {
+                        html += "<tr>";
+
+                        html += "<td>" + (i+1) + "</td>";
+                        html += "<td>" + data[i][2] + "</td>";
+                        html += "<td>" + data[i][1] + "</td>";
+                        html += "<td>" + data[i][3] + "</td>";
+                        html += "<td>" + data[i][4] + "</td>";
+                        html += "<td>" + data[i][5] + "</td>";
+                        html += "</tr>";
+                    }
+                    $('#' + id + ' .bindItem tbody').html(html)
+                }
+
+            });
+
+        }
+        else {
+            alert('Error');
+            $('#' + id).toggle(1000);
+        }
+
+
+
+    }
+</script>
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div id="Forbind">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+
+                </div>
+                <h4 class="page-title">Product Entry</h4>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4" class="col-form-label">Select Product <span style="color:red">*</span> </label>
+                            @*@Html.DropDownList("ddlItem", (List<SelectListItem>)ViewBag.ItemHeadList, new { @id = "ddlItem", @class = "form-control",@onchange= "GetRawMaterial(this)" })*@
+                            @Html.DropDownListFor(m => m.ItemID, (List<SelectListItem>)ViewBag.ItemHeadList, new { @Id = "ddlItem", @class = "form-control" , @onchange = "GetRawMaterial(this)" })
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4" class="col-form-label">Select UOM <span style="color:red">*</span> </label>
+                            @*@Html.DropDownList("ddlUOM", (List<SelectListItem>)ViewBag.UOMList, new { @id = "ddlUOM", @class = "form-control" })*@
+                            @*<input type="text" class="form-control" id="TxtUOM" />*@
+                            @Html.TextBoxFor(m=>m.UOM, new { @id = "ddlUOM", @class = "form-control" })
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4" class="col-form-label">Enter Product Quantity <span style="color:red">*</span> </label>
+                            <input type="number" id="txtPQuantity" onchange="calQuantity(this)" class="form-control" placeholder="Enter Quantity" />
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4" class="col-form-label">Enter Production date <span style="color:red">*</span> </label>
+                            <input type="date" id="txtdate"  class="form-control" placeholder="Enter Production date" />
+                        </div>
+                    </div>
+                </div> <!-- end card-body -->
+            </div> <!-- end card-->
+        </div> <!-- end col -->
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <div class="table-responsive">
+                                <table class="table table-centered table-borderless table-hover mb-0" id="tblcon">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th style="width: 20px;">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input" id="customCheck1" checked="checked">
+                                                    @*<label class="custom-control-label" for="customCheck1">&nbsp;</label>*@
+                                                </div>
+                                            </th>
+                                            <th style="width:420px;">Particulars</th>
+                                            <th>Quantity/Unit</th>
+                                            <th>Unit</th>
+                                            <th>Leakage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                                    {
+                                        foreach (DataRow dr in Model.dt.Rows)
+                                        {
+                                                <tr>
+                                                    <td>
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" onclick="checkme(this)" class="custom-control-input" checked="checked" id="customCheck2">
+                                                            @*<label class="custom-control-label" for="customCheck2">&nbsp;</label>*@
+                                                        </div>
+                                                    </td>
+                                                    <td class="item11" val="@dr["ItemCode"]">
+                                                        @dr["RawItemname"]
+                                                        <input type="hidden" id="hdCode" value="@dr["ItemCode"]" />
+                                                    </td>
+                                                    <td class="quan">
+                                                        <input type="number" id="txtQuantity"  class="form-control" value="@dr["quantity"]" />
+                                                        <input type="hidden" id="hdquan" value="@dr["quantity"]" />
+                                                    </td>
+                                                    <td class="uom">
+                                                        @*@Html.DropDownList("ddlUOMitm", (List<SelectListItem>)ViewBag.UOMList, new { @id = "ddlUOMitm" })*@
+                                                        <label class="form-control" id="lblunit">@dr["rawunit"]</label>
+                                                    </td>
+                                                    <td class="leakage">
+                                                        <input type="text" id="txtleakage" class="form-control" placeholder="Leakage" />
+                                                    </td>
+                                                </tr>
+
+                                                
+                                            }
+                                        }
+
+                                    </tbody>
+                                    <tfoot>
+                                        <tr><td><button type="button" onclick="valItem()" class="btn btn-sm btn-success">Save</button></td></tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- end card-body -->
+            </div> <!-- end card-->
+        </div> <!-- end col -->
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <h4 class="header-title">Product Consumption Details</h4>
+            <div class="table-responsive" style="overflow-y:scroll;max-height:500px">
+                <table id="tblItemHead" class="table table-borderless table-hover table-centered m-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sr.No</th>
+                            <th>ProductID</th>
+                            <th>Product</th>
+                            <th>Product UOM</th>
+                            <th>Quantity</th>
+                            <th>Added Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+                        {
+                            int i = 1; 
+                            foreach (DataRow dr in Model.dt1.Rows)
+                            {
+                               
+                                <tr onclick="GetItem('tr_@i','@dr["ProductId"]')">
+                                    <td>@(i++)</td>
+                                    <td><a style="color:#122686;font-weight:bold;cursor:pointer">@dr["ProductId"]</a></td>
+                                    <td>@dr["ItemName"]</td>
+                                    <td>@dr["Uom"]</td>
+                                    <td>@dr["Quantity"]</td>
+                                    <td>@dr["EntryDate"]</td>
+                                    <td><button class="btn btn-sm btn-danger" onclick="delItemlist('@dr["ProductId"]')">Delete</button></td>
+                                </tr>
+                                <tr id="tr_@(i-1)" style="display:none">
+                                    <td>
+                                        <div class="card" style="background:lavender;width:60%">
+                                            <div class="card-body">
+                                                <table class="table table-striped table-bordered bindItem">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Sr.No</th>
+                                                            <th>Item Id</th>
+                                                            <th>Raw Item Name</th>
+                                                            <th>Quantity</th>
+                                                            <th>unit</th>
+                                                            <th>Leakage</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>
+

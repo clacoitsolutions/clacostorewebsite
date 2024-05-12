@@ -1,0 +1,644 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Claco Store - Create New Account</title>
+
+    <!-- Favicon Icon -->
+    <link rel="icon" type="image/png" href="images/fav.png">
+    <style>
+        .cross-icon {
+            font-size: 24px;
+            color: red;
+            cursor: pointer;
+        }
+    </style>
+
+    <style>
+        @@media only screen and (max-width: 768px) and (max-width: 1024px) {
+            #pnw {
+                display: none;
+            }
+
+            #hdd {
+                border: 3px solid#ff006e;
+                margin: 3px
+            }
+
+            #in7 {
+                padding: 0px;
+            }
+
+            #space1 {
+                margin-top: 0px;
+                padding: 0px
+            }
+        }
+
+        #in7 {
+            background-color: white;
+            min-height: 400px;
+            padding: 40px
+        }
+
+        #x2 {
+            display: none;
+        }
+
+        #space1 {
+            margin-top: 30px
+        }
+
+        .error-message {
+            color: red;
+            /* Add any other styles you want */
+        }
+    </style>
+
+    <style>
+        /* code by muskan*/
+        /* CSS for centering the alert message div */
+        #alertMessage {
+            position: fixed;
+            bottom: 1%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            height: 50px;
+            background: black;
+            display: none;
+            text-align: center; /* Center the text horizontally */
+            color: white;
+        }
+
+        .icon {
+            width: 20px; /* Adjust size as needed */
+            height: 20px; /* Adjust size as needed */
+            display: none;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    </style>
+
+    <!-- Libs CSS
+    ============================================ -->
+
+    <link rel="stylesheet" href="@Url.Content("~/css/font-awesome/css/font-awesome.min.css")" />
+
+    <link rel="stylesheet" id="color_scheme" href="@Url.Content("~/css/theme.css")" />
+
+
+    <!-- Stylesheets -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link href='~/webassets/vendor/unicons-2.0.1/css/unicons.css' rel='stylesheet'>
+    <link href="~/webassets/css/style.css" rel="stylesheet">
+    <link href="~/webassets/css/responsive.css" rel="stylesheet">
+    <link href="~/webassets/css/night-mode.css" rel="stylesheet">
+    <link href="~/webassets/css/step-wizard.css" rel="stylesheet">
+
+    <!-- Vendor Stylesheets -->
+    <link href="~/webassets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="~/webassets/vendor/OwlCarousel/assets/owl.carousel.css" rel="stylesheet">
+    <link href="~/webassets/vendor/OwlCarousel/assets/owl.theme.default.min.css" rel="stylesheet">
+    <link href="~/webassets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/webassets/vendor/semantic/semantic.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script>
+        function InsertCustomerAccount() {
+            var ssname1 = $("#txtName").val();
+            var Email = $("#txtEmailAddress").val();
+            var pass = $("#txtPassword").val();
+            var mob = $("#txtMobileNo").val();
+
+            var dataobject = {
+                SSName: ssname1,
+                EmailAddress: Email,
+                Password: pass,
+                ContactNo: mob,
+                AccountType: 'Online'
+            };
+
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Account/InsertCustomerAccounts",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    if (r.strId == '1') {
+                        // Show success icon and set success message
+                        $("#iconSuccess").show();
+                        $("#iconError").hide();
+                        $("#message").text(r.msg);
+                        $("#alertMessage").show(); // Show the alert message div
+                        var url = "../WebHome/Index";
+                        window.location.href = url;
+                    }
+                    else if (r.strId == '2') {
+                        // Show error icon and set error message
+                        $("#iconError").show();
+                        $("#iconSuccess").hide();
+                        $("#message").text(r.msg);
+                        $("#alertMessage").show(); // Show the alert message div
+                    }
+                    else {
+                        // Show error icon and set default error message
+                        $("#iconError").show();
+                        $("#iconSuccess").hide();
+                        $("#message").text('Server not Responding, Please try later !!!');
+                        $("#alertMessage").show(); // Show the alert message div
+                    }
+                    // Automatically hide the alert message after 3 seconds
+                    setTimeout(function () {
+                        $("#alertMessage").hide();
+                    }, 3000);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    // Show error icon and set error message
+                    $("#iconError").show();
+                    $("#iconSuccess").hide();
+                    $("#message").text('Please Check values Entered by you !!!');
+                    $("#alertMessage").show(); // Show the alert message div
+                    // Automatically hide the alert message after 3 seconds
+                    setTimeout(function () {
+                        $("#alertMessage").hide();
+                    }, 3000);
+                },
+                complete: function () {
+                    $("#showSpinner").hide();
+                }
+            });
+        }
+    </script>
+    <script>
+        function toggleContent() {
+            window.location.href = "../../WebHome/Index";
+        }
+    </script>
+
+
+    <script>
+        function togglePasswordVisibility() {
+            var passwordField = document.getElementById("Password");
+            var toggleIcon = document.getElementById("password-toggle-icon");
+
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                toggleIcon.classList.remove("fa-eye-slash");
+                toggleIcon.classList.add("fa-eye");
+            } else {
+                passwordField.type = "password";
+                toggleIcon.classList.remove("fa-eye");
+                toggleIcon.classList.add("fa-eye-slash");
+            }
+        }
+
+        function togglePasswordVisibility1() {
+            var passwordInput = document.getElementById("txtPassword");
+            var passwordIcon = document.getElementById("passwordIcon");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                passwordIcon.classList.remove("fa-eye-slash");
+                passwordIcon.classList.add("fa-eye");
+            } else {
+                passwordInput.type = "password";
+                passwordIcon.classList.remove("fa-eye");
+                passwordIcon.classList.add("fa-eye-slash");
+            }
+        }
+
+    </script>
+    <style>
+        .toggle-password {
+            position: absolute;
+            top: 28%;
+            right: 10px; /* Adjusted right position */
+            transform: translateY(-50%);
+            z-index: 1;
+            background: none;
+            border: none !important;
+            opacity: 0.5 !important;
+            font-size: 18px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    @* end password hide show start*@
+
+</head>
+<body style="background:#eef5fa !important;">
+
+    <div class="main-container ">
+        <ul class="breadcrumb" style="background:#ff006e;margin:0px !important;padding:20px">
+            <li><a href="@Url.Action("Index","WebHome")"><i class="fa fa-home"></i></a></li>
+            <li><a href="#">User</a></li>
+            <li><a href="#">User Registration</a></li>
+        </ul>
+
+        <div class="row">
+            <div id="content" class="col-sm-12">
+                <div class="page-login">
+                    <div class="account-border">
+                        <h1 id="topspace"></h1>
+                        <div class="row">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-6 mainboxsign">
+                                <div class="row" style="padding:20px">
+                                    <div class="col-sm-5">
+                                        <img src="~/img/Register  -Join the Claco Family (1).png" class="signimg" style="background-size:cover" />
+                                    </div>
+
+                                    <div class="col-sm-7 customer-login" style="margin: 0px !important; padding: 10px 20px 10px 20px !important; background:">
+                                        <div style="color: green; opacity: 0.8" id="temp_data"></div>
+                                        <div style="color: red; opacity: 0.8" id="temp_data11"></div>
+                                        <div class="form-inpts checout-address-step" id="space1">
+
+                                            <div class="form-group pos_rel">
+                                                <input id="txtName" name="fullname" type="text" placeholder="" class="form-control" required="">
+                                                <label class="placeholder uil uil-user-circle lgn_icon" for="Name"> Full name </label>
+                                                <div id="nameError" class="error-message"></div>
+                                            </div>
+                                            <div class="form-group pos_rel">
+                                                <input id="txtEmailAddress" name="emailaddress" type="email" placeholder="" class="form-control" required="">
+                                                <label class="placeholder uil uil-envelope lgn_icon" for="Email"> Email </label>
+                                                <div id="emailError" class="error-message"></div>
+                                            </div>
+                                            <div id="temp_data3" style="color: red"></div>
+                                            <div class="form-group pos_rel" style="margin-right: 0px !important;">
+                                                <input id="txtMobileNo" name="phone" type="text" placeholder="" class="form-control" required="" onkeypress="return isNumberKey(event);" maxlength="10">
+                                                <label class="placeholder uil-mobile-android-alt lgn_icon" for="Mobile">Phone No.</label>
+                                                <div id="phoneError" class="error-message"></div>
+                                            </div>
+                                            <div class="form-group pos_rel">
+                                                <input id="Password" name="password" type="password" placeholder="" class="form-control" required>
+                                                <label class="placeholder uil-padlock lgn_icon" for="Password">Password</label>
+                                                <button class="toggle-password" onclick="togglePasswordVisibility()">
+                                                    <i id="password-toggle-icon" class="fas fa-eye-slash"></i>
+                                                </button>
+                                                <div id="passwordError" class="error-message"></div>
+                                            </div>
+                                            <div id="temp_data1" style="color: red"></div>
+                                            <div class="form-group pos_rel">
+                                                <input id="txtPassword" name="password1" type="password" placeholder="" class="form-control" required="">
+                                                <label class="placeholder uil-padlock lgn_icon" for="Confirm Password">Confirm Password</label>
+                                                <!-- Toggle button -->
+                                                <button id="togglePasswordBtn" class="toggle-password" onclick="togglePasswordVisibility1()">
+                                                    <i id="passwordIcon" class="fas fa-eye-slash"></i> <!-- Initially hidden -->
+                                                </button>
+                                                <div id="confirmPasswordError" class="error-message"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-2"></div>
+                                                <div class="col-md-8">
+                                                    <button id="signUpBtn" class="login-btn" type="button" onclick="validateAndSubmitForm()"><span>Sign Up</span> </button>
+                                                </div>
+                                                <div class="col-md-3"></div>
+                                            </div>
+                                            <h2></h2>
+                                            <center>
+                                                <span style="color: #454545 !important; opacity: 0.8 !important">I have an account?</span>
+                                                <a id="" class="" href="/CustomerAccount/Index" style="color: #ff006e !important; opacity: 0.8 !important"><b>Sign In</b></a>
+                                            </center>
+                                        </div>
+                                    </div>
+
+                                    <script>
+                                        // Add event listeners to clear error messages on input
+                                        document.getElementById("txtName").addEventListener("input", clearErrorMessage);
+                                        document.getElementById("txtEmailAddress").addEventListener("input", clearErrorMessage);
+                                        document.getElementById("txtMobileNo").addEventListener("input", clearErrorMessage);
+                                        document.getElementById("Password").addEventListener("input", clearErrorMessage);
+                                        document.getElementById("txtPassword").addEventListener("input", clearErrorMessage);
+
+                                        function clearErrorMessage() {
+                                            var errorId = this.id + "Error";
+                                            document.getElementById(errorId).innerHTML = "";
+                                        }
+
+                                        function validateAndSubmitForm() {
+                                            var isValid = validateForm();
+                                            if (isValid) {
+                                                InsertCustomerAccount();
+                                            }
+                                        }
+                                    </script>
+
+
+                                </div>
+
+                            </div>
+                            <div class="col-md-3"></div>
+                        </div>
+                        @*change*@
+
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="alertMessage" style="height:50px;background:black; display:none;">
+        <div style="margin:10px;">
+            <span id="iconSuccess" style="display: none;"><img src="~/img/sucessicon-removebg-preview.png" alt="Success" height="30" width="30"></span>
+            <span id="iconError" style="display: none;"><img src="/img/erroricon.png" alt="Error" height="30" width="30"></span>
+            <span id="message" style="color:white;font-weight:bold"></span>
+        </div>
+    </div>
+    @*VALIDATION*@
+    <script>
+        function isNumberKey(evt) {
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            var inputValue = evt.target.value;
+
+            // Check if the first character is already entered
+            //if (inputValue.length === 0) {
+            //    // Restrict the first character to be 6, 7, 8, or 9
+            //    if (charCode < 54 || charCode > 57) { // ASCII codes for '6' to '9'
+            //        return false;
+            //    }
+            //}
+
+            // Allow only digits 0-9
+            if (charCode < 48 || charCode > 57) {
+                return false;
+            }
+            return true;
+        }
+
+
+    </script>
+    <script>
+        function validateForm() {
+            var name = document.getElementById("txtName").value;
+            var email = document.getElementById("txtEmailAddress").value;
+            var phone = document.getElementById("txtMobileNo").value;
+            var password = document.getElementById("Password").value;
+            var confirmPassword = document.getElementById("txtPassword").value;
+            var isValid = true;
+
+            // Clear previous error messages
+            document.getElementById("nameError").innerHTML = "";
+            document.getElementById("emailError").innerHTML = "";
+            document.getElementById("phoneError").innerHTML = "";
+            document.getElementById("passwordError").innerHTML = "";
+            document.getElementById("confirmPasswordError").innerHTML = "";
+
+            // Simple validation, you can enhance it as needed
+            if (name.trim() == "") {
+                document.getElementById("nameError").innerHTML = " Enter Full name.";
+                isValid = false;
+            }
+            if (email.trim() == "" || !validateEmail(email)) {
+                document.getElementById("emailError").innerHTML = "Enter Valid email address.";
+                isValid = false;
+            }
+            if (phone.trim() == "") {
+                document.getElementById("phoneError").innerHTML = "Enter phone number.";
+                isValid = false;
+            }
+            //if (phone.trim().length !== 10 || !/^\d{10}$/.test(phone.trim())) {
+            //    document.getElementById("phoneError").innerHTML = "Please enter a valid 10-digit phone number.";
+            //    isValid = false;
+            //}
+            // Phone number validation
+            var phoneRegex = /^[6-9]\d{9}$/;
+            if (!phoneRegex.test(phone.trim())) {
+                document.getElementById("phoneError").innerHTML = "Enter Valid Mobile Number";
+                isValid = false;
+            }
+            if (password.trim() == "") {
+                document.getElementById("passwordError").innerHTML = "Enter password";
+                isValid = false;
+            }
+            if (confirmPassword == "") {
+                document.getElementById("confirmPasswordError").innerHTML = "Enter password ";
+                isValid = false;
+            }
+            if (password != confirmPassword) {
+                document.getElementById("confirmPasswordError").innerHTML = "Passwords do not match.";
+                isValid = false;
+            }
+
+            // Check if all required fields are filled
+            if (!name || !email || !phone || !password || !confirmPassword) {
+                isValid = false;
+            }
+
+            // If all fields are filled, return isValid
+            return isValid;
+
+            //muskan
+
+            var ssname1 = $("#txtName").val();
+            var Email = $("#txtEmailAddress").val();
+            var pass = $("#txtPassword").val();
+            var mob = $("#txtMobileNo").val();
+
+            var dataobject = {
+                SSName: ssname1,
+                EmailAddress: Email,
+                Password: pass,
+                ContactNo: mob,
+                AccountType: 'Online'
+            };
+
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Account/InsertCustomerAccounts",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    if (r.strId == '1') {
+                        // Show success icon and set success message
+                        $("#iconSuccess").show();
+                        $("#iconError").hide();
+                        $("#message").text(r.msg);
+                        $("#alertMessage").show(); // Show the alert message div
+                        var url = "../WebHome/Index";
+                        window.location.href = url;
+                    }
+                    else if (r.strId == '2') {
+                        // Show error icon and set error message
+                        $("#iconError").show();
+                        $("#iconSuccess").hide();
+                        $("#message").text(r.msg);
+                        $("#alertMessage").show(); // Show the alert message div
+                    }
+                    else {
+                        // Show error icon and set default error message
+                        $("#iconError").show();
+                        $("#iconSuccess").hide();
+                        $("#message").text('Server not Responding, Please try later !!!');
+                        $("#alertMessage").show(); // Show the alert message div
+                    }
+                    // Automatically hide the alert message after 3 seconds
+                    setTimeout(function () {
+                        $("#alertMessage").hide();
+                    }, 3000);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    // Show error icon and set error message
+                    $("#iconError").show();
+                    $("#iconSuccess").hide();
+                    $("#message").text('Please Check values Entered by you !!!');
+                    $("#alertMessage").show(); // Show the alert message div
+                    // Automatically hide the alert message after 3 seconds
+                    setTimeout(function () {
+                        $("#alertMessage").hide();
+                    }, 3000);
+                },
+                complete: function () {
+                    $("#showSpinner").hide();
+                }
+            });
+
+
+
+
+        }
+
+        function validateEmail(email) {
+            // Regular expression for email validation
+            var re = /^\S+@@\S+\.\S+$/;
+            return re.test(email);
+        }
+    </script>
+
+    <style>
+        .error-message {
+            color: red;
+            opacity: 0.6;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+
+
+
+
+    @*Start Sinup Box*@
+
+    <style>
+.well {
+    padding: 40px !important;
+    border: none !important
+}
+
+.mainboxsign {
+    background-color: white;
+    min-height: 400px;
+    margin: 0px;
+    padding: 10px;
+    box-shadow: 0px 2px 15px #c3c3c3;
+    border-radius: 20px
+}
+
+.signimg {
+height:600px;
+background-size:cover !important;
+    opacity: 0.8 !important
+}
+
+@@media only screen and (max-width:768px) {
+        .mainboxsign {
+         margin:25px;
+           padding:0px !important
+        }
+        .customer-login
+        {
+            padding:0px !important
+        }
+        .well {
+            padding: 10px !important;
+        }
+
+    .signimg {
+        height: 500px !important;
+        display:none
+
+    }
+        #topspace
+        {
+            display:none
+        }
+}
+@*start inputbox*@
+.form-group {
+    position: relative;
+    /* Adjust as needed */
+}
+
+.form-control {
+    /* Set initial width */
+    min-height: 45px; /* Set initial height */
+    transition: height 0.3s ease; /* Smooth transition for height change */
+    margin-bottom:10px;
+    margin-top:0px;
+
+}
+
+    .form-control:focus {
+        height: 35px; /* Set expanded height when focused */
+    }
+
+.placeholder {
+    position: absolute;
+    left: 10px; /* Adjust as needed */
+    top: 30%;
+    transform: translateY(-30%);
+    color: #aaa;
+    pointer-events: none; /* Prevent interaction with placeholder */
+    transition: top 0.3s ease, font-size 0.3s ease;
+}
+
+.form-control:focus + .placeholder,
+.form-control:not(:placeholder-shown) + .placeholder {
+    top: -10px;
+    left: 8PX;
+    padding-bottom:2PX;
+    font-size: 18px;
+    color: #454545;
+    opacity: 0.8;
+
+}
+
+    </style>
+
+
+    <!-- Javascripts -->
+    <script src="~/webassets/js/jquery-3.3.1.min.js"></script>
+    <script src="~/webassets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/webassets/vendor/OwlCarousel/owl.carousel.js"></script>
+    <script src="~/webassets/vendor/semantic/semantic.min.js"></script>
+    <script src="~/webassets/js/jquery.countdown.min.js"></script>
+    <script src="~/webassets/js/custom.js"></script>
+    <script src="~/webassets/js/product.thumbnail.slider.js"></script>
+    <script src="~/webassets/js/offset_overlay.js"></script>
+    <script src="~/webassets/js/night-mode.js"></script>
+
+
+
+
+
+    <script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-auth-compat.js"></script>
+
+
+</body>
+</html>

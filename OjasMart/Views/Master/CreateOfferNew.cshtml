@@ -1,0 +1,938 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Create Offer";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('select').select2();
+
+        //$('#txtStartDate').datepicker({
+        //    format: 'dd-mm-yyyy'
+        //});
+        //$('#txtEndDate').datepicker({
+        //    format: 'dd-mm-yyyy'
+        //});
+
+        $("#tblItemHead").DataTable();
+
+        $('input[type=radio][name=radioInline0]').change(function () {
+            var value1 = this.value;
+            if (value1 == 'Brand') {
+                $("#divItem").hide();
+                $("#divCategory").hide();
+                $("#divPromo").hide();
+                
+                $("#divBrand").show();
+            }
+            else if (value1 == 'Category') {
+                $("#divItem").hide();
+                $("#divCategory").show();
+                $("#divPromo").hide();
+                $("#divBrand").hide();
+            }
+            else if (value1 == 'Product') {
+                $("#divItem").show();
+                $("#divCategory").hide();
+                $("#divPromo").hide();
+                $("#divBrand").hide();
+            }
+            else if (value1 == 'Promo') {
+                $("#divItem").hide();
+                $("#divCategory").hide();
+                $("#divPromo").show();
+                $("#divBrand").hide();
+            }
+            else {
+                $("#divItem").hide();
+                $("#divCategory").show();
+                $("#divPromo").hide();
+                $("#divBrand").hide();
+            }
+        });
+        $('#chkFree').change(function () {
+            if ($(this).is(":checked")) {
+                $("#divFreeItem").show();
+            }
+            else {
+                $("#divFreeItem").hide();
+            }
+        });
+
+        $('#ddlOfferType').change(function () {
+            if ($('#ddlOfferType').val() == "Discount") {
+                $('#divDisccountType').show();
+                $('#divReward').hide();
+                $('#divCashBack').hide();
+                $('#divFreeItem').hide();
+            }
+            else if ($('#ddlOfferType').val() == "Cashback") {
+                $('#divDisccountType').hide();
+                $('#divReward').hide();
+                $('#divCashBack').show();
+                $('#divFreeItem').hide();
+            }
+            else if ($('#ddlOfferType').val() == "Reward Points") {
+                $('#divDisccountType').hide();
+                $('#divReward').show();
+                $('#divCashBack').hide();
+                $('#divFreeItem').hide();
+            }
+            else if ($('#ddlOfferType').val() == "Free Items") {
+                $('#divDisccountType').hide();
+                $('#divReward').hide();
+                $('#divCashBack').hide();
+                $('#divFreeItem').show();
+            }
+            else {
+                $('#divDisccountType').hide();
+                $('#divReward').hide();
+                $('#divCashBack').hide();
+                $('#divFreeItem').hide();
+            }
+
+        });
+
+        $("#fuMainFile").change(function () {
+            var file = this.files[0];
+            var fileType = file["type"];
+            var validImageTypes = ["image/gif", "image/jpeg", "image/png", "image/webp"];
+            if ($.inArray(fileType, validImageTypes) < 0) {
+                alert('Please Upload only image file!');
+                $("#fuMainFile").val('');
+                $('#imgMainImage').attr('src', '../img/noimageicon.png');
+                return;
+            }
+            else {
+                readURL(this);
+            }
+        });
+
+    });
+
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#imgMainImage').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+        else {
+            $('#imgMainImage').attr('src', '../img/noimageicon.png');
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    function InsertOffer() {
+        var pCode = null;
+        var PromoCode = null;
+        var type = $('input:radio[name=radioInline0]:checked').val();
+        if ($("#txtOfferName").val() == "") {
+            alert("Please Enter Offer Name !!!");
+            $("#txtOfferName").focus();
+            return;
+        }
+        if (type == "Brand") {
+            if ($("#ddlBrand").val() == "" || $("#ddlBrand").val() == "0") {
+                alert("Please Select Brand !!!");
+                $("#ddlBrand").focus();
+                return;
+            }
+            pCode = $("#ddlBrand").val();
+        }
+        if (type == "Category") {
+            if ($("#ddlCategory").val() == "" || $("#ddlCategory").val() == "0") {
+                alert("Please Select Category !!!");
+                $("#ddlCategory").focus();
+                return;
+            }
+            pCode = $("#ddlCategory").val();
+        }
+        if (type == "Product") {
+            if ($("#ddlItemHead").val() == "" || $("#ddlItemHead").val() == "0") {
+                alert("Please Select Product !!!");
+                $("#ddlItemHead").focus();
+                return;
+            }
+            pCode = $("#ddlItemHead").val();
+        }
+        if (type == "Promo") {
+            if ($("#txtPromoCode").val() == "") {
+                alert("Please Enter Promocode !!!");
+                $("#txtPromoCode").focus();
+                return;
+            }
+            PromoCode = $("#txtPromoCode").val();
+        }
+
+        
+        if ($('#ddlOfferType').val() == "Discount") {
+            if ($("#txtDiscountValue").val() == "") {
+                alert("Please Enter Discount Value !!!");
+                $("#txtDiscountValue").focus();
+                return;
+            }
+        }
+        //Reward Points,Free Items
+        if ($('#ddlOfferType').val() == "Cashback") {
+            if ($("#txtPurchaseAmt").val() == "") {
+                alert("Please Enter Purchase Amount !!!");
+                $("#txtPurchaseAmt").focus();
+                return;
+            }
+            if ($("#txtCashBack").val() == "") {
+                alert("Please Enter Cashback Amount !!!");
+                $("#txtCashBack").focus();
+                return;
+            }
+        }
+        if ($('#ddlOfferType').val() == "Reward Points") {
+            if ($("#txtPoints").val() == "") {
+                alert("Please Enter Points !!!");
+                $("#txtPoints").focus();
+                return;
+            }
+            if ($("#txtPointAmount").val() == "") {
+                alert("Please Enter Per Point Amount !!!");
+                $("#txtPointAmount").focus();
+                return;
+            }
+        }
+        if ($('#ddlOfferType').val() == "Free Items") {
+            if ($("#ddlFreeItem").val() == "" || $("#ddlFreeItem").val() == "0") {
+                alert("Please Select Product which will be Free !!!");
+                $("#ddlFreeItem").focus();
+                return;
+            }
+            if ($("#txtFreeQty").val() == "") {
+                alert("Please Enter Free Quantity !!!");
+                $("#txtFreeQty").focus();
+                return;
+            }
+        }
+
+        var st = "0";
+        if ($("#OnlyForFirstPurchase").prop('checked') == true) {
+            st = "1";
+        }
+        var IsFree = "0";
+
+        var Imagefile = $("#fuMainFile").get(0).files;
+        var data = new FormData;
+        data.append("MainImage", Imagefile[0]);
+        data.append("Action", "1");
+        data.append("OfferTitle", $("#txtOfferName").val());
+        data.append("OfferType", type);
+        data.append("ItemCode", pCode);
+        data.append("OnPurchaseAmount", $("#txtPurchaseAmt").val() != "" ? parseFloat($("#txtPurchaseAmt").val()) : 0);
+        data.append("CashBackAmount", $("#txtCashBack").val() != "" ? parseFloat($("#txtCashBack").val()) : 0);
+        data.append("mDate", $("#txtStartDate").val() != "" ? $("#txtStartDate").val() : "01/01/1900");
+        data.append("eDate", $("#txtEndDate").val() != "" ? $("#txtEndDate").val() : "01/01/1900");
+        data.append("Points", $("#txtPoints").val() != "" ? parseFloat($("#txtPoints").val()) : 0);
+        data.append("AmountPerPoint", $("#txtPointAmount").val() != "" ? parseFloat($("#txtPointAmount").val()) : 0);
+        data.append("Status", st);
+        data.append("IsFreeItem", IsFree);
+        data.append("FreeItemCode", $("#ddlFreeItem").val());
+        data.append("FreeQty", $("#txtFreeQty").val() != "" ? parseFloat($("#txtFreeQty").val()) : 0);
+        data.append("AccountType", $("#ddlOfferType").val());
+        data.append("CardType", $("#ddlDiscountType").val());
+        data.append("DiscPer", $("#txtDiscountValue").val() != "" ? parseFloat($("#txtDiscountValue").val()) : 0);
+        data.append("ItemBarCode", PromoCode);
+        data.append("ApplyMRPFrom", $("#txtMRPFrom").val());
+        data.append("ApplyMRPTo", $("#txtMRPTo").val());
+
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Master/InsertOfferDetails",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                if (r.strId == '1') {
+                    alert(r.msg);
+                    location.reload();
+                }
+                else if (r.strId == '2') {
+                    alert(r.msg);
+                    $("#showSpinner").hide();
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+  
+    function UpdateOfferDetails() {
+        if ($("#hdOfferCode").val() == "") {
+            alert("Offer Code Not Found !!!");
+            return;
+        }
+        var pCode = null;
+        var PromoCode = null;
+        var type = $('input:radio[name=radioInline0]:checked').val();
+        if ($("#txtOfferName").val() == "") {
+            alert("Please Enter Offer Name !!!");
+            $("#txtOfferName").focus();
+            return;
+        }
+        if (type == "Brand") {
+            if ($("#ddlBrand").val() == "") {
+                alert("Please Select Brand !!!");
+                $("#ddlBrand").focus();
+                return;
+            }
+            pCode = $("#ddlBrand").val();
+        }
+        if (type == "Category") {
+            if ($("#ddlCategory").val() == "") {
+                alert("Please Select Category !!!");
+                $("#ddlCategory").focus();
+                return;
+            }
+            pCode = $("#ddlCategory").val();
+        }
+        if (type == "Product") {
+            if ($("#ddlItemHead").val() == "") {
+                alert("Please Select Product !!!");
+                $("#ddlItemHead").focus();
+                return;
+            }
+            pCode = $("#ddlItemHead").val();
+        }
+        if (type == "Promo") {
+            if ($("#txtPromoCode").val() == "") {
+                alert("Please Enter Promocode !!!");
+                $("#txtPromoCode").focus();
+                return;
+            }
+            PromoCode = $("#txtPromoCode").val();
+        }
+        if ($('#ddlOfferType').val() == "Discount") {
+            if ($("#txtDiscountValue").val() == "") {
+                alert("Please Enter Discount Value !!!");
+                $("#txtDiscountValue").focus();
+                return;
+            }
+        }
+        //Reward Points,Free Items
+        if ($('#ddlOfferType').val() == "Cashback") {
+            if ($("#txtPurchaseAmt").val() == "") {
+                alert("Please Enter Purchase Amount !!!");
+                $("#txtPurchaseAmt").focus();
+                return;
+            }
+            if ($("#txtCashBack").val() == "") {
+                alert("Please Enter Cashback Amount !!!");
+                $("#txtCashBack").focus();
+                return;
+            }
+        }
+        if ($('#ddlOfferType').val() == "Reward Points") {
+            if ($("#txtPoints").val() == "") {
+                alert("Please Enter Points !!!");
+                $("#txtPoints").focus();
+                return;
+            }
+            if ($("#txtPointAmount").val() == "") {
+                alert("Please Enter Per Point Amount !!!");
+                $("#txtPointAmount").focus();
+                return;
+            }
+        }
+        if ($('#ddlOfferType').val() == "Free Items") {
+            if ($("#ddlFreeItem").val() == "" || $("#ddlFreeItem").val() == "0") {
+                alert("Please Select Product which will be Free !!!");
+                $("#ddlFreeItem").focus();
+                return;
+            }
+            if ($("#txtFreeQty").val() == "") {
+                alert("Please Enter Free Quantity !!!");
+                $("#txtFreeQty").focus();
+                return;
+            }
+        }
+
+        var st = "0";
+        if ($("#OnlyForFirstPurchase").prop('checked') == true) {
+            st = "1";
+        }
+        var IsFree = "0";
+        
+
+        var Imagefile = $("#fuMainFile").get(0).files;
+        var data = new FormData;
+        data.append("MainImage", Imagefile[0]);
+        data.append("Action", "3");
+        data.append("RespoCode", $("#hdOfferCode").val());
+        data.append("OfferTitle", $("#txtOfferName").val());
+        data.append("OfferType", type);
+        data.append("ItemCode", pCode);
+        data.append("OnPurchaseAmount", $("#txtPurchaseAmt").val() != "" ? parseFloat($("#txtPurchaseAmt").val()) : 0);
+        data.append("CashBackAmount", $("#txtCashBack").val() != "" ? parseFloat($("#txtCashBack").val()) : 0);
+        data.append("mDate", $("#txtStartDate").val() != "" ? $("#txtStartDate").val() : "01/01/1900");
+        data.append("eDate", $("#txtEndDate").val() != "" ? $("#txtEndDate").val() : "01/01/1900");
+        data.append("Points", $("#txtPoints").val() != "" ? parseFloat($("#txtPoints").val()) : 0);
+        data.append("AmountPerPoint", $("#txtPointAmount").val() != "" ? parseFloat($("#txtPointAmount").val()) : 0);
+        data.append("Status", st);
+        data.append("IsFreeItem", IsFree);
+        data.append("FreeItemCode", $("#ddlFreeItem").val());
+        data.append("FreeQty", $("#txtFreeQty").val() != "" ? parseFloat($("#txtFreeQty").val()) : 0);
+        data.append("AccountType", $("#ddlOfferType").val());
+        data.append("CardType", $("#ddlDiscountType").val());
+        data.append("DiscPer", $("#txtDiscountValue").val() != "" ? parseFloat($("#txtDiscountValue").val()) : 0);
+        data.append("ItemBarCode", PromoCode);
+        data.append("ApplyMRPFrom", $("#txtMRPFrom").val());
+        data.append("ApplyMRPTo", $("#txtMRPTo").val());
+
+
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Master/InsertOfferDetails",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                if (r.strId == '1') {
+                    alert(r.msg);
+                    location.reload();
+                }
+                else if (r.strId == '2') {
+                    alert(r.msg);
+                    $("#showSpinner").hide();
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+
+    }
+
+    function GetDetailsForEdit(ItemCode) {
+        var dataobject = {
+            OfferId: ItemCode
+        };
+        $.ajax({
+            type: "POST",
+            url: "/Master/GetOfferDetailsForEdit",
+            data: dataobject,
+            dataType: "json",
+            success: function (r) {
+                if (r != null) {
+                    debugger;
+                    $("#hdOfferCode").val(r.RespoCode);
+                    $("#txtOfferName").val(r.OfferTitle);
+                    $("#txtPurchaseAmt").val(r.OnPurchaseAmount);
+                    $('#txtCashBack').val(r.CashBackAmount);
+                    $('#txtPoints').val(r.Points);
+                    $('#txtPointAmount').val(r.AmountPerPoint);
+                    $('#txtStartDate').val(r.mDate);
+                    $('#txtEndDate').val(r.eDate);
+
+                    $('#ddlOfferType').val(r.AccountType).trigger('change');
+                    $('#ddlDiscountType').val(r.CardType).trigger('change');
+                    $('#txtDiscountValue').val(r.DiscPer);
+
+                    $('#txtMRPFrom').val(r.ApplyMRPFrom);
+                    $('#txtMRPTo').val(r.ApplyMRPTo);
+
+                    if (r.Status == "1") {
+                        $("#OnlyForFirstPurchase").attr("checked", "checked");
+                    }
+                    if (r.OfferType == "Brand") {
+                        $("#inlineRadio1").attr("checked", "checked");
+                        $('#ddlBrand').val(r.ItemCode).trigger('change');
+
+                        $("#divItem").hide();
+                        $("#divCategory").hide();
+                        $("#divPromo").hide();
+                        $("#divBrand").show();
+
+                    }
+                    else if (r.OfferType == "Category") {
+                        $("#inlineRadio2").attr("checked", "checked");
+                        $('#ddlCategory').val(r.ItemCode).trigger('change');
+
+                        $("#divItem").hide();
+                        $("#divCategory").show();
+                        $("#divPromo").hide();
+                        $("#divBrand").hide();
+
+                    }
+                    else if (r.OfferType == "Product") {
+                        $("#inlineRadio3").attr("checked", "checked");
+                        $('#ddlItemHead').val(r.ItemCode).trigger('change');
+
+                        $("#divItem").show();
+                        $("#divCategory").hide();
+                        $("#divPromo").hide();
+                        $("#divBrand").hide();
+                    }
+                    else if (r.OfferType == "Promo") {
+                        $("#inlineRadio4").attr("checked", "checked");
+                        $('#txtPromoCode').val(r.ItemBarCode);
+
+                        $("#divItem").hide();
+                        $("#divCategory").hide();
+                        $("#divPromo").show();
+                        $("#divBrand").hide();
+                    }
+
+                    if (r.PurchaseFile != "") {
+                        $("#imgMainImage").attr("src", r.PurchaseFile);
+                    }
+
+                    $("#txtOfferName").focus();
+
+                    $("#btnSave").hide();
+                    $("#btnUpdate").show();
+               //     $("#btnCancel").show();
+
+                }
+                else {
+                    alert("Item Details Not Found !!!");
+                }
+            }
+        });
+    }
+    function CancelUpdate() {
+        location.reload();
+    }
+    function DeleteItemHeadDetails(ItemCode) {
+        var x = confirm("Are you sure you want to delete?");
+        if (x) {
+            var dataobject = {
+                ItemCode1: ItemCode
+            };
+            $.ajax({
+                type: "POST",
+                url: "/Master/DeleteOfferDetails",
+                data: dataobject,
+                dataType: "json",
+                success: function (r) {
+                    if (r.strId == "1") {
+                        alert(r.msg);
+                        location.reload();
+                    }
+                    else {
+                        alert(r.msg);
+                    }
+                }
+            });
+        }
+        else {
+            return false;
+        }
+    }
+
+    function BindItemsByGroup() {
+        $("#ddlItemHead").empty();
+        $.ajax({
+            type: 'Post',
+            url: '@Url.Action("GetItemsByGroup", "Sales")',
+            dataType: 'json',
+            data: { GroupCode: $("#ddlItemGroup").val() },
+            success: function (data) {
+                $.each(data, function (i, data) {
+                    $("#ddlItemHead").append('<option value="'
+                        + data.Value + '">' +
+                        data.Text + '</option>');
+                });
+                $("#ddlItemHead").val('');
+            },
+            error: function (ex) {
+                alert('Failed to retrieve Items : ' + ex);
+            }
+        });
+    }
+
+    function DiscountPercentCalculate() {
+        if ($("#ddlDiscountType").val()=="Percent") {
+            if (parseInt($("#txtDiscountValue").val()) > 100) {
+                alert("Max Discount 100%");
+                $("#txtDiscountValue").val("0");
+                return;
+            }
+        }
+    }
+
+    function ApplyMRP() {
+
+        var MRPFrom = parseFloat($("#txtMRPFrom").val());
+        var MRPTo = parseFloat($("#txtMRPTo").val());
+
+        if (MRPFrom > MRPTo)
+        {
+            alert("Apply MRP From can not be greater than apply MRP To!!");
+            $("#txtMRPTo").val("");
+            $("#txtMRPFrom").val("");
+            $("#txtMRPFrom").focus()
+        }
+        
+    }
+
+
+</script>
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Create Offer</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <p class="text-muted mt-3 mb-2">Offer On <span style="color:red">*</span></p>
+                        <div class="radio radio-info form-check-inline" >
+                            <input type="radio" id="inlineRadio1" value="Brand" name="radioInline0" checked>
+                            <label for="inlineRadio1"> On Brand </label>
+                        </div>
+                        <div class="radio form-check-inline">
+                            <input type="radio" id="inlineRadio2" value="Category" name="radioInline0" >
+                            <label for="inlineRadio2"> On Category </label>
+                        </div>
+                        <div class="radio form-check-inline">
+                            <input type="radio" id="inlineRadio3" value="Product" name="radioInline0">
+                            <label for="inlineRadio3"> On Product </label>
+                        </div>
+                        <div class="radio form-check-inline">
+                            <input type="radio" id="inlineRadio4" value="Promo" name="radioInline0">
+                            <label for="inlineRadio4"> Promocode </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-8">
+
+                        <div class="row">
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="inputEmail4" class="col-form-label">Offer Name <span style="color:red">*</span> </label>
+                                    <input type="text" class="form-control" id="txtOfferName" placeholder="Offer Name" />
+                                    <input type="hidden" id="hdOfferCode" />
+
+
+                                    <div class="form-row" style="display:none;">
+                                        <div class="form-group col-md-8">
+                                           
+                                        </div>
+                                        <div class="form-group col-md-4" style="display:none;">
+                                            <label for="inputEmail4" class="col-form-label">Offer Type <span style="color:red">*</span> </label>
+                                            <select id="ddlOfferType" class="form-control">
+                                                <option selected>Discount</option>
+                                                <option>Cashback</option>
+                                                <option>Reward Points</option>
+                                                <option>Free Items</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-md-6">
+                               
+                                <div class="form-group" id="divItem" style="display:none">
+                                    
+                                        <label for="inputEmail4" class="col-form-label">Item Name <span style="color:red">*</span> </label>
+                                        @Html.DropDownList("ddlItemHead", (List<SelectListItem>)ViewBag.ItemHeadList, new { @id = "ddlItemHead", @class = "form-control" })
+                                   
+                                </div>
+                                <div class="form-group" id="divBrand" style="display:block">
+                                   
+                                        <label for="inputEmail4" class="col-form-label">Brand Name <span style="color:red">*</span> </label>
+                                        @Html.DropDownList("ddlBrand", (List<SelectListItem>)ViewBag.BrandList, new { @id = "ddlBrand", @class = "form-control" })
+                                   
+                                </div>
+                                <div class="form-group" id="divCategory" style="display:none">
+                                        <label for="inputEmail4" class="col-form-label">Category Name <span style="color:red">*</span> </label>
+                                        @Html.DropDownList("ddlCategory", (List<SelectListItem>)ViewBag.MainCategoryList, new { @id = "ddlCategory", @class = "form-control" })
+                                   
+                                </div>
+                                <div class="form-group" id="divCashBack" style="display:none">
+                                    <div class="" id="divOnPurchase">
+                                        <label for="inputPassword4" class="col-form-label">On Purchase of <span style="color:red">*</span></label>
+                                        <input type="text" class="form-control" id="txtPurchaseAmt" placeholder="On Purchase of">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="inputAddress" class="col-form-label">Cashback <span style="color:red">*</span></label>
+                                        <input type="text" class="form-control allownumericwithdecimal" id="txtCashBack" placeholder="Enter Cashback Amount">
+                                    </div>
+
+                                </div>
+                                <div class="form-group" id="divFreeItem" style="display:none">
+                                    <div class="form-group col-md-6">
+                                        <label for="inputPassword4" class="col-form-label">Select Free Item<span class="text-danger">*</span></label>
+                                        @Html.DropDownList("ddlFreeItem", (List<SelectListItem>)ViewBag.ItemHeadList, new { @id = "ddlFreeItem", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label for="inputEmail4" class="col-form-label">Quantity<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="txtFreeQty" value="1" placeholder="Quantity">
+                                    </div>
+                                </div>
+                                <div class="form-group" id="divReward" style="display:none">
+                                    <div class="form-group col-md-3">
+                                        <label for="inputPassword4" class="col-form-label">Points <span style="color:red">*</span></label>
+                                        <input type="text" class="form-control allownumericwithdecimal" id="txtPoints" placeholder="Enter Points">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="inputPassword4" class="col-form-label">Amount per Point <span style="color:red">*</span></label>
+                                        <input type="text" class="form-control allownumericwithdecimal" id="txtPointAmount" placeholder="Enter Amount per Point">
+                                    </div>
+                                </div>
+                                <div class="form-group" id="divPromo" style="display:none">
+                                    
+                                        <label for="inputPassword4" class="col-form-label">Promocode <span style="color:red">*</span></label>
+                                        <input type="text" class="form-control" id="txtPromoCode" placeholder="Enter Promocode">
+                                   
+                                </div>
+
+
+
+
+
+
+                            </div>
+
+
+
+                            <div class="col-md-6" style="display:none;">
+                                
+                                <div class="form-group" id="divDisccountType">
+                                    
+                                        <label for="inputPassword4" class="col-form-label">Discount Type</label>
+                                        <select id="ddlDiscountType" class="form-control" >
+                                            <option selected>Percent</option>
+                                            <option>Amount</option>
+                                        </select>
+                                   
+                                </div>
+
+
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="inputPassword4" class="col-form-label">Discount value</label>
+                                    <input type="text" class="form-control allownumericwithdecimal" id="txtDiscountValue" placeholder="eg. 10" onchange="DiscountPercentCalculate(this)" maxlength="3">
+                                </div>
+                                </div>
+
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="inputPassword4" class="col-form-label">Apply MRP From</label>
+                                    <input type="text" class="form-control allownumericwithdecimal" id="txtMRPFrom" placeholder="eg. 200" maxlength="10" onchange="ApplyMRP(this)">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="inputPassword4" class="col-form-label">Apply MRP To</label>
+                                    <input type="text" class="form-control allownumericwithdecimal" id="txtMRPTo" placeholder="eg. 400" maxlength="10" onchange="ApplyMRP(this)">
+                                </div>
+                            </div>
+
+
+
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <label for="inputPassword4" class="col-form-label">Offer Start Form</label>
+                                        <input type="date" class="form-control" id="txtStartDate" placeholder="Offer Start Form">
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <label for="inputPassword4" class="col-form-label">Offer End at</label>
+                                        <input type="date" class="form-control" id="txtEndDate" placeholder="Offer End at">
+                                    </div>
+
+                                    <div class="form-group col-md-4" style="display:none;">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="OnlyForFirstPurchase">
+                                            <label class="custom-control-label text-info" for="OnlyForFirstPurchase" style="margin-top:45px">Is Offer for only on first Purchase !</label>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+
+                            <div class="col-md-6">
+                                
+                                    <div class="form-group">
+                                        <label for="inputPassword4" class="col-form-label">Upload Banner <span style="color:red">*</span></label>
+                                        <input type="file" class="form-control" id="fuMainFile">
+                                    </div>
+
+                                
+                                </div>
+
+                            <div class="col-md-6">
+                                <button style="margin-top:11%;width:100%;" type="submit" id="btnSave" class="btn btn-primary waves-effect waves-light" onclick="InsertOffer()">Save Banner</button>
+                                <button style="margin-top:11%;width:100%;display:none" type="submit" id="btnUpdate"  class="btn btn-warning waves-effect waves-light" onclick="UpdateOfferDetails()">Update Record</button>
+                                <button style="margin-top:11%;width:100%;display:none" type="submit" id="btnCancel" class="btn btn-danger waves-effect waves-light" onclick="CancelUpdate()">Cancel</button>
+                                </div>
+
+
+
+                            </div>
+
+
+
+                    </div>
+
+
+
+                    <div class="col-md-4">
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group imgpd">
+                                    <img id="imgMainImage" src="../img/noimageicon.png" alt="Profile Image" class="imghwt" width="300" height="300" />
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+
+                </div> <!-- end row -->
+
+
+                
+              
+            </div>
+        </div>
+    </div> <!-- end card-body -->
+</div> <!-- end card-->
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <h4 class="header-title">Offer Details</h4>
+            <div class="table-responsive">
+                <table id="tblItemHead" class="table table-borderless table-hover table-centered m-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sr.No</th>
+                            <th>Offer Name</th>
+                            <th>Offer Detail</th>
+                            <th>Added Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                i++;
+                                <tr>
+                                    <td>@i</td>
+                                    <td>
+                                        <h5 class="m-0 font-weight-normal">@dr["OfferTitle"]</h5>
+                                        <p class="mb-0 text-muted"><small>@dr["OfferCode"]</small></p>
+                                        <p class="mb-0 text-muted">
+                                            <small>
+                                                @if (dr["OfferType"].ToString() == "Brand")
+                                                {
+                                                    <span class="badge badge-success">@dr["OfferType"]</span>
+                                                }
+                                                else if (dr["OfferType"].ToString() == "Category")
+                                                {
+                                                    <span class="badge badge-info">@dr["OfferType"]</span>
+                                                }
+                                                else if (dr["OfferType"].ToString() == "Promo")
+                                                {
+                                                    <span class="badge badge-primary">@dr["OfferType"]</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-warning">@dr["OfferType"]</span>
+                                                }
+                                                <span> - @dr["ItemName"]</span>
+                                            </small>
+                                        </p>
+                                    </td>
+                                    <td>
+                                        @dr["Detail"] <br />
+                                    <p class="text-muted">
+                                        <span>Valid From: @dr["StartDate"]</span> <span>Till: @dr["EndDate"]</span>
+                                    </p>
+                                    @if (dr["ActStatus"].ToString() == "Active")
+                                    {
+                                        <span class="badge badge-success">@dr["ActStatus"]</span>
+                                    }
+                                    else if (dr["ActStatus"].ToString() == "DeActive")
+                                    {
+                                        <span class="badge badge-danger">@dr["ActStatus"]</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-info">@dr["ActStatus"]</span>
+                                    }
+                                </td>
+                                <td>@dr["AddedDate"]</td>
+                                <td>
+                                    <a href="javascript:void(0);" title="Edit" class="action-icon" onclick="GetDetailsForEdit('@dr["OfferCode"]')"> <i class="mdi mdi-square-edit-outline" style="color:#51bfd0"></i></a>
+                                    <a href="javascript:void(0);" title="Delete" class="action-icon" onclick="DeleteItemHeadDetails('@dr["OfferCode"]')"> <i class="mdi mdi-delete" style="color:red"></i></a>
+                                </td>
+                            </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>

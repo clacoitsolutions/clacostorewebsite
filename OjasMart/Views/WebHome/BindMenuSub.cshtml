@@ -1,0 +1,43 @@
+@model OjasMart.Models.PropertyClass
+@{
+    Layout = null;
+}
+@using System.Data;
+
+
+@if (Model.dtMenuSub != null && Model.dtMenuSub.Rows.Count > 0)
+{
+    <div class="menu dropdown_page shadow">
+        @foreach (DataRow dr1 in Model.dtMenuSub.Rows)
+        {
+            <a href="../ProductDetail/SearchCategory?CatName=@dr1["ProductCategory"]&&CatId=@dr1["ParrentCategoryId"]&&SubCatId=@dr1["SrNo"]" class="item i2 channel_item page__links ">@dr1["ProductCategory"]</a>
+        }
+    </div>
+}
+
+<style>
+    .menu.dropdown_page {
+        display: inline-block;
+        column-count: 3; /* Adjust the number of columns as needed */
+        column-gap: 0px; /* Adjust the gap between columns as needed */
+        width: auto; /* Set width to auto to adjust based on content */
+     /* Add padding for better visual appearance */
+        background: #f5f5f5; /* Set a light background color */
+        color:black;
+    }
+
+    .i2 {
+        display: block;
+        margin-bottom: 10px; /* Adjust the margin between items as needed */
+        color: black;
+    }
+    @@media only screen and (max-width: 767px) {
+        /* Apply styles for screens up to 767 pixels wide (typical mobile view) */
+        .menu.dropdown_page {
+            column-count: 1; /* Adjust for a single column in mobile view */
+            column-gap: 0px; /* Adjust the gap between columns as needed */
+            width: 100%; /* Full width in mobile view */
+            padding: 10px; /* Add padding for better visual appearance */
+        }
+    }
+</style>

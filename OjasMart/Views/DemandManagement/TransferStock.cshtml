@@ -1,0 +1,753 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Transfer Stock";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using System.Data;
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var RoleId = '@Request.RequestContext.HttpContext.Session["Role"]';
+        var UserId = '@Request.RequestContext.HttpContext.Session["UserName"]';
+        if (RoleId == '') {
+            window.location.href = "../Account/Index"
+        }
+
+        $('#txtTransferDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+
+        var totcgstAmt = 0, totsgstAmt = 0, totIgstAmt = 0, totTaxableAmt = 0;
+
+        $("#tblItemDetail TBODY TR").each(function () {
+            var row = $(this);
+            var rate = row.find("TD").eq(4).html() != "" ? parseFloat(row.find("TD").eq(4).html()) : 0;
+            var Quantity = row.find("#txtQuantity").val() != "" ? parseFloat(row.find("#txtQuantity").val()) : 0;
+            var cgstPer = row.find("#hdCgstPer").val() != "" ? parseFloat(row.find("#hdCgstPer").val()) : 0;
+            var SgstPer = row.find("#hdSgstPer").val() != "" ? parseFloat(row.find("#hdSgstPer").val()) : 0;
+            var IgstPer = row.find("#hdIgstPer").val() != "" ? parseFloat(row.find("#hdIgstPer").val()) : 0;
+
+            var stAmt = rate * Quantity;
+            var cgstAmt = (stAmt * cgstPer) / 100;
+            var sgstAmt = (stAmt * SgstPer) / 100;
+            var igstAmt = (stAmt * IgstPer) / 100;
+
+            var totTax = (cgstAmt + sgstAmt + igstAmt);
+            row.find("#lblTaxAmt").text(totTax.toFixed(2));
+            row.find("#totAmt").text(stAmt.toFixed(2));
+            totcgstAmt += cgstAmt;
+            totsgstAmt += sgstAmt;
+            totIgstAmt += igstAmt;
+            totTaxableAmt += stAmt;
+        });
+
+        var tx = totcgstAmt + totsgstAmt + totIgstAmt;
+        $("#lbltaxableAmt").text(totTaxableAmt.toFixed(2));
+        $("#lblTotaltax").text(tx.toFixed(2));
+        var net = totTaxableAmt + tx;
+        $("#lblNetPayable").text(net.toFixed(2));
+
+        var tt = totTaxableAmt + tx;
+        total = Math.abs(tt);
+        var absTotal = Math.round(total.toFixed(2))
+        var r = total - Math.floor(total);
+        var rrr = (absTotal - tt)
+        rrr = Math.abs(rrr);
+        $("#lblRoundOff").text(rrr.toFixed(2));
+        $("#lblNetPayable").text(Math.round(total.toFixed(2))).toString("0.00");
+
+        $("#hdTotIgst").val(totIgstAmt);
+        $("#hdTotCgst").val(totcgstAmt);
+        $("#hdTotSgst").val(totsgstAmt);
+
+        //$("#txtQuantity").on("change", function () {
+        //    var Qty = $(this).closest('tr').find("txtQuantity").val();
+        //    var ActQty = $(this).closest('tr').find("hdActQty").val();
+        //});
+    });
+
+    function Cal(data) {
+        var trfQty = $(data).eq(0).val() != "" ? parseFloat($(data).eq(0).val()) : 0;
+        var at = $(data).eq(0).next().val() != "" ? parseFloat($(data).eq(0).next().val()) : 0;
+        var itmCode = $(data).eq(0).prev().val();
+        if (trfQty > at) {
+            alert('Transfer Quantity Should be Less than or Equal to Pending Quantity !!!')
+            $(data).eq(0).val(at);
+            return;
+        }
+        var dataobject = {
+            ItemCode1: itmCode
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/DemandManagement/CheckStockAvailibility",
+            type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (data1) {
+                if (data1 == "0") {
+                    alert("Sorry ! You have not Sufficient Item Balance.");
+                    $(data).eq(0).val(at);
+                    $("#showSpinner").hide();
+                    return;
+                }
+                else {
+                    var AvlQty = data1 != "" ? parseInt(data1) : 0;
+                    if (AvlQty < trfQty) {
+                        alert("Sorry ! You have not Sufficient Item Balance.");
+                        $(data).eq(0).val(at);
+                        $("#showSpinner").hide();
+                        return;
+                    }
+                    else {
+                        var totcgstAmt = 0, totsgstAmt = 0, totIgstAmt = 0, totTaxableAmt = 0;
+
+                        $("#tblItemDetail TBODY TR").each(function () {
+                            var row = $(this);
+                            var ActQty = row.find("#hdActQty").val() != "" ? parseFloat(row.find("#hdActQty").val()) : 0;
+                            var rate = row.find("TD").eq(4).html() != "" ? parseFloat(row.find("TD").eq(4).html()) : 0;
+                            var Quantity = row.find("#txtQuantity").val() != "" ? parseFloat(row.find("#txtQuantity").val()) : 0;
+                            var cgstPer = row.find("#hdCgstPer").val() != "" ? parseFloat(row.find("#hdCgstPer").val()) : 0;
+                            var SgstPer = row.find("#hdSgstPer").val() != "" ? parseFloat(row.find("#hdSgstPer").val()) : 0;
+                            var IgstPer = row.find("#hdIgstPer").val() != "" ? parseFloat(row.find("#hdIgstPer").val()) : 0;
+
+                            var stAmt = rate * Quantity;
+                            var cgstAmt = (stAmt * cgstPer) / 100;
+                            var sgstAmt = (stAmt * SgstPer) / 100;
+                            var igstAmt = (stAmt * IgstPer) / 100;
+
+                            var totTax = (cgstAmt + sgstAmt + igstAmt);
+                            row.find("#lblTaxAmt").text(totTax.toFixed(2));
+                            row.find("#totAmt").text(stAmt.toFixed(2));
+                            totcgstAmt += cgstAmt;
+                            totsgstAmt += sgstAmt;
+                            totIgstAmt += igstAmt;
+                            totTaxableAmt += stAmt;
+                        });
+
+                        var tx = totcgstAmt + totsgstAmt + totIgstAmt;
+                        $("#lbltaxableAmt").text(totTaxableAmt.toFixed(2));
+                        $("#lblTotaltax").text(tx.toFixed(2));
+                        var net = totTaxableAmt + tx;
+                        $("#lblNetPayable").text(net.toFixed(2));
+
+                        var tt = totTaxableAmt + tx;
+                        total = Math.abs(tt);
+                        var absTotal = Math.round(total.toFixed(2))
+                        var r = total - Math.floor(total);
+                        var rrr = (absTotal - tt)
+                        rrr = Math.abs(rrr);
+                        $("#lblRoundOff").text(rrr.toFixed(2));
+                        $("#lblNetPayable").text(Math.round(total.toFixed(2))).toString("0.00");
+
+                        $("#hdTotIgst").val(totIgstAmt);
+                        $("#hdTotCgst").val(totcgstAmt);
+                        $("#hdTotSgst").val(totsgstAmt);
+                    }
+                }
+                $("#showSpinner").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+
+
+
+    }
+
+    function InsertSuppliersAccount() {
+        if ($("#txtName").val() == "") {
+            alert("Enter Supplier Account Name !!!");
+            $("#txtName").focus();
+            return;
+        }
+        if ($("#txtPhone").val() == "") {
+            alert("Enter Phone/Mobile No !!!");
+            $("#txtPhone").focus();
+            return;
+        }
+        if ($("#ddlState").val() == "") {
+            alert("Select State Name !!!");
+            $("#ddlState").focus();
+            return;
+        }
+
+        var dataobject = {
+            SSName: $("#txtName").val(),
+            ContactNo: $("#txtPhone").val(),
+            Address: $("#txtAddress").val(),
+            CityName: $("#txtCity").val(),
+            StateId: $("#ddlState").val(),
+            PinCode: $("#txtPinCode").val(),
+            GstNo: $("#txtGstNO").val(),
+            PanNo: $("#txtPanNo").val(),
+            TINNo: $("#txtTinNo").val(),
+            Description: $("#txtAbout").val()
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/ProductManagement/InsertSupplierAccounts",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r != '0') {
+                    alert(r);
+                    location.reload();
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function GetAccountCode() {
+        if ($("#ddlStockiest").val() != "" && $("#ddlStockiest").val() != "0") {
+            var dataobject = {
+                AccountCode: $("#ddlStockiest").val()
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/DemandManagement/GetStockiestAccDetail",
+                type: "POST",
+                data: dataobject,
+                dataType: "json",
+                success: function (r) {
+                    if (r.AccountCode != "") {
+                        //$("#txtAcCode").val(r.AccountCode);
+                        $("#hdSuppAccStateCode").val(r.StCode);
+                    }
+                    $("#showSpinner").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });
+        }
+        else {
+            //$("#txtAcCode").val('');
+            $("#hdSuppAccStateCode").val('');
+        }
+    }
+    function GetItemHeadDetails() {
+        if ($("#ddlStockiest").val() == "" || $("#ddlStockiest").val() == "0") {
+            alert("Please Select Stockiest Account !!!");
+            $("#ddlSupplier").focus();
+            $("#ddlItemHead").val('');
+            return;
+        }
+
+        var dataobject = {
+            ItemCode1: $("#ddlItemHead").val()
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/ProductManagement/GetItemHeadDetail",
+            type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (r) {
+                if (r.Rate != "" || r.Rate != "0") {
+                    $("#txtRate").val(r.Rate);
+                    if ($("#hdSuppAccStateCode").val() == $("#hdCompanyStateCode").val()) {
+                        $("#hdgstPer").val('0');
+                        $("#hdCgstPer").val(r.CGSTPer);
+                        $("#hdSgstPer").val(r.SGSTPer);
+                    }
+                    else {
+                        $("#hdgstPer").val(r.GSTPer);
+                        $("#hdCgstPer").val('0');
+                        $("#hdSgstPer").val('0');
+                    }
+                    $("#lblTaxPer").text('/ ' + r.GSTPer + '%');
+                }
+                $("#showSpinner").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function calculateAmount() {
+        var Rate = $("#txtRate").val() != "" ? parseFloat($("#txtRate").val()) : 0;
+        var Quantity = $("#txtQuantity").val() != "" ? parseFloat($("#txtQuantity").val()) : 0;
+        var subTotal = Rate * Quantity;
+        var AfterDisc = subTotal;
+
+        var gstPer = $("#hdgstPer").val() != "" ? parseFloat($("#hdgstPer").val()) : 0;
+        var CgstPer = $("#hdCgstPer").val() != "" ? parseFloat($("#hdCgstPer").val()) : 0;
+        var SgstPer = $("#hdSgstPer").val() != "" ? parseFloat($("#hdSgstPer").val()) : 0;
+
+        var gstAmt = (AfterDisc * gstPer) / 100;
+        var CgstAmt = (AfterDisc * CgstPer) / 100;
+        var SgstAmt = (AfterDisc * SgstPer) / 100;
+        var taxAmt = (gstAmt + CgstAmt + SgstAmt);
+
+        $("#lbltaxAmt").text(taxAmt.toFixed(2));
+        $("#hdgstAmt").val(gstAmt.toFixed(2));
+        $("#hdCgstAmt").val(CgstAmt.toFixed(2));
+        $("#hdSgstAmt").val(SgstAmt.toFixed(2));
+
+        var TotalAmt = AfterDisc;
+        $("#txtAmount").text(TotalAmt.toFixed(2));
+
+    }
+
+    function AddTableRow() {
+        var ddlItemHead = $("#ddlItemHead");
+        var txtQuantity = $("#txtQuantity");
+        var txtRate = $("#txtRate");
+        var lbltaxAmt = $("#lbltaxAmt");
+        var lblTaxPer = $("#lblTaxPer");
+        var txtAmount = $("#txtAmount");
+
+        var hdgstPer = $("#hdgstPer");
+        var hdCgstPer = $("#hdCgstPer");
+        var hdSgstPer = $("#hdSgstPer");
+
+        var hdgstAmt = $("#hdgstAmt");
+        var hdCgstAmt = $("#hdCgstAmt");
+        var hdSgstAmt = $("#hdSgstAmt");
+
+        if (ddlItemHead.val() == "") {
+            alert("Please Select Item Head !!!");
+            ddlItemHead.focus();
+            return;
+        }
+        if (txtQuantity.val() == "" || txtQuantity.val() == "0" || txtQuantity.val() == "0.00") {
+            alert("Please Enter Quantity !!!");
+            txtQuantity.focus();
+            return;
+        }
+        if (txtRate.val() == "") {
+            alert("Rate Can not be Blank !!!");
+            txtRate.focus();
+            return;
+        }
+        if (txtAmount.text() == "" || txtAmount.text() == "0" || txtAmount.text() == "0.00") {
+            alert("Total Amount Can not be Blank");
+            txttotal.focus();
+            return;
+        }
+
+        //Get the reference of the Table's TBODY element.
+        var tBody = $("#tblItemDetail > TBODY")[0];
+
+        //Add Row.
+        var row = tBody.insertRow(-1);
+        //Add Item Title cell.
+        var cell = $(row.insertCell(-1));
+        //cell.html(txtItem.val());
+        cell.html($("#ddlItemHead :selected").text());
+
+        //Add Category ref. cell.
+        cell = $(row.insertCell(-1));
+        cell.html(txtQuantity.val());
+        // Add HSn Code Cell
+        cell = $(row.insertCell(-1));
+        cell.html(txtRate.val());
+
+        // Add Unit Cell
+        cell = $(row.insertCell(-1));
+        cell.html(lbltaxAmt.text() + ' ' + lblTaxPer.text());
+        // Add MRP Cell
+        cell = $(row.insertCell(-1));
+        cell.html(txtAmount.text());
+
+        //Add Button cell.
+        cell = $(row.insertCell(-1));
+        var btnRemove = $("<input />");
+        btnRemove.attr("type", "button");
+        btnRemove.attr("onclick", "Remove(this);");
+        btnRemove.attr("class", "btn btn-danger btn-xs");
+        btnRemove.val("Remove");
+        cell.append(btnRemove);
+        //Add item Id
+        cell = $(row.insertCell(-1));
+        cell.html(ddlItemHead.val());
+        cell.hide();
+        // Add CGST Cell
+        cell = $(row.insertCell(-1));
+        var cgst = hdCgstPer.val() != "" ? hdCgstPer.val() : 0;
+        cell.html(cgst);
+        cell.hide();
+        cell = $(row.insertCell(-1));
+        var gstPer = hdgstPer.val() != "" ? hdgstPer.val() : 0;
+        cell.html(gstPer);
+        cell.hide();
+        // Add CGST Cell
+        cell = $(row.insertCell(-1));
+        var SgstPer = hdSgstPer.val() != "" ? hdSgstPer.val() : 0;
+        cell.html(SgstPer);
+        cell.hide();
+
+        cell = $(row.insertCell(-1));
+        var gstAmt = hdgstAmt.val() != "" ? hdgstAmt.val() : 0;
+        cell.html(gstAmt);
+        cell.hide();
+        // Add IGST Cell
+        cell = $(row.insertCell(-1));
+        var CgstAmt = hdCgstAmt.val() != "" ? hdCgstAmt.val() : 0;
+        cell.html(CgstAmt);
+        cell.hide();
+
+        cell = $(row.insertCell(-1));
+        var SgstAmt = hdSgstAmt.val() != "" ? hdSgstAmt.val() : 0;
+        cell.html(SgstAmt);
+        cell.hide();
+
+
+        CalculateTotal();
+        //Clear the TextBoxes.
+        ddlItemHead.val("");
+        txtQuantity.val("");
+        txtRate.val("");
+        lblTaxPer.text('');
+        lbltaxAmt.text("0.00");
+        txtAmount.text("0.00");
+
+        hdgstPer.val("");
+        hdCgstPer.val("");
+        hdSgstPer.val("");
+        hdgstAmt.val("");
+        hdCgstAmt.val("");
+        hdSgstAmt.val("");
+
+    }
+
+    function Remove(button) {
+        //Determine the reference of the Row using the Button.
+        var row = $(button).closest("TR");
+        var name = $("TD", row).eq(0).html();
+        var cgsttAmt = $("TD", row).eq(11).html();
+        var sgstAmt = $("TD", row).eq(12).html();
+        var igstAmt = $("TD", row).eq(10).html();
+        var tAmt = $("TD", row).eq(4).html();
+
+        if (confirm("Do you want to delete: " + name)) {
+            //Get the reference of the Table.
+            var table = $("#tblItemDetail")[0];
+            //Delete the Table row using it's Index.
+            table.deleteRow(row[0].rowIndex);
+
+
+            var lbltaxableAmt = $.trim($("#lbltaxableAmt").text()) != "" ? parseFloat($.trim($("#lbltaxableAmt").text())) : 0;
+            var lblTotaltax = $.trim($("#lblTotaltax").text()) != "" ? parseFloat($.trim($("#lblTotaltax").text())) : 0;
+            var lblRoundOff = $.trim($("#lblRoundOff").text()) != "" ? parseFloat($.trim($("#lblRoundOff").text())) : 0;
+            var lblNetPayable = $.trim($("#lblNetPayable").text()) != "" ? parseFloat($.trim($("#lblNetPayable").text())) : 0;
+
+            var hdTotIgst = $.trim($("#hdTotIgst").val()) != "" ? parseFloat($.trim($("#hdTotIgst").val())) : 0;
+            var hdTotCgst = $.trim($("#hdTotCgst").val()) != "" ? parseFloat($.trim($("#hdTotCgst").val())) : 0;
+            var hdTotSgst = $.trim($("#hdTotSgst").val()) != "" ? parseFloat($.trim($("#hdTotSgst").val())) : 0;
+
+            var gstAmt = $.trim(igstAmt) != "" ? parseFloat(igstAmt) : 0;
+            var cgstAmt = $.trim(cgsttAmt) != "" ? parseFloat(cgsttAmt) : 0;
+            var sgstAmt = $.trim(sgstAmt) != "" ? parseFloat(sgstAmt) : 0;
+
+            var totcgst = hdTotCgst - cgstAmt;
+            var totsgst = hdTotSgst - sgstAmt;
+            $("#hdTotCgst").val(totcgst.toFixed(2));
+            $("#hdTotSgst").val(totsgst.toFixed(2));
+
+            var tt = $.trim(tAmt) != "" ? parseFloat(tAmt) : 0;
+            var total = lbltaxableAmt - tt;
+
+
+
+            var taxAmt = lblTotaltax - (gstAmt + cgstAmt + sgstAmt);
+            $("#lbltaxableAmt").text(total.toFixed(2));
+            $("#lblTotaltax").text(taxAmt.toFixed(2));
+            $("#hdTotIgst").val(taxAmt.toFixed(2));
+
+            var tt = total + taxAmt;
+            total = Math.abs(tt);
+            var absTotal = Math.round(total.toFixed(2))
+            var r = total - Math.floor(total);
+            var rrr = (absTotal - tt)
+            rrr = Math.abs(rrr);
+            $("#lblRoundOff").text(rrr.toFixed(2));
+            $("#lblNetPayable").text(Math.round(total.toFixed(2))).toString("0.00");
+        }
+    };
+
+    function CalculateTotal() {
+        var lbltaxableAmt = $.trim($("#lbltaxableAmt").text()) != "" ? parseFloat($.trim($("#lbltaxableAmt").text())) : 0;
+        var lblTotaltax = $.trim($("#lblTotaltax").text()) != "" ? parseFloat($.trim($("#lblTotaltax").text())) : 0;
+        var lblRoundOff = $.trim($("#lblRoundOff").text()) != "" ? parseFloat($.trim($("#lblRoundOff").text())) : 0;
+        var lblNetPayable = $.trim($("#lblNetPayable").text()) != "" ? parseFloat($.trim($("#lblNetPayable").text())) : 0;
+
+        var hdTotIgst = $.trim($("#hdTotIgst").val()) != "" ? parseFloat($.trim($("#hdTotIgst").val())) : 0;
+        var hdTotCgst = $.trim($("#hdTotCgst").val()) != "" ? parseFloat($.trim($("#hdTotCgst").val())) : 0;
+        var hdTotSgst = $.trim($("#hdTotSgst").val()) != "" ? parseFloat($.trim($("#hdTotSgst").val())) : 0;
+
+        var txtAmount = $.trim($("#txtAmount").text()) != "" ? parseFloat($.trim($("#txtAmount").text())) : 0;
+
+        var hdgstAmt = $.trim($("#hdgstAmt").val()) != "" ? parseFloat($.trim($("#hdgstAmt").val())) : 0;
+        var hdCgstAmt = $.trim($("#hdCgstAmt").val()) != "" ? parseFloat($.trim($("#hdCgstAmt").val())) : 0;
+        var hdSgstAmt = $.trim($("#hdSgstAmt").val()) != "" ? parseFloat($.trim($("#hdSgstAmt").val())) : 0;
+
+        var tgst = hdTotIgst + hdgstAmt;
+        var tCgst = hdTotCgst + hdCgstAmt;
+        var tSgst = hdTotSgst + hdSgstAmt;
+
+        $("#hdTotIgst").val(tgst.toFixed(2));
+        $("#hdTotCgst").val(tCgst.toFixed(2));
+        $("#hdTotSgst").val(tSgst.toFixed(2));
+
+        var TaxableAmt = lbltaxableAmt + txtAmount;
+        var totalTax = lblTotaltax + (hdgstAmt + hdCgstAmt + hdSgstAmt);
+        $("#lblTotaltax").text(totalTax.toFixed(2));
+        $("#lbltaxableAmt").text(TaxableAmt.toFixed(2));
+
+        var tt = TaxableAmt + totalTax;
+        total = Math.abs(tt);
+        var absTotal = Math.round(total.toFixed(2))
+        var r = total - Math.floor(total);
+        var rrr = (absTotal - tt)
+        rrr = Math.abs(rrr);
+        $("#lblRoundOff").text(rrr.toFixed(2));
+        $("#lblNetPayable").text(Math.round(total.toFixed(2))).toString("0.00");
+
+    }
+    function allowonlyDegitandDot() {
+        if (event.which < 46 || event.which >= 58 || event.which == 47) {
+            event.preventDefault();
+        }
+
+        if (event.which == 46 && $(this).val().indexOf('.') != -1) {
+            this.value = '';
+        }
+    }
+
+    function InsertStockDemand() {
+        if ($("#hdPartyCode").val() == "") {
+            alert("Party Code does not Exists !!!");
+            $("#hdPartyCode").focus();
+            return;
+        }
+        if ($("#txtTransferDate").val() == "") {
+            alert("Please Enter Transfer Date !!!");
+            $("#txtTransferDate").focus();
+            return;
+        }
+
+        var itemdetails = [];
+        $("#tblItemDetail TBODY TR").each(function () {
+            var row = $(this);
+            var subTotal = row.find("totAmt").text() != "" ? parseFloat(row.find("totAmt").text()) : 0;
+            var cgstAmt = row.find("#hdCgstAmt").val() != "" ? parseFloat(row.find("#hdCgstAmt").val()) : 0;
+            var sgstAmt = row.find("#hdSgstAmt").val() != "" ? parseFloat(row.find("#hdSgstAmt").val()) : 0;
+            var igstAmt = row.find("#hdIgstAmt").val() != "" ? parseFloat(row.find("#hdIgstAmt").val()) : 0;
+
+            item = {};
+            item["ItemCode"] = row.find("#hdItemCode").val();
+            item["Quantity"] = row.find("#txtQuantity").val();
+            item["Rate"] = row.find("TD").eq(4).html();
+            item["cgstPer"] = row.find("#hdCgstPer").val();
+            item["cgstAmt"] = row.find("#hdCgstAmt").val();
+            item["sgstPer"] = row.find("#hdSgstPer").val();
+            item["sgstAmt"] = row.find("#hdSgstAmt").val();
+            item["igstPer"] = row.find("#hdIgstPer").val();
+            item["igstAmt"] = row.find("#hdIgstAmt").val();
+            item["TotalAmount"] = subTotal + cgstAmt + sgstAmt + igstAmt;
+            var qty = row.find("#txtQuantity").val() != "" ? parseInt(row.find("#txtQuantity").val()) : 0;
+            if (qty > 0) {
+                itemdetails.push(item);
+            }
+
+        });
+        var dataobject = {
+            TransferDate: $("#txtTransferDate").val(),
+            partyCode: $("#hdPartyCode").val(),
+            CgstAmt: $("#hdTotCgst").val(),
+            SgstAmt: $("#hdTotSgst").val(),
+            IgstAmt: $("#hdTotIgst").val(),
+            SubTotal: $("#lbltaxableAmt").text(),
+            NetTotal: $("#lblNetPayable").text(),
+            roundOff: $("#lblRoundOff").text(),
+            DemandCode: $("#hdDemandCode").val(),
+            ItemList: itemdetails,
+        };
+
+        $.ajax({
+            url: "/DemandManagement/InsertStockTransferDetails",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r != "0") {
+                    alert(r);
+                    location.reload();
+                }
+                else {
+                    alert("Error !!!");
+                }
+            }
+        });
+    }
+
+</script>
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<input type="hidden" id="hdSuppAccStateCode" value="@Model.PartyStateCode" />
+<input type="hidden" id="hdCompanyStateCode" value="@Model.StateName" />
+<input type="hidden" id="hdPartyCode" value="@Model.OutLetCode" />
+<input type="hidden" id="hdDemandCode" value="@Model.OrderId" />
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                @*<a href="../OutLet/OutLetList" class="btn btn-primary waves-effect waves-light mb-2"><i class="mdi mdi-plus-circle mr-1"></i>Go to OutLet List</a>*@
+            </div>
+            <h4 class="page-title">Transfer Stock</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row" id="divSSDDl">
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Party Name</label>
+                        <input type="text" class="form-control" id="txtPartyName" disabled placeholder="Party Name" value="@Model.SSName">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Demand Date</label>
+                        <input type="text" class="form-control" id="txtBillDate" disabled placeholder="Demand Date" value="@Model.mDate">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Transfer Date <span style="color:red">*</span></label>
+                        <input type="text" class="form-control" id="txtTransferDate" placeholder="Date" value="@Model.eDate">
+                    </div>
+                </div>
+                <span>Item List</span>
+                <hr />
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-borderless table-hover table-centered m-0" id="tblItemDetail">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Sr.No.</th>
+                                        <th>Item Details</th>
+                                        <th>Pending Quantity</th>
+                                        <th>Quantity</th>
+                                        <th>Rate</th>
+                                        <th>Tax Amt</th>
+                                        <th style="text-align:right">Taxable Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                                    {
+                                        int i = 0;
+                                        foreach (DataRow dr in Model.dt.Rows)
+                                        {
+                                            i++;
+                                            <tr>
+                                                <td>@i</td>
+                                                <td>
+                                                    @dr["ItemName"]
+
+                                                </td>
+                                                <td style="color:#cc180e;">@dr["PendingQty"]</td>
+                                                <td style="width:130px">
+                                                    <input type="hidden" id="hdItemCode" value="@dr["ItemCode"]" />
+                                                    <input type="text" class="form-control" id="txtQuantity" value="@dr["PendingQty"]" onchange="Cal(this)" />
+                                                    <input type="hidden" id="hdActQty" value="@dr["PendingQty"]" />
+                                                </td>
+                                                <td>@dr["Rate"]</td>
+                                                <td>
+                                                    <span id="lblTaxAmt">0.00</span> / <span style="color:#16b548">@dr["GSTPer"]%</span>
+                                                    <input type="hidden" id="hdIgstPer" value="@dr["IgstPer"]" />
+                                                    <input type="hidden" id="hdCgstPer" value="@dr["CgstPer"]" />
+                                                    <input type="hidden" id="hdSgstPer" value="@dr["SgstPer"]" />
+                                                    <input type="hidden" id="hdIgstAmt" value="@dr["IgstAmount"]" />
+                                                    <input type="hidden" id="hdCgstAmt" value="@dr["CgstAmount"]" />
+                                                    <input type="hidden" id="hdSgstAmt" value="@dr["SgstAmount"]" />
+                                                </td>
+                                                <td style="text-align:right"><span id="totAmt">0.00</span></td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="form-row">
+                    <div class="form-group col-md-8">
+
+                    </div>
+                    <div class="form-group col-md-4">
+                        <div class="form-row">
+                            <div class="form-group col-md-12" style="margin-bottom:-2px">
+                                <label>Taxable Amount: </label>
+                                <div style="float:right"> <span id="lbltaxableAmt">0.00</span> </div>
+                            </div>
+                        </div>
+                        <div class="form-row" style="display:none">
+                            <div class="form-group col-md-12" style="margin-bottom:-2px">
+                                <label>Adjustment </label>
+                                <div style="float:right"> <input type="text" class="form-control" id="txtAdjustment" value="0.00"> </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12" style="margin-bottom:-2px">
+                                <label>Total Tax: </label>
+                                <div style="float:right"> <span id="lblTotaltax">0.00</span> </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12" style="margin-bottom:-2px">
+                                <label>Total Roundoff: </label>
+                                <div style="float:right"> <span id="lblRoundOff" style="color:red">0.00</span> </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="form-row">
+                            <div class="form-group col-md-12" style="margin-bottom:-2px">
+                                <label>Net Payable: </label>
+                                <div style="float:right"> <span id="lblNetPayable">0.00</span> </div>
+                                <input type="hidden" id="hdTotIgst" />
+                                <input type="hidden" id="hdTotCgst" />
+                                <input type="hidden" id="hdTotSgst" />
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="form-row">
+                            <div class="form-group col-md-10" style="margin-bottom:-2px">
+                                <button type="submit" id="btnSave" class="btn btn-primary waves-effect waves-light" onclick="InsertStockDemand()">Submit Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>

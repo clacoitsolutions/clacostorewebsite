@@ -1,0 +1,227 @@
+@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "WishList";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+@using System.Data;
+<style>
+    .pt {
+        color: black !important;
+    }
+
+        .pt:hover {
+            color: blue !important
+        }
+</style>
+<style>
+    /* Style for dropdown menu */
+    .dropdown {
+        position: relative;
+        display: flex;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: white;
+        min-width: 400px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        height: 80px;
+        margin-left: -100%;
+    }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+            .dropdown-content a:hover {
+                background-color: white;
+            }
+
+    .dropdown:hover .dropdown-content {
+        display: inline;
+    }
+
+    .dropdown-content a .fa {
+        margin-right: 10px;
+    }
+
+    #myDIV {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    @@media only screen and (max-width:767px) {
+        .pts {
+            display: none;
+        }
+    }
+
+    .pts1 {
+        display: none;
+    }
+
+    @@media only screen and (max-width:767px) {
+        .pts1 {
+            display: block;
+        }
+    }
+</style>
+
+
+
+
+
+<div class="gambo-Breadcrumb">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="../WebHome/Index">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Wish List</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="pts">
+    <div class="container">
+        @*<div class="row mt-5">
+              <div class=" col-sm-12"style="height: 60px; box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;">
+                  <h4 style="margin-top:20px;">My Wishlist (@Model.TotalCountCart)</h4>
+              </div>
+            </div>*@
+
+        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+        {
+            <div class="row mt-2">
+
+
+                @foreach (DataRow dr in Model.dt.Rows)
+                {
+                    <div class="col-md-12" style="margin-top:10px;">
+                        <div class="item">
+
+                            <div class="product-item" style="box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;">
+                                <br />
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductId"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" target="_blank">
+                                            <img src="~/productImages/@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]" height="150" width="150" class="mb-5 mt-2 mx-5" />
+                                            @*<span class="like-icon mt-4 mx-4" title="wishlist" onclick="AddToWhishlist('@dr["ProductId"]')" style="background:#fa2365;"></span>*@
+
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-9 mt-5">
+
+                                        <div class="product-text-dt">
+
+                                            <p>Available<span>(In Stock)</span></p>
+                                            <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductId"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" target="_blank" class="pt">
+                                                <h3>@dr["ProductName"]</h3>@*<span class="like-icon mt-4 mx-4" title="wishlist" onclick="AddToWhishlist('@dr["ProductId"]')" style="background:#fa2365;"></span>*@
+
+                                            </a>
+
+                                            <div class="row" style="min-height:50px;">
+                                                <div class="col-sm-5" style="min-height:50px">
+                                                    <div class="product-price">
+                                                        &#8377;@dr["amount"]
+
+                                                        <span>&#8377;@dr["RegularPrice"]</span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-7" style="min-height:50px;float:left">
+                                                    <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductId"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" target="_blank">
+                                                        @*<button class="add-cart-btn hover-btn" onclick="AddItemInCartSingle()" >Add to Cart</button>*@
+                                                    </a>
+                                                    <div style="float:right; margin-top:-20%;">
+                                                        <h5 onclick="RemoveWishlistProduct('@dr["ProductId"]')" style="font-weight:bolder; color:red; float:right; cursor:pointer;" class="mb-5"><i class="fa fa-trash"></i></h5>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-sm-5" style="margin:0px auto;">
+                    <img src="~/img/OIP-removebg-preview.png" />
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
+<!----phone View -->
+
+<div class="container pts1">
+    @if (Model.dt != null && Model.dt.Rows.Count > 0)
+    {
+        <div class="row" id="wishlistSection">
+            @foreach (DataRow dr in Model.dt.Rows)
+            {
+
+                <div class="col-sm-12" style="border-bottom:1px solid gray;">
+                    <div style="float:left;">
+                        <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductId"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" target="_blank">
+                            <img src="~/productImages/@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]" height="100" width="100" class="mt-5 mb-5" />
+                            @*<span class="like-icon mt-4 mx-4" title="wishlist" onclick="AddToWhishlist('@dr["ProductId"]')" style="background:#fa2365;"></span>*@
+                        </a>
+                    </div>
+                    <div style="float:left;margin-left:3%;width:190px;margin-top:10%;">
+                        <span>Available<span>(In Stock)</span></span><br />
+                        <span style="font-size:12px;font-weight:bold;">@dr["ProductName"]</span>@*<span class="like-icon mt-4 mx-4" title="wishlist" onclick="AddToWhishlist('@dr["ProductId"]')" style="background:#fa2365;"></span>*@
+                        <p class="product-price">
+                            &#8377;@dr["amount"]
+
+                            <span>&#8377;@dr["RegularPrice"]</span>
+                        </p>
+                    </div>
+                    <div style="float:right;margin-top:5%;">
+
+                        <h5 onclick="RemoveWishlistProduct('@dr["ProductId"]')" style="font-weight:bolder; color:red; float:right; cursor:pointer;" class="mb-5"><i class="fa fa-trash"></i></h5>
+                    </div>
+
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!----end shailja Tiwari-->
+<!---remove product in wishlist-->
+
+<script>
+    function RemoveWishlistProduct(productId) {
+
+        $.ajax({
+            type: 'POST',
+            url: '/CustomerAccount/RemoveWishlistProduct',
+            data: { productId: productId },
+            dataType: 'json',
+            success: function (response) {
+                location.reload();
+            },
+            error: function (xhr, status, error) {
+                console.error('Error removing product from wishlist:', error);
+            }
+        });
+    }
+
+
+</script>

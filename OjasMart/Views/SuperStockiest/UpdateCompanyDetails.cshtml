@@ -1,0 +1,402 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Create New Company";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="~/ckeditor/ckeditor.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('select').select2();
+        $('#txtmfgDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+        $('#txtExpiryDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+        $("#tblItemHead").DataTable();
+
+        //$('#ddlState').select2();
+
+        if ($("#hdSSCode").val() != "") {
+            $("#btnUpdate").show();
+            $("#btnCancel").show();
+            $("#btnSave").hide();
+
+            $('#divLog').hide();
+            $("#ddlState").val($("#hdStateCode").val()).trigger('change');
+
+
+        }
+    });
+
+
+    function calcRate() {
+        var PurchRate = $("#txtPurchaseRate").val() != "" ? parseFloat($("#txtPurchaseRate").val()) : 0;
+        var MRP = $("#txtMRP").val() != "" ? parseFloat($("#txtMRP").val()) : 0;
+        var IGST = $("#txtIGSt").val() != "" ? parseFloat($("#txtIGSt").val()) : 0;
+
+        var cgst = IGST / 2;
+        var sgst = IGST / 2;
+        var Rate = (MRP / ((100 + IGST) / 100));
+        $("#txtcgst").val(cgst.toFixed(2));
+        $("#txtsgst").val(sgst.toFixed(2));
+        $("#txtRate").val(Rate.toFixed(2));
+
+    }
+
+    function InsertSuperStockiest() {
+        if ($("#txtSSName").val() == "") {
+            alert("Please Enter Company Name !!!");
+            $("#txtSSName").focus();
+            return;
+        }
+        if ($("#txtContactNo").val() == "") {
+            alert("Please Enter Contact No !!!");
+            $("#txtContactNo").focus();
+            return;
+        }
+        if ($("#ddlState").val() == "") {
+            alert("Please Select State Name !!!");
+            $("#ddlState").focus();
+            return;
+        }
+        if ($("#txtUserId").val() == "") {
+            alert("Please Enter Login Id !!!");
+            $("#txtUserId").focus();
+            return;
+        }
+        if ($("#txtPassword").val() == "") {
+            alert("Please Enter Password !!!");
+            $("#txtPassword").focus();
+            return;
+        }
+        if ($("#txtConfirmPassword").val() == "") {
+            alert("Please Confirm Your Password !!!");
+            $("#txtConfirmPassword").focus();
+            return;
+        }
+        if ($("#txtConfirmPassword").val() != $("#txtPassword").val()) {
+            alert("Both Password Should be Same !!!");
+            $("#txtConfirmPassword").val('');
+            $("#txtConfirmPassword").focus();
+            return;
+        }
+
+        var Notes = CKEDITOR.instances.txtSaleInvocieNote.getData();
+
+        var IsPadPrint = $('#chkIsLetterPad').prop("checked") == true ? true : false;
+
+        var Imagefile = $("#fuLogo").get(0).files;
+        var data = new FormData;
+        data.append("MemberPic", Imagefile[0]);
+        data.append("SSName", $("#txtSSName").val());
+        data.append("ContactPerson", $("#txtContactPerson").val());
+        data.append("ContactNo", $("#txtContactNo").val());
+        data.append("EmailAddress", $("#txtEmailAddress").val());
+        data.append("PinCode", $("#txtPinCode").val());
+        data.append("Address", $("#txtAddress").val());
+        data.append("StateId", $("#ddlState").val());
+        data.append("CityName", $("#txtCityName").val());
+        data.append("GstNo", $("#txtGstNo").val());
+        data.append("PanNo", $("#txtPanNo").val());
+        data.append("AadhaarNo", $("#txtAadharNo").val());
+        data.append("UserName", $("#txtUserId").val());
+        data.append("Bankname", $("#txtBankName").val());
+        data.append("BanKAccName", $("#txtBankAccName").val());
+        data.append("branchname", $("#txtBankBranch").val());
+        data.append("accountno", $("#txtBankAccnumber").val());
+        data.append("ifsccode", $("#txtIFSCCode").val());
+        data.append("InvoicePrefix", $("#txtInvoicePrefix").val());
+        data.append("Description", Notes);
+        data.append("Password", $("#txtPassword").val());
+        data.append("IsLatterPad", IsPadPrint);
+        data.append("Action", "1");
+
+        $("#showSpinner").show();
+
+        $.ajax({
+            url: "/SuperStockiest/InsertUpdateCompanyDetails",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                if (r.strId = '1') {
+                    alert(r.msg);
+                    location.reload();
+                }
+                else if (r.strId = '2') {
+                    alert(r.msg);
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function UpdateSuperStockiest() {
+        if ($("#hdSSCode").val() == "") {
+            alert("Company Code Not Found !!!");
+            return;
+        }
+        if ($("#txtSSName").val() == "") {
+            alert("Please Enter Company Name !!!");
+            $("#txtSSName").focus();
+            return;
+        }
+        if ($("#txtContactNo").val() == "") {
+            alert("Please Enter Contact No !!!");
+            $("#txtContactNo").focus();
+            return;
+        }
+        if ($("#ddlState").val() == "") {
+            alert("Please Select State Name !!!");
+            $("#ddlState").focus();
+            return;
+        }
+
+        var Notes = CKEDITOR.instances.txtSaleInvocieNote.getData();
+
+        var IsPadPrint = $('#chkIsLetterPad').prop("checked") == true ? true : false;
+
+        var Imagefile = $("#fuLogo").get(0).files;
+        var data = new FormData;
+        data.append("MemberPic", Imagefile[0]);
+        data.append("SSName", $("#txtSSName").val());
+        data.append("ContactPerson", $("#txtContactPerson").val());
+        data.append("ContactNo", $("#txtContactNo").val());
+        data.append("EmailAddress", $("#txtEmailAddress").val());
+        data.append("PinCode", $("#txtPinCode").val());
+        data.append("Address", $("#txtAddress").val());
+        data.append("StateId", $("#ddlState").val());
+        data.append("CityName", $("#txtCityName").val());
+        data.append("GstNo", $("#txtGstNo").val());
+        data.append("PanNo", $("#txtPanNo").val());
+        data.append("AadhaarNo", $("#txtAadharNo").val());
+        data.append("UserName", $("#txtUserId").val());
+        data.append("Bankname", $("#txtBankName").val());
+        data.append("BanKAccName", $("#txtBankAccName").val());
+        data.append("branchname", $("#txtBankBranch").val());
+        data.append("accountno", $("#txtBankAccnumber").val());
+        data.append("ifsccode", $("#txtIFSCCode").val());
+        data.append("InvoicePrefix", $("#txtInvoicePrefix").val());
+        data.append("Description", Notes);
+        data.append("Password", $("#txtPassword").val());
+        data.append("IsLatterPad", IsPadPrint);
+        data.append("SSCode", $('#hdSSCode').val());
+        data.append("CompanyLogo", $('#hdImageFile').val());
+        data.append("Action", "2");
+
+        $("#showSpinner").show();
+
+        $.ajax({
+            url: "/SuperStockiest/InsertUpdateCompanyDetails",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                if (r.strId = '1') {
+                    alert(r.msg);
+                    window.location.href = "../SuperStockiest/MyProfile";
+                    //location.reload();
+                }
+                else if (r.strId = '2') {
+                    alert(r.msg);
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+
+    function CancelUpdate() {
+        window.location.href = "../SuperStockiest/MyProfile";
+    }
+</script>
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                @*<a href="../SuperStockiest/SuperStockiestList" class="btn btn-primary waves-effect waves-light mb-2"><i class="mdi mdi-plus-circle mr-1"></i>Go to List</a>*@
+            </div>
+            <h4 class="page-title">Update Profile</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h3>Basic Details</h3><hr />
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Company Name <span style="color:red">*</span> </label>
+                        <input type="text" class="form-control" id="txtSSName" placeholder="Enter Company Name" value="@Model.SSName">
+                        <input type="hidden" id="hdSSCode" value="@Model.SSCode" />
+                        <input type="hidden" id="hdStateCode" value="@Model.StCode" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress" class="col-form-label">Contact No <span style="color:red">*</span></label>
+                        <input type="text" class="form-control" id="txtContactNo" maxlength="10" placeholder="Enter Contact No" value="@Model.ContactNo">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputPassword4" class="col-form-label">Contact Person</label>
+                        <input type="text" class="form-control" id="txtContactPerson" placeholder="Enter Contact Person" value="@Model.ContactPerson">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2" class="col-form-label">e-Mail Address</label>
+                        <input type="text" class="form-control" id="txtEmailAddress" placeholder="Enter e-Mail Address" value="@Model.EmailAddress">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress" class="col-form-label">Compelete Address</label>
+                        <textarea id="txtAddress" class="form-control" placeholder="Enter Compelete Address" rows="2">@Model.Address</textarea>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2" class="col-form-label">Company Logo</label>
+                        <input type="file" class="form-control" id="fuLogo" />
+                        <input type="hidden" id="hdImageFile" value="@Model.CompanyLogo" />
+                    </div>
+                </div>
+                <div class="form-row">
+
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2" class="col-form-label">Select State <span style="color:red">*</span></label>
+                        @Html.DropDownList("ddlState", (List<SelectListItem>)ViewBag.StateList, new { @id = "ddlState", @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2" class="col-form-label">City Name </label>
+                        <input type="text" class="form-control" id="txtCityName" placeholder="Enter City Name" value="@Model.CityName">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2" class="col-form-label">Postal Code</label>
+                        <input type="text" class="form-control" id="txtPinCode" maxlength="10" placeholder="Enter Postal Code" value="@Model.PinCode">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2" class="col-form-label">Aadhaar No</label>
+                        <input type="text" class="form-control" id="txtAadharNo" placeholder="Enter Aadhaar No." value="@Model.AadhaarNo">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2" class="col-form-label">GST No.</label>
+                        <input type="text" class="form-control" id="txtGstNo" placeholder="Enter GST No." value="@Model.GstNo">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2" class="col-form-label">PAN No. </label>
+                        <input type="text" class="form-control" id="txtPanNo" placeholder="Enter PAN No." value="@Model.PanNo">
+                    </div>
+                </div>
+                <div id="divLog">
+                    <h3>Authentication Details</h3><hr />
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="inputAddress2" class="col-form-label">Email/Phone/User Name <span style="color:red">*</span></label>
+                            <input type="text" class="form-control" id="txtUserId" placeholder="Email/Phone/User Name" value="@Model.UserName">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="inputAddress2" class="col-form-label">Password <span style="color:red">*</span></label>
+                            <input type="text" class="form-control" id="txtPassword" placeholder="Enter Password" value="@Model.Password">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="inputAddress2" class="col-form-label">Confirm Password <span style="color:red">*</span></label>
+                            <input type="text" class="form-control" id="txtConfirmPassword" placeholder="Enter Confirm Password" value="@Model.Password">
+                        </div>
+                    </div>
+                </div>
+                <h3>Bank Details</h3><hr />
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2" class="col-form-label">Bank Name</label>
+                        <input type="text" class="form-control" id="txtBankName" placeholder="Enter Bank Name" value="@Model.Bankname">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2" class="col-form-label">Bank Account Name</label>
+                        <input type="text" class="form-control" id="txtBankAccName" placeholder="Enter Bank Account Name" value="@Model.BanKAccName">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2" class="col-form-label">Bank Branch </label>
+                        <input type="text" class="form-control" id="txtBankBranch" placeholder="Enter Bank Branch" value="@Model.branchname">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2" class="col-form-label">Account Number</label>
+                        <input type="text" class="form-control" id="txtBankAccnumber" placeholder="Enter Account Number" value="@Model.accountno">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2" class="col-form-label">IFSC Code</label>
+                        <input type="text" class="form-control" id="txtIFSCCode" placeholder="Enter IFSC Code" value="@Model.ifsccode">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2" class="col-form-label">Invoice Prefix</label>
+                        <input type="text" class="form-control" id="txtInvoicePrefix" placeholder="Enter Invoice Prefix" value="@Model.InvoicePrefix">
+                        <span class="text-muted">(ex: Inv)</span>
+                    </div>
+                    <div class="form-group col-md-4" style="margin-top: 47px;text-align:left">
+                        <div class="custom-control custom-checkbox">
+                            @if (Model.IsLatterPad == true)
+                            {
+                                <input type="checkbox" class="custom-control-input" id="chkIsLetterPad" checked>
+                                <label class="custom-control-label" for="chkIsLetterPad"> Letter Pad Print</label>
+                            }
+                            else
+                            {
+                                <input type="checkbox" class="custom-control-input" id="chkIsLetterPad">
+                                <label class="custom-control-label" for="chkIsLetterPad"> Letter Pad Print</label>
+
+                            }
+
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="inputAddress2" class="col-form-label">Sales Invoice Notes</label>
+                        <textarea id="txtSaleInvocieNote" class="form-control">@Model.Description</textarea>
+                    </div>
+                    <script type="text/javascript">
+                        CKEDITOR.replace('txtSaleInvocieNote', {
+                            filebrowserImageUploadUrl: '/Account/UploadImage'
+                        });
+                    </script>
+                </div>
+                @*<button type="submit" id="btnSave" class="btn btn-primary waves-effect waves-light" onclick="InsertSuperStockiest()">Save Record</button>*@
+                <button type="submit" id="btnUpdate" style="display:none" class="btn btn-warning waves-effect waves-light" onclick="UpdateSuperStockiest()">Update Record</button>
+
+                <button type="submit" id="btnCancel" style="display:none" class="btn btn-danger waves-effect waves-light" onclick="CancelUpdate()">Cancel</button>
+
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+

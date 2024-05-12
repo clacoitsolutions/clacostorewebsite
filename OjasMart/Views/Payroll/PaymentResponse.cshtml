@@ -1,0 +1,31 @@
+﻿@model OjasMart.Models.PaymentResponse1
+@{
+    Layout = null;
+}
+
+
+@*@Html.Raw(ViewBag.Message)*@
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script>
+    $(document).ready(function () {
+        if ('@TempData["Msg"]' != '') {
+          //  window.location.href = "/Booking/Booking"
+            window.location.href = '@TempData["Msg"]';
+           // window.open("@TempData["Msg"]", "_blank");
+        }
+    })
+</script>
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>PaymentResponse</title>
+</head>
+<body>
+  
+    <div>
+       
+    </div>
+</body>
+</html>

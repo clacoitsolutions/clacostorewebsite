@@ -1,0 +1,426 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Get Cheque Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using System.Data;
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+    function ddlstatuschange() {
+        debugger;
+        if ($('#ddlStatus').val() == 'Rejected') {
+            $('#divBounceAmount').show();
+        }
+        else {
+            $('#divBounceAmount').hide();
+        }
+    }
+    $(document).ready(function () {
+        $("#tblItemHead").DataTable({
+            dom: 'Bfrtip',
+            //pageLength: 5,
+            lengthMenu: [[5, 10, 20, 50, 100, 500, -1], [5, 10, 20, 50, 100, 500, "All"]],
+            buttons: [
+               'pageLength',
+           {
+               extend: 'excelHtml5', footer: true
+           },
+           { extend: 'csvHtml5', footer: true },
+           {
+               extend: 'pdfHtml5', footer: true, orientation: 'landscape',
+
+               pageSize: 'LEGAL',
+               text: '<i class="fa fa-file-pdf-o"> PDF</i>',
+               titleAttr: 'PDF'
+           }
+            ]
+        });
+        $('select').select2();
+        $('#txtStartDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+        $('#txtEndDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+        $('#txtClearDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+
+        $("body").on("click", "#tblItemHead .clsEdit", function () {
+            var TxnId = $(this).attr('id');
+            var paymenttype = $(this).attr('Typenew');
+            $("#showSpinner").show();
+            $.ajax({
+                url: "../ChequeClearance/GetChequeReport",
+                type: "POST",
+                data: { 'FromDate': null, 'Todate': null, 'CustomerId': null, 'txnId': TxnId, 'type': "1" },
+                datatype: "json",
+                success: function (data1) {
+                    $('#divClearChq').show();
+                    var htmlNew = data1;
+                    $('#divClearChq').html($(htmlNew).find('#divChqDetails'));
+
+                    window.location.hash = '#divClearChq';
+                    $("#showSpinner").hide();
+                    $('#hdpaymentType').val($.trim(paymenttype));
+                }
+            });
+
+        });
+
+
+
+    });
+    function getDetails() {
+        $("#showSpinner").show();
+        $.ajax({
+            url: "../ChequeClearance/GetChequeReport",
+            type: "POST",
+            data: { 'FromDate': $.trim($('#txtStartDate').val()), 'Todate': $.trim($('#txtEndDate').val()), 'CustomerId': null },
+            datatype: "json",
+            success: function (data1) {
+                $("#tblItemHead").DataTable().destroy();
+                var htmlNew = data1;
+                $('#divDetails').html($(htmlNew).find('#tblItemHead'));
+                //$("#tblItemHead").DataTable();
+
+                // $('#divtable').html($(htmlNew).find('#divcnt'));
+
+                $("#tblItemHead").DataTable({
+                    dom: 'Bfrtip',
+                    //pageLength: 5,
+                    lengthMenu: [[5, 10, 20, 50, 100, 500, -1], [5, 10, 20, 50, 100, 500, "All"]],
+                    buttons: [
+                       'pageLength',
+                   {
+                       extend: 'excelHtml5', footer: true
+                   },
+                   { extend: 'csvHtml5', footer: true },
+                   {
+                       extend: 'pdfHtml5', footer: true, orientation: 'landscape',
+
+                       pageSize: 'LEGAL',
+                       text: '<i class="fa fa-file-pdf-o"> PDF</i>',
+                       titleAttr: 'PDF'
+                   }
+                    ]
+                });
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function HideClearPanel() {
+        var x = confirm('Are you sure to Cancel this?');
+        if (x) {
+            window.location.reload();
+        }
+        return;
+    }
+
+    function InsertChequeUpdates() {
+        if ($('#hdTxnCode').val() == '') {
+            alert('Transaction Id not found. your Request can not be processed !!!');
+            return;
+        }
+        if ($('#hdChqSrNo').val() == '') {
+            alert('Cheque Details not found !!!');
+            return;
+        }
+        if ($('#hdBankAccCode').val() == '') {
+            alert('Bank Account not found !!!');
+            return;
+        }
+        if ($('#hdPartyCode').val() == '') {
+            alert('Party Code not found !!!');
+            return;
+        }
+        if ($('#lblChqNo').text() == '') {
+            alert('Cheque No. not found !!!');
+            return;
+        }
+        if ($('#ddlStatus').val() == '' || $('#ddlStatus').val() == '0' || $('#ddlStatus').val() == 'Select') {
+            alert('Please Select Cheque Clear Status !!!');
+            $('#ddlStatus').focus();
+            return;
+        }
+        if ($('#ddlStatus').val() == 'Rejected') {
+            if ($('#txtBounceAmount').val() == '') {
+                $('#txtBounceAmount').focus();
+                return;
+            }
+        }
+        if ($('#txtClearDate').val() == '') {
+            alert('Please Enter Cleare/Reject Date !!!');
+            return;
+        }
+        var dataobject = {
+            txnId: $("#hdTxnCode").val(),
+            Status: $("#ddlStatus").val(),
+            mDate: $("#txtClearDate").val(),
+            Description: $("#txtComments").val(),
+            OfferType: $('#hdpaymentType').val(),
+            PayableAmt: $('#txtBounceAmount').val(),
+
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/ChequeClearance/InsertChequeUpdateStatus",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r.strId != '0') {
+                    alert(r.msg);
+                    location.reload();
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+</script>
+
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Pending Cheque Details</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="inputEmail4" class="col-form-label">Start Date </label>
+                        <input type="text" class="form-control" id="txtStartDate" placeholder="Start Date">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="inputPassword4" class="col-form-label">End Date</label>
+                        <input type="text" class="form-control" id="txtEndDate" placeholder="End Date">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <button type="submit" class="btn btn-primary waves-effect waves-light" onclick="getDetails()">Filter Record</button>
+                    </div>
+                </div>
+
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <h4 class="header-title">Pending Cheque Details</h4>
+            <div class="table-responsive" id="divDetails">
+                <table id="tblItemHead" class="table table-borderless table-hover table-centered m-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sr.No</th>
+                            <th style="width:82px" nowrap>Action</th>
+                            <th nowrap>Txn Detail</th>
+                            <th nowrap>Party Name</th>
+                            <th nowrap>Cheque No.</th>
+                            <th nowrap>Cheque Date</th>
+                            <th nowrap>Amount</th>
+                            <th nowrap>Bank Name</th>
+                            <th nowrap>Account Name</th>
+                            <th nowrap>Status</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                i++;
+                                <tr>
+                                    <td>@i</td>
+                                    <td nowrap>
+                                        <a href="javascript: void(0);" id="@dr["TxnNo"]" Typenew="@dr["paymentType"]" class="btn btn-warning btn-xs clsEdit">Update Status</a>
+                                    </td>
+                                    <td nowrap>
+                                        <h5 class="m-0 font-weight-normal">Txn. Date: @dr["txnDate"]</h5>
+                                        <p class="mb-0 text-muted"><small>Txn. Id: @dr["TxnNo"] </small></p>
+                                        <p class="mb-0 text-muted"><small>Voucher Id: @dr["VoucherId"] </small></p>
+                                    </td>
+                                    <td nowrap>@dr["PartyName"]</td>
+                                    <td nowrap>@dr["ChequeDDNo"]</td>
+                                    <td nowrap>@dr["chqDate"]</td>
+                                    <td nowrap>@dr["Amount"]</td>
+                                    <td nowrap>@dr["CChqBankName"]</td>
+                                    <td nowrap>@dr["AccountHeadName"]</td>
+                                    <td nowrap><span class="badge badge-danger">@dr["ClearStatus"]</span></td>
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>
+
+
+<div class="row" id="divClearChq" style="display:none">
+    <div class="col-sm-12" id="divChqDetails">
+        <div class="card-box">
+            <a href="javascript: void();" onclick="HideClearPanel()" style="float:right;color:red"><i class="fa fa-times"></i> Close</a> <h4 class="header-title">Clear/Reject Cheque</h4>
+            <hr />
+            @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+            {
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <p class="text-muted mb-2 font-13">
+                            <strong>Txn.No. :</strong>
+                            <span class="ml-2" id="lblTxnId">
+                                @Model.dt1.Rows[0]["TxnNo"].ToString()
+                            </span>
+                            <input type="hidden" id="hdBankAccCode" value="@Model.dt1.Rows[0]["AccountHeadCode"].ToString()" />
+                            <input type="hidden" id="hdChqSrNo" value="@Model.dt1.Rows[0]["SrNo"].ToString()" />
+                            <input type="hidden" id="hdPartyCode" value="@Model.dt1.Rows[0]["PartyCode"].ToString()" />
+                            <input type="hidden" id="hdTxnCode" value="@Model.dt1.Rows[0]["TxnNo"].ToString()" />
+                            <input type="hidden" id="hdpaymentType" />
+                        </p>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <p class="text-muted mb-2 font-13">
+                            <strong>Txn. Date :</strong>
+                            <span class="ml-2" id="lblTxnDate">
+                                @Model.dt1.Rows[0]["transDate"].ToString()
+                            </span>
+                        </p>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <p class="text-muted mb-2 font-13">
+                            <strong>Cheque No. :</strong>
+                            <span class="ml-2" id="lblChqNo" style="color: #488e84;">
+                                @Model.dt1.Rows[0]["ChequeDDNo"].ToString()
+                            </span>
+                        </p>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <p class="text-muted mb-2 font-13">
+                            <strong>Cheque Date :</strong>
+                            <span class="ml-2" id="lblChqDate" style="color: #488e84;">
+                                @Model.dt1.Rows[0]["chqDate"].ToString()
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <p class="text-muted mb-2 font-13">
+                            <strong>Bank Name :</strong>
+                            <span class="ml-2" id="lblBankname">@Model.dt1.Rows[0]["BankName"].ToString()</span>
+                        </p>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <p class="text-muted mb-2 font-13">
+                            <strong>Account Head :</strong>
+                            <span class="ml-2" id="lblAccHead">@Model.dt1.Rows[0]["Accname"].ToString()</span>
+                        </p>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <p class="text-muted mb-2 font-13">
+                            <strong>Party Name :</strong>
+                            <span class="ml-2" id="lblPartyName">@Model.dt1.Rows[0]["Name"].ToString()</span>
+                        </p>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <p class="text-muted mb-2 font-13">
+                            <strong>Voucher Id :</strong>
+                            <span class="ml-2" id="lblVoucherId">@Model.dt1.Rows[0]["VoucherId"].ToString()</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <p class="text-muted mb-2 font-13">
+                            <strong>Amount :</strong>
+                            <span class="ml-2" id="lblVoucherId">@Model.dt1.Rows[0]["Amount"].ToString()</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <p class="text-muted mb-2 font-13">
+                            <strong>Clear Status :<span class="text-danger">*</span> </strong>
+                            <select id="ddlStatus" class="form-control" onchange="ddlstatuschange()">
+                                <option>Select</option>
+                                <option>Clear</option>
+                                <option>Rejected</option>
+                            </select>
+                        </p>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <p class="text-muted mb-2 font-13">
+                            <strong>Clear/Reject Date :<span class="text-danger">*</span></strong>
+                            <input type="date" class="form-control" id="txtClearDate" placeholder="Clear/Reject Date" min='@Model.dt1.Rows[0]["ValidatechequeDate"].ToString()' />
+
+                        </p>
+                    </div>
+                    <div class="form-group col-md-3" id="divBounceAmount" style="display:none">
+                        <p class="text-muted mb-2 font-13">
+                            <strong>Amount :<span class="text-danger">*</span></strong>
+                            <input type="text" class="form-control" id="txtBounceAmount" placeholder="Amount" />
+                        </p>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <p class="text-muted mb-2 font-13">
+                            <strong>Comments :</strong>
+                            <textarea id="txtComments" class="form-control" rows="3" placeholder="Comments"></textarea>
+                        </p>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6"></div>
+                    <div class="form-group col-md-6" style="text-align:right">
+                        <input type="submit" class="btn btn-info btn-sm" value="Update Status" onclick="InsertChequeUpdates()" />
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <span style="color:red">No Data Found...</span>
+                    </div>
+                </div>
+            }
+
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>

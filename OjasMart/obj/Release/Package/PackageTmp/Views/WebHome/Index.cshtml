@@ -1,0 +1,464 @@
+﻿﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Claco Store";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+@using System.Data;
+@using OjasMart.Models;
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    function AddItemInCart(pId, obj, AttrId, varId) {
+        var clas = ".sp_" + pId;
+        var Qty = $(obj).parent().find('input[type=number]').val();
+        if (Qty > 0) {
+            if (varId > 0) {
+                var _varId = $(clas).val();
+                AdditemToCart(pId, Qty, AttrId, _varId);
+            }
+            else {
+                AdditemToCart(pId, Qty, AttrId, varId);
+            }
+        }
+        else {
+            $.notify("Please at least add one quantity", "error");
+            return false;
+        }
+    }
+</script>
+
+<style>
+
+    .footer {
+        background: #fff !important;
+        padding-top: 0px;
+    }
+
+    .wrapper {
+        padding-top: 88px;
+        padding-bottom: 0px;
+        /* margin-bottom: 20px; */
+        background: #fff !important;
+    }
+
+    #switcher {
+        list-style: none;
+        margin: 9px 5px 0 0px;
+        padding: 0;
+        overflow: hidden;
+        float: right;
+    }
+
+    #switcher23 {
+        list-style: none;
+        margin: 0 60px 0 0px;
+        padding: 0;
+        overflow: hidden;
+        float: right;
+    }
+
+        #switcher23 li {
+            float: left;
+            width: auto;
+            min-width: 25px;
+            height: 25px;
+            text-align: center;
+            padding: 3px;
+            padding-top: 3px;
+            border-radius: 1px;
+            border: 1px solid #a59b9a;
+            cursor: pointer;
+        }
+
+    #switcher li {
+        float: left;
+        width: 31px;
+        height: 20px;
+        border-radius: 30px;
+        border: 2px solid #ffffff;
+        padding: 8px;
+        cursor: pointer;
+    }
+</style>
+<!-- Offers Start -->
+
+@if (Model.dtTopBanner != null && Model.dtTopBanner.Rows.Count > 0)
+{
+    <div class="main-banner-slider">
+        <div class="owl-carousel offers-banner owl-theme">
+            @foreach (DataRow dr in Model.dtTopBanner.Rows)
+            {
+                <div class="item">
+                    <div class="offer-item">
+                        <div class="offer-item-img">
+                            <div class="gambo-overlay"></div>
+                            <img src=@dr["BannerImages"] alt="@dr["Bannertitle"]" style="height: 600px; width: 100%;">
+                        </div>
+                        <div class="offer-text-dt">
+                            <div class="offer-top-text-banner">
+                                <div class="top-text-1">@dr["Bannertitle"]</div>
+                                <span>@dr["ProductCategory"]</span>
+                            </div>
+                            <a href="#" class="Offer-shop-btn hover-btn">Shop Now</a>
+                        </div>
+                    </div>
+                </div>
+
+
+            }
+        </div>
+    </div>
+}
+
+
+
+
+<!-- Offers End -->
+
+<div class="section145">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="main-title-tt main-title-tt-2">
+                    <div class="main-title-left">
+
+                        <h2><span> Our Most Popular</span> packages</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="owl-carousel top-cate-slider owl-theme">
+
+                    <div class="item">
+                        <a href="http://indrarekhadevelopers.com/" class="Popular-item">
+                            <div class="Popular-img">
+                                <img src="~/popular_icons/1.png" alt="">
+                            </div>
+                            <h4 href="http://indrarekhadevelopers.com/" class="Popular-title">Properties</h4>
+                        </a>
+                    </div>
+                    <div class="item">
+                        <a href="" class="Popular-item">
+                            <div class="Popular-img">
+                                <img src="~/popular_icons/2.png" alt="">
+                            </div>
+                            <h4 class="Popular-title">E-commerce</h4>
+                        </a>
+                    </div>
+                    <div class="item">
+                        <a href="/WebHome/our_services" class="Popular-item">
+                            <div class="Popular-img">
+                                <img src="~/popular_icons/3.png" alt="">
+                            </div>
+                            <h4 class="Popular-title" href="/WebHome/our_services">Services</h4>
+                        </a>
+                    </div>
+
+                    <div class="item">
+                        <a href="" class="Popular-item">
+                            <div class="Popular-img">
+                                <img src="~/popular_icons/5.png" alt="">
+                            </div>
+                            <h4 class="Popular-title">Recharge</h4>
+                        </a>
+                    </div>
+                    <div class="item">
+                        <a href="https://traveler.claco.in/" class="Popular-item">
+                            <div class="Popular-img">
+                                <img src="~/popular_icons/4.png" alt="">
+                            </div>
+                            <h4 class="Popular-title">Travel</h4>
+                        </a>
+                    </div>
+                    <div class="item">
+                        <a href="http://indrarekhadevelopers.com/" class="Popular-item">
+                            <div class="Popular-img">
+                                <img src="~/popular_icons/1.png" alt="">
+                            </div>
+                            <h4 class="Popular-title">Properties</h4>
+                        </a>
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Categories Start -->
+
+@if (Model.dtMainCategory != null && Model.dtMainCategory.Rows.Count > 0)
+{
+    <div class="section145" style="padding-top: 10px;">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-title-tt-2 main-title-tt-3">
+                        <div class="main-title-left">
+
+                            <h2><span>Shop By</span> Categories</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="owl-carousel cate-slider owl-theme">
+                        @foreach (DataRow dr in Model.dtMainCategory.Rows)
+                        {
+                            <div class="item">
+                                <a href="../ProductDetail/SearchCategory?CatName=@dr["ProductCategory"]&&CatId=@dr["SrNo"]&&SubCatId=0" class="category-item">
+                                    <div class="">
+                                        <img src="@dr["CatImage"]" alt="@dr["ProductCategory"]" style="height:100px;" />
+                                    </div>
+                                    <h4>@dr["ProductCategory"]</h4>
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<!-- Categories End -->
+<!-- Featured Products Start -->
+@if (Model.dt != null && Model.dt.Rows.Count > 0)
+{
+    <div class="section145">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-title-tt">
+                        <div class="main-title-left">
+
+                            <h2><span>For You</span> Top Featured Products</h2>
+                        </div>
+                        <a href="#" class="see-more-btn" style="display:block">See All</a>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="owl-carousel featured-slider owl-theme">
+                        @foreach (DataRow dr in Model.dt.Rows)
+                        {
+                            <div class="item">
+                                <div class="product-item">
+                                    <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" target="_blank" class="product-img">
+                                        <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]">
+                                        <div class="product-absolute-options">
+                                            @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                            {
+                                                <span class="offer-badge-1">@dr["Discper"]% off</span>
+                                            }
+                                            <span class="like-icon" title="wishlist" style="display:none"></span>
+                                        </div>
+                                    </a>
+                                    <div class="product-text-dt">
+                                        <p>Available<span>(In Stock)</span></p>
+                                        <h4>@dr["pName"]</h4>
+                                        <div class="clearfix"></div>
+                                        <div class="product-price">
+                                            &#8377;@dr["saleValue"]
+                                            @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                            {
+                                                <span>&#8377;@dr["RegularPrice"]</span>
+                                            }
+                                            @*<div class="product-Size">
+
+                                                    @if (Model.sizeList != null && Model.sizeList.Rows.Count > 0)
+                                                    {
+                                                        <ul id="switcher23">
+
+
+                                                        @foreach (DataRow sizeItem in Model.sizeList.Rows)
+                                                        {
+
+                                                                <li id="Button1" value="@sizeItem["Size_Name"]" onclick="Activeli(this)">@sizeItem["Size_Name"]</li>
+                                                                <input type="hidden" id="checksize" value="0" />
+                                                            }
+
+                                                    </ul>
+                                                    }
+                                                </div>*@
+                                        </div>
+
+
+
+                                        <div class="clearfix"></div>
+
+
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@*<div class="section145">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-title-tt">
+                        <div class="main-title-left">
+
+                            <h2><span>Offers</span> Best Values</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    <a href="#" class="best-offer-item">
+                        <img src="~/img/offer-1.jpg" alt="">
+                    </a>
+                </div>
+
+                <div class="col-lg-6 col-md-6">
+                    <a href="#" class="best-offer-item offr-none">
+                        <img src="~/img/offer-3.jpg" alt="">
+                        <div class="cmtk_dt">
+                            <div class="product_countdown-timer offer-counter-text" data-countdown="2022/08/09"></div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-12">
+                    <a href="#" class="code-offer-item">
+                        <img src="~/img/offer-4.jpg" alt="">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+
+
+<!-- Best Values Offers End -->
+<!-- Vegetables and Fruits Start -->
+@if (Model.dtMainCategory != null && Model.dtMainCategory.Rows.Count > 0)
+{
+    foreach (DataRow dr in Model.dtMainCategory.Rows)
+    {
+        <div class="section145">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="main-title-tt">
+                            <div class="main-title-left">
+                                @*<span>For You</span>*@
+                                <h2>@dr["ProductCategory"]</h2>
+                            </div>
+                        </div>
+                    </div>
+                    @Html.Action("GetproductCategoryWise", "WebHome", new { CategoryId = dr["SrNo"] })
+                    @*@html.RenderPartial("WebHome", "GetproductCategoryWise", new ViewDataDictionary { CategoryId = Convert.ToString(dr["SrNo"]) })*@
+                    @*<div class="col-md-12">
+                            <div class="owl-carousel featured-slider owl-theme">
+                                @foreach (DataRow dr in Model.dtCatProduct.Rows)
+                                {
+                                    <div class="item">
+                                        <div class="product-item">
+                                            <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" class="product-img">
+                                                <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]">
+                                                <div class="product-absolute-options">
+                                                    @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                                    {
+                                                        <span class="offer-badge-1">@dr["Discper"]% off</span>
+                                                    }
+                                                    <span class="like-icon" title="wishlist" style="display:none"></span>
+                                                </div>
+                                            </a>
+                                            <div class="product-text-dt">
+                                                <p>Available<span>(In Stock)</span></p>
+                                                <h4>@dr["pName"]</h4>
+                                                <div class="product-price">
+                                                    &#8377;@dr["saleValue"]
+
+                                                    @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                                    {
+                                                        <span>&#8377;@dr["RegularPrice"]</span>
+                                                    }
+                                                </div>
+                                                <div style="display:none">
+                                                    <select style="width:67%">
+                                                        <option>Select</option>
+                                                    </select>
+                                                </div>
+                                                <div class="qty-cart">
+                                                    <div class="quantity buttons_added">
+                                                        <input type="button" value="-" class="minus minus-btn">
+                                                        <input type="number" step="1" name="quantity" value="1" class="input-text qty text">
+                                                        <input type="button" value="+" class="plus plus-btn">
+                                                    </div>
+                                                    <span class="cart-icon" onclick="AddItemInCart('@dr["ProductCode"]',this,'@dr["AttrId"]','@dr["VarId"]')"><i class="uil uil-shopping-cart-alt"></i></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>*@
+                </div>
+            </div>
+        </div>
+    }
+}
+
+
+@*<div class="section145">
+        <div class="container-fluid">
+            <div class="row">
+
+                <div class="col-md-12">
+                    <a href="#" class="code-offer-item">
+                        <img src="~/img/offer-2.jpg" alt="">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+<!-- Vegetables and Fruits Products End -->
+<!-- New Products Start -->
+
+<script>
+    $(document).on('change', '.ddl_PVariation', function () {
+        var pvarid = $('option:selected', this).attr('value');
+        var RegularPrice = $('option:selected', this).attr('RegularPrice');
+        var SalePrice = $('option:selected', this).attr('SalePrice');
+        if (pvarid > 0) {
+            $(this).closest(".product-price").children(".regularprice").text(RegularPrice);
+            $(this).closest(".product-price").children(".salepice").text(SalePrice);
+        }
+    });
+    function AddToWhishlist() {
+        debugger;
+        var data;
+        data = new FormData();
+        var Id = $("#hdProductId").val();
+        data.append("ProductId", Id);
+        debugger;
+        $.ajax({
+            url: "../ProductDetail/AddToWhishlist",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                alert(r.msg);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+</script>

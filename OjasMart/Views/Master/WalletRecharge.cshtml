@@ -1,0 +1,289 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Wallet Recharge";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#tblItemHead").DataTable();
+
+        $(document).bind('contextmenu', function (e) {
+            e.preventDefault();
+        });
+
+        var RoleId = '@Request.RequestContext.HttpContext.Session["Role"]';
+        if (RoleId == "4") {
+            $("#txtMobileNo").attr("disabled", "disabled");
+            $("#ddlMode").val("Online");
+            $("#ddlMode").attr("disabled", "disabled");
+            $("#divRefId").hide();
+            $("#divMode").hide();
+        }
+        else {
+            var select = document.getElementById('ddlMode');
+            for (i = 0; i < select.length; i++) {
+                if (select.options[i].value == 'Online') {
+                    select.remove(i);
+                }
+            }
+          //  $("#ddlMode").remove("Online");
+        }
+    });
+    function InsertCustomerWalletRecharge() {
+        if ($("#txtMobileNo").val() == "") {
+            alert("Please Enter Mobile No !!!");
+            $("#txtMobileNo").focus();
+            return;
+        }
+        if ($("#hdCustomerId").val() == "") {
+            alert("Customer Code Not Found !!!");
+            return;
+        }
+        if ($("#txtAmount").val() == "") {
+            alert("Please Enter Recharge Amount !!!");
+            $("#txtAmount").focus();
+            return;
+        }
+        if ($("#ddlMode").val() == "") {
+            alert("Please Select Payment Mode !!!");
+            $("#ddlMode").focus();
+            return;
+        }
+        var status1 = "success";
+        if ($("#ddlMode").val() == "Online") {
+            status1 = "pending";
+        }
+        var dataobject = {
+            CustomerId: $("#hdCustomerId").val(),
+            PaidAmount: $("#txtAmount").val(),
+            PayMode: $("#ddlMode").val(),
+            Status: status1,
+            BankTransId: $("#txtRefNo").val(),
+            CardType: null
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Sales/InsertWalletRecharge",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                if (data.msg == '1') {
+                    if ($("#ddlMode").val() == "Online") {
+                        window.location.href = "../frmPaymentRequest.aspx?txnId=" + data.txnId;
+                    }
+                    else {
+                        alert('Wallet Successfully Recharged !!!');
+                        location.reload();
+                    }
+                }
+                else {
+                    alert('Recharge Services Corrently not Working. Please try after some time !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function GetCustomerDetailByMobile() {
+        if ($.trim($("#txtMobileNo").val()) != "") {
+            var dataobject = {
+                MobileNo: $("#txtMobileNo").val()
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Sales/GetCustomerAccDetaiByMobilel",
+                type: "POST",
+                data: dataobject,
+                dataType: "json",
+                success: function (r) {
+                    if (r.ContactNo != "0") {
+                        $("#hdCustomerId").val(r.CustomerId);
+                        $("#txtName").val(r.SSName);
+                    }
+                    else {
+                        alert("Account Details not Found for this MobileNo.");
+                        $("#txtMobileNo").val('');
+                        $("#hdCustomerId").val('');
+                        $("#txtName").val('');
+                    }
+                    $("#showSpinner").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });
+        }
+        else {
+            $("#txtMobileNo").val('');
+            $("#hdCustomerId").val('');
+            $("#txtName").val('');
+        }
+    }
+
+    function ProcedPayment() {
+        window.location.href = "../frmPaymentRequest.aspx";
+    }
+
+    function SendSMSForOTP() {
+        if ($("#hdCustomerId").val() == "") {
+            alert("Please Enter Mobile No. !!!");
+            $("#hdCustomerId").focus();
+            return;
+        }
+        var dataobject = {
+            Customerid: $("#txtMobileNo").val()
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Sales/GenerateAndSendOTP",
+            type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (data1) {
+                if (data1 != "0") {
+                    $("#div2").hide();
+                    $("#divOTP").show();
+                   // $("#txtOtp").val(data1);
+                    $("#hdOTP").val(data1);
+                }
+                else {
+                    alert("Mobile No. Not Found !!!");
+                    $("#div2").show();
+                    $("#divOTP").hide();
+                    //$("#txtOtp").val('');
+                    $("#hdOTP").val('');
+                }
+                $("#showSpinner").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+    function VerifyOTP() {
+        if ($("#txtOtp").val() == "") {
+            alert("Please Enter 6 digit OTP !!!");
+            $("#txtOtp").focus();
+            return;
+        }
+        if ($("#txtOtp").val() == $("#hdOTP").val()) {
+            $("#div2").show();
+            $("#btnRecharge").show();
+            $("#btnSendOTP").hide();
+            $("#divOTP").hide();
+        }
+        else {
+            alert("Invalid OTP !!!");
+            $("#txtOtp").focus();
+            return;
+        }
+    }
+</script>
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<input type="submit" value="Click" onclick="ProcedPayment()" style="display:none" />
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Wallet Recharge</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mb-3 header-title">Wallet Recharge</h4>
+                <div class="form-horizontal">
+                    <div class="form-group row mb-3">
+                        <label for="inputEmail3" class="col-3 col-form-label">Mobile No<span style="color:red">*</span> </label>
+                        <div class="col-9">
+                            <input type="text" class="form-control" id="txtMobileNo" value="@Model.ContactNo" placeholder="Mobile No" onchange="GetCustomerDetailByMobile()">
+                            <input type="hidden" id="hdCustomerId" value="@Model.CustomerId" />
+                        </div>
+                    </div>
+                    <div class="form-group row mb-3">
+                        <label for="inputPassword3" class="col-3 col-form-label">Customer Name</label>
+                        <div class="col-9">
+                            <input type="text" disabled class="form-control" value="@Model.SSName" id="txtName" placeholder="Customer Name">
+                        </div>
+                    </div>
+                    <div class="form-group row mb-3">
+                        <label for="inputPassword3" class="col-3 col-form-label">Amount <span style="color:red">*</span></label>
+                        <div class="col-9">
+                            <input type="text" class="form-control" id="txtAmount" placeholder="Amount">
+                        </div>
+                    </div>
+                    <div class="form-group row mb-3" id="divMode">
+                        <label for="inputPassword5" class="col-3 col-form-label">Payment Mode <span style="color:red">*</span></label>
+                        <div class="col-9">
+                            <select id="ddlMode" class="form-control">
+                                <option>Select Mode</option>
+                                <option>Cash</option>
+                                <option>Swap Machine</option>
+                                <option>Paytm</option>
+                                <option>Online</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row mb-3" id="divRefId">
+                        <label for="inputPassword3" class="col-3 col-form-label">Reference No</label>
+                        <div class="col-9">
+                            <input type="text" class="form-control" id="txtRefNo" placeholder="Reference No">
+                        </div>
+                    </div>
+
+                    <div class="form-row" style="display:none" id="divOTP">
+                        <hr />                        
+                        <div class="form-group col-md-6">
+                            <input type="text" class="form-control" id="txtOtp" placeholder="Enter OTP" />
+                            <input type="hidden" id="hdOTP" />                            
+                        </div> 
+                        <div class="form-group col-md-4">
+                            <button type="submit" class="btn btn-info btn-xs" onclick="VerifyOTP()">Submit OTP</button>
+                            <button type="submit" class="btn btn-secondary btn-xs" onclick="SendSMSForOTP()">Resend</button>
+                        </div>                                         
+                    </div>
+
+                    @*<div class="form-group row mb-3 justify-content-end">
+                            <div class="col-9">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="checkmeout">
+                                    <label class="custom-control-label" for="checkmeout">Check me out !</label>
+                                </div>
+                            </div>
+                        </div>*@
+                    <div class="form-group mb-0 justify-content-end row" id="div2">
+                        <div class="col-9">
+                            <button type="submit" id="btnSendOTP" style="display:none" class="btn btn-info waves-effect waves-light" onclick="SendSMSForOTP()">Send OTP</button>
+                            <button type="submit" id="btnRecharge" style="display:block" class="btn btn-info waves-effect waves-light" onclick="InsertCustomerWalletRecharge()">Recharge Wallet</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>  <!-- end card-body -->
+        </div>  <!-- end card -->
+    </div>
+</div>
+

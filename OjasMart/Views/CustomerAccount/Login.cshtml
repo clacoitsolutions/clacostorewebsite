@@ -1,0 +1,448 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <!-- Libs CSS
+    ============================================ -->
+
+    <link rel="stylesheet" href="@Url.Content("~/css/font-awesome/css/font-awesome.min.css")" />
+
+    <link rel="stylesheet" id="color_scheme" href="@Url.Content("~/css/theme.css")" />
+
+    <!-- Stylesheets -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link href='~/webassets/vendor/unicons-2.0.1/css/unicons.css' rel='stylesheet'>
+    <link href="~/webassets/css/style.css" rel="stylesheet">
+    <link href="~/webassets/css/responsive.css" rel="stylesheet">
+    <link href="~/webassets/css/night-mode.css" rel="stylesheet">
+    <link href="~/webassets/css/step-wizard.css" rel="stylesheet">
+
+    <!-- Vendor Stylesheets -->
+    <link href="~/webassets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="~/webassets/vendor/OwlCarousel/assets/owl.carousel.css" rel="stylesheet">
+    <link href="~/webassets/vendor/OwlCarousel/assets/owl.theme.default.min.css" rel="stylesheet">
+    <link href="~/webassets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/webassets/vendor/semantic/semantic.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+    <style>
+        .inp {
+            border: 1px solid #dcdada;
+            height: 40px;
+            text-align: center
+        }
+        .well {
+            padding: 40px !important;
+            border: none !important
+        }
+
+        .customer-login {
+            margin: 0px !important;
+            padding: 60px 40px 10px 50px !important;
+        }
+
+        .mainboxsign {
+            background-color: white;
+            min-height: 400px;
+            margin: 0px;
+            padding: 10px;
+            box-shadow: 0px 2px 15px #c3c3c3;
+            border-radius: 20px
+        }
+
+        .signimg {
+            height: 400px;
+            background-size: cover !important;
+            opacity: 0.8 !important
+        }
+
+        #topspace {
+            height: 70px
+        }
+
+        @@media only screen and (max-width:768px) {
+
+            .well {
+                padding: 10px !important;
+            }
+
+            .signimg {
+                height: 500px !important
+            }
+
+            #topspace {
+                display: none
+            }
+
+            .customer-login {
+                margin: 0px !important;
+                padding: 10px 20px 10px 20px !important;
+            }
+        }
+
+        @*start inputbox*@ .form-group {
+            position: relative;
+            /* Adjust as needed */
+        }
+
+        .form-control {
+            /* Set initial width */
+            min-height: 45px; /* Set initial height */
+            transition: height 0.3s ease; /* Smooth transition for height change */
+
+            margin-bottom: 25px;
+        }
+
+            .form-control:focus {
+                height: 45px; /* Set expanded height when focused */
+            }
+
+        .placeholder {
+            font-size: 18px;
+            position: absolute;
+            left: 25px; /* Adjust as needed */
+            top: 30%;
+            transform: translateY(-50%);
+            color: #aaa;
+            pointer-events: none; /* Prevent interaction with placeholder */
+            transition: top 0.3s ease, font-size 0.3s ease;
+        }
+
+        .form-control:focus + .placeholder,
+        .form-control:not(:placeholder-shown) + .placeholder {
+            top: -13px;
+            left: 20PX;
+            padding-bottom: 5PX;
+            font-size: 18px;
+            color: #454545;
+            opacity: 0.8;
+            font-weight:;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container ">
+        <ul class="breadcrumb" style="background:#ff006e;margin:0px !important;padding:20px">
+            <li><a href="@Url.Action("Index","WebHome")"><i class="fa fa-home"></i></a></li>
+            <li><a href="#">User</a></li>
+            <li><a href="#">Login</a></li>
+        </ul>
+        <script>
+            function handleVerifyButtonClick() {
+                var mobileNumber = document.getElementById("mobileInput").value.trim();
+                if (mobileNumber !== "") {
+                    // Show the OTP input box
+                    document.getElementById("otpInputBox").style.display = "block";
+                    // Disable the Verify button
+                    document.getElementById("sendOTPBtn").disabled = true;
+                    // Show the Submit button
+                    document.getElementById("txtOTP").style.display = "block";
+                }
+            }
+
+            function checkMobileNumber() {
+                var mobileNumber = document.getElementById("mobileInput").value.trim();
+                var verifyBtn = document.getElementById("sendOTPBtn");
+                // Enable the Verify button if mobile number is not empty
+                if (mobileNumber !== "") {
+                    verifyBtn.disabled = false;
+                } else {
+                    verifyBtn.disabled = true;
+                }
+            }
+        </script>
+
+        <div class="row">
+            <div id="content" class="col-sm-12">
+                <div class="page-login">
+                    <div class="account-border">
+                        <h1 id="topspace"></h1>
+                        <div class="row">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-6 mainboxsign">
+                                <div class="row" style="padding:20px">
+                                    <div class="col-sm-5" style="padding:20px">
+                                        <img src="~/img/userlogin.png" class="signimg" style="background-size:cover" />
+                                    </div>
+                                    <div class="col-sm-7 customer-login " style="">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-8 col-12">
+                                                    <input type="text" name="" value="" id="mobileInput" class="form-control " placeholder="" onkeyup="checkMobileNumber()" />
+                                                    <label class="placeholder" for="Password lgn_icon ">Mobile No. </label>
+                                                </div>
+                                                <div class="col-sm-4 "></div>
+                                                <div class="col-sm-12">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 col-12"> <div id="recaptcha-container" style="display:none;"></div></div>
+                                                        <div class="col-md-12 col-12">
+                                                            <h6></h6>
+                                                            <button style="background: #ff006e !important;border:none !important;  opacity: 0.8 !important" id="sendOTPBtn" class="btn btn-primary p-2 px-3" onclick="handleVerifyButtonClick()" disabled> Verify</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div id="otpInputBox" class="form-group" style="display: none;">
+                                            <!-- OTP input fields -->
+                                            <div class="row">
+                                                <div class="col-md-8 col-12">
+                                                    <input class="inp" type="text" maxlength="1" size="1" id="otp1" class="otpInput" onKeyUp="moveToNext(this, 'otp2')" onKeyDown="moveToPrevious(this, 'otp1', event)" onKeyPress="deleteInput(this, event)">
+                                                    <input class="inp" type="text" maxlength="1" size="1" id="otp2" class="otpInput" onKeyUp="moveToNext(this, 'otp3')" onKeyDown="moveToPrevious(this, 'otp1', event)" onKeyPress="deleteInput(this, event)">
+                                                    <input class="inp" type="text" maxlength="1" size="1" id="otp3" class="otpInput" onKeyUp="moveToNext(this, 'otp4')" onKeyDown="moveToPrevious(this, 'otp2', event)" onKeyPress="deleteInput(this, event)">
+                                                    <input class="inp" type="text" maxlength="1" size="1" id="otp4" class="otpInput" onKeyUp="moveToNext(this, 'otp5')" onKeyDown="moveToPrevious(this, 'otp3', event)" onKeyPress="deleteInput(this, event)">
+
+                                                    <input class="inp" type="text" maxlength="1" size="1" id="otp5" class="otpInput" onKeyUp="moveToNext(this, 'otp6')" onKeyDown="moveToPrevious(this, 'otp4', event)" onKeyPress="deleteInput(this, event)">
+
+                                                    <input class="inp" type="text" maxlength="1" size="1" id="otp6" class="otpInput" onKeyUp="moveToNext(this, 'otp6')" onKeyDown="moveToPrevious(this, 'otp5', event)" onKeyPress="deleteInput(this, event)">
+
+                                                </div>
+                                            </div>
+                                            <div id="" class="form-group" style="">
+                                                <div class="row">
+                                                    <div class="col-md-6 col-6">
+                                                        <br />
+                                                        <button style="background:#ff006e !important;border:none;border-radius:10px;color:white !important;padding:10px !important;opacity:0.8 !important; display: none;" class="form-control" onclick="txtverifyOtp()" id="txtOTP"><b>Submit</b></button>
+                                                    </div>
+                                                    <div class="col-md-6 col-6"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- Checkbox for "I am not a robot" -->
+            @*<input type="checkbox" id="robotCheckbox" onclick="handleCheckboxClick()">
+                <label for="robotCheckbox">I am not a robot</label>*@
+
+        </div>
+        <script>
+
+            $(document).ready(function () {
+                //$('#sendOTPBtn').click(function () {
+                //    $('#otpGroup').show(); // Show the OTP input field group
+
+                //});
+
+                $('#confirmOTPBtn').click(function () {
+                    $('#newPasswordGroup').show(); // Show the New Password input field group
+                    $('#confirmPasswordGroup').show(); // Show the Confirm Password input field group
+                    $('#btnhide').show();
+                });
+            });
+
+            //Js for otp box
+
+            function moveToNext(currentInput, nextInputId) {
+                var maxLength = parseInt(currentInput.getAttribute('maxlength'));
+                var currentLength = currentInput.value.length;
+                if (currentLength >= maxLength) {
+                    var nextInput = document.getElementById(nextInputId);
+                    if (nextInput) {
+                        nextInput.focus();
+                    }
+                }
+            }
+
+            function moveToPrevious(currentInput, previousInputId, event) {
+                var currentLength = currentInput.value.length;
+                if (currentLength === 0 && event.keyCode === 8) {
+                    var previousInput = document.getElementById(previousInputId);
+                    if (previousInput) {
+                        previousInput.focus();
+                    }
+                }
+            }
+
+            function deleteInput(currentInput, event) {
+                var currentLength = currentInput.value.length;
+                if (currentLength === 0 && event.keyCode === 8) {
+                    currentInput.value = ""; // Clear current input field
+                }
+            }
+
+        </script>
+
+        <!-------Start code by Abhishek Singh -->
+        @*<script>
+                $('#sendOTPBtn').click(function () {
+                    console.log("hlow")
+                    debugger;
+                    var phoneNumber = $("#mobileInput").val();
+
+                    // AJAX request to send OTP
+                    $.ajax({
+                        url: '/CustomerAccount/sendOTP', // Update the URL with your server route
+                        method: 'POST',
+                        data: JSON.stringify({ phone: phoneNumber }),
+                        contentType: 'application/json',
+                        success: function (response) {
+                            if (response === "ok") {
+                                // OTP sent successfully, show OTP input box
+                                $('#otpInputBox').show();
+                            } else {
+                                // Handle error if OTP not sent
+                                alert("Failed to send OTP. Please try again later.");
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(error);
+                            // Handle error if AJAX request fails
+                            alert("Failed to send OTP. Please try again later.");
+                        }
+                    });
+                    // Your code to handle the click event goes here
+                    // For example, you can trigger a function to send OTP
+                });
+
+
+                function txtverifyOtp() {
+                    debugger;
+                    var phoneNumber = $("#mobileInput").val();
+                    var OTP = $('#otp1').val() + '' + $('#otp2').val() + '' + $('#otp3').val() + '' + $('#otp4').val() + '' + $('#otp5').val() + '' + $('#otp6').val();
+
+                    $.ajax({
+                        url: '/Account/AuthenticateUserByOTP',
+                        method: 'POST',
+                        data: JSON.stringify({ phone: phoneNumber, OTP: OTP }),
+                        contentType: 'application/json',
+                        success: function (response) {
+
+                            console.log(response);
+                            window.location.href = "/WebHome/Index";
+                            $('#newPasswordGroup').show(); // Show the New Password input field group
+                            $('#confirmPasswordGroup').show(); // Show the Confirm Password input field group
+                            $('#btnhide').show();
+                            // Show the OTP input box
+                            /* $("#otpInput").removeClass("d-none");*/
+
+
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(error);
+                        }
+                    });
+                }
+            </script>*@
+
+        <script src="~/webassets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="~/webassets/vendor/OwlCarousel/owl.carousel.js"></script>
+        <script src="~/webassets/vendor/semantic/semantic.min.js"></script>
+        <script src="~/webassets/js/jquery.countdown.min.js"></script>
+        <script src="~/webassets/js/custom.js"></script>
+        <script src="~/webassets/js/product.thumbnail.slider.js"></script>
+        <script src="~/webassets/js/offset_overlay.js"></script>
+
+
+
+
+        <script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-auth-compat.js"></script>
+        <script>
+            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+            // Import Firebase SDK if necessary (if not already imported)
+
+            // Initialize Firebase with your configuration
+            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+            const firebaseConfig = {
+                apiKey: "AIzaSyCz22UHSeOXoKQJVmRUQACJZEoh_guEP-w",
+                authDomain: "clacostore-7303d.firebaseapp.com",
+                projectId: "clacostore-7303d",
+                storageBucket: "clacostore-7303d.appspot.com",
+                messagingSenderId: "811975379858",
+                appId: "1:811975379858:web:4d7a818a2ee24984c3cf4b",
+                measurementId: "G-TK8PFFV7VW"
+            };
+
+            firebase.initializeApp(firebaseConfig);
+
+            // Initialize reCAPTCHA verifier
+            const appVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                'size': 'invisible',
+                'callback': (response) => {
+                    // Callback function when reCAPTCHA verification is successful
+                }
+            });
+
+            // Attach click event listener to send OTP button
+            document.getElementById('sendOTPBtn').addEventListener('click', function () {
+                debugger;
+                var number = '+91' + document.getElementById('mobileInput').value;
+
+                // Send OTP using signInWithPhoneNumber
+                firebase.auth().signInWithPhoneNumber(number, appVerifier)
+                    .then(function (confirmationResult) {
+                        window.confirmationResult = confirmationResult;
+                        coderesult = confirmationResult;
+
+                        console.log(coderesult);
+                        $('#otpInputBox').show();
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+
+                    });
+            });
+
+            document.getElementById('txtOTP').addEventListener('click', function () {
+                debugger;
+                var code = $('#otp1').val() + '' + $('#otp2').val() + '' + $('#otp3').val() + '' + $('#otp4').val() + '' + $('#otp5').val() + '' + $('#otp6').val();
+                console.log(code);
+                coderesult.confirm(code).then(function () {
+                    //console.log("Verified OTP");
+                    //window.location.href = "/WebHome/Index";
+                    var number1 = document.getElementById('mobileInput').value;
+                    $.ajax({
+                        url: '/Account/AuthenticateUserByOTP',
+                        method: 'POST',
+                        data: JSON.stringify({ phone: number1, OTP: code }),
+                        contentType: 'application/json',
+                        success: function (response) {
+
+                            console.log(response);
+                            window.location.href = "/WebHome/Index";
+                            $('#newPasswordGroup').show(); // Show the New Password input field group
+                            $('#confirmPasswordGroup').show(); // Show the Confirm Password input field group
+                            $('#btnhide').show();
+                            // Show the OTP input box
+                            /* $("#otpInput").removeClass("d-none");*/
+
+
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(error);
+                        }
+                    });
+
+                }).catch(function (error) {
+                    console.log(error);
+                   
+                })
+            });
+
+
+        </script>
+
+
+
+</body>
+</html>

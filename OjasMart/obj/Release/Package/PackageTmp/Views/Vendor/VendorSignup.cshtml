@@ -1,0 +1,669 @@
+﻿@model  OjasMart.Models.VMVendorSignup
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>New Registration</title>
+
+    <link rel="shortcut icon" type="image/png" href="@Url.Content("~/image/logo/favicon.png")" />
+    <!-- Libs CSS
+    ============================================ -->
+    <link rel="stylesheet" href="@Url.Content("~/css/bootstrap/css/bootstrap.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/font-awesome/css/font-awesome.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/js/datetimepicker/bootstrap-datetimepicker.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/js/owl-carousel/owl.carousel.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/themecss/lib.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/js/jquery-ui/jquery-ui.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/js/minicolors/miniColors.css")" />
+
+
+
+    <!-- Theme CSS
+    ============================================ -->
+    <link rel="stylesheet" href="@Url.Content("~/css/themecss/so_searchpro.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/themecss/so_megamenu.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/themecss/so-categories.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/themecss/so-newletter-popup.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/themecss/so-listing-tabs.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/footer/footer1.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/header/header1.css")" />
+    <link rel="stylesheet" id="color_scheme" href="@Url.Content("~/css/theme.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/responsive.css")" />
+    <!-- Google web fonts
+    ============================================ -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500,500i,700' rel='stylesheet' type='text/css'>
+    <style type="text/css">
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .typeheader-1 .header-middle {
+            clear: both;
+            background-color: #fff0;
+            padding: 15px 0 7px 0;
+        }
+
+        .typeheader-1 {
+            background-color: #e6e6e6;
+        }
+    </style>
+
+    <script type="text/javascript">
+        function allowOnlyDigit(evt, obj) {
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            if (charCode == 45) {
+                var val = obj.value;
+                if (val.length > 0)
+                    return false;
+            }
+            else if (charCode > 31 && (charCode < 48) || (charCode > 57)) {
+                return false;
+            }
+            return true;
+        }
+    </script>
+
+</head>
+<body class="res layout-1 layout-subpage">
+    <div id="wrapper" class="wrapper-fluid banners-effect-5">
+        <!-- Header Container  -->
+        <header id="header" class=" typeheader-1">
+            <!-- Header Top -->
+            <!-- Header center -->
+            <div class="header-middle">
+                <div class="container">
+                    <div class="row">
+                        <!-- Logo -->
+                        <div class="navbar-logo col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                            <div class="logo"><a href="@Url.Action("Index","WebHome")"><img src="/img/logo111.png" title="Shop Adda Store" alt="Shop Adda Store" /></a></div>
+                        </div>
+                        <!-- //end Logo -->
+                        <!-- Main menu -->
+                        <div class="main-menu col-lg-9 col-md-9 ">
+                            <div class="responsive so-megamenu megamenu-style-dev">
+                                <nav class="navbar-default">
+                                    <div class=" container-megamenu horizontal open ">
+                                        <div class="navbar-header">
+                                            <button type="button" id="show-megamenu" data-toggle="collapse" class="navbar-toggle">
+                                                <span class="icon-bar"></span>
+                                                <span class="icon-bar"></span>
+                                                <span class="icon-bar"></span>
+                                            </button>
+                                        </div>
+
+                                        <div class="megamenu-wrapper">
+                                            <span id="remove-megamenu" class="fa fa-times"></span>
+                                            <div class="megamenu-pattern">
+                                                <div class="container-mega">
+                                                    <ul class="megamenu" data-transition="slide" data-animationtime="250">
+                                                        @*<li class="home hover">
+                                                                <a href="#">Privacy Policy <b class="caret"></b></a>
+
+                                                            </li>
+
+                                                            <li class="home hover">
+                                                                <a href="#">User Agreement <b class="caret"></b></a>
+
+                                                            </li>
+
+
+
+                                                            <li class="home hover">
+                                                                <a href="#">Terms & Condition <b class="caret"></b></a>
+
+                                                            </li>
+
+
+
+
+                                                            <li class="home hover">
+                                                                <a href="#">Faqs <b class="caret"></b></a>
+
+                                                            </li>*@
+
+
+                                                    </ul>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </nav>
+                            </div>
+                        </div>
+                        <!-- //end Main menu -->
+
+
+                    </div>
+
+                </div>
+            </div>
+            <!-- //Header center -->
+            <!-- Header Bottom -->
+
+        </header>
+        <!-- //Header Container  -->
+        <!-- Main Container  -->
+        <div class="main-container container">
+            <ul class="breadcrumb">
+                <li><a href="/Home/Index"><i class="fa fa-home"></i></a></li>
+                <li><a href="#">Seller</a></li>
+                <li><a href="#">Seller Registration</a></li>
+            </ul>
+            @if (ViewBag.Message != null && ViewBag.Message != "")
+            {
+                <div class="row">
+                    <div class="col-sm-12">
+                        @*@if (TempData["msg"].ToString() == "1")
+                            {
+                                <div class="alert alert-success">
+                                    <strong>Success!</strong> @ViewBag.Message
+                                </div>
+                            }*@
+                        @if (TempData["msg"].ToString() == "0")
+                        {
+                            <div class="alert alert-danger">
+                                <strong>Error!</strong> @ViewBag.Message
+                            </div>
+                        }
+                        @if (TempData["msg"].ToString() == "2")
+                        {
+                            <div class="alert alert-warning">
+                                <strong>Warning!</strong> @ViewBag.Message
+                            </div>
+                        }
+                        @if (TempData["msg"].ToString() == "3")
+                        {
+                            <div class="alert alert-warning">
+                                <strong>Warning!</strong> @ViewBag.Message
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            }
+            <div class="row">
+                <div id="content" class="col-sm-12">
+                    <div class="page-login">
+                        <div class="account-border">
+                            <div class="row">
+                                @using (Html.BeginForm("VendorSignup", "Vendor", FormMethod.Post))
+                                {
+                                    @Html.ValidationSummary(true)
+                                    <div class="col-sm-6 customer-login">
+                                        <div class="well">
+                                            <h2><i class="fa fa-file-text-o" aria-hidden="true"></i> Seller Registration</h2>
+                                            <p><strong>I am a New Seller for Register</strong></p>
+                                            <div class="row">
+                                                <div class="col-sm-4">
+
+                                                    <div class="form-group">
+                                                        <label class="control-label " for="input-email">Name</label>
+                                                        @*<input type="text" name="email" value="" id="input-email" class="form-control" />*@
+                                                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", @Placeholder = "Name", @id = "txtName" })
+                                                        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+
+                                                    <div class="form-group">
+                                                        <label class="control-label " for="input-email">E-Mail Address</label>
+                                                        @*<input type="text" name="email" value="" id="input-email" class="form-control" />*@
+                                                        @Html.TextBoxFor(m => m.EmailId, new { @class = "form-control", @Placeholder = "Email Address", @id = "txtEmail" })
+                                                        @Html.ValidationMessageFor(m => m.EmailId, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <label class="control-label " for="input-mob">Mobile No.</label>
+                                                        @*<input type="text" name="Mobile" value="" id="input-mobile" class="form-control" />*@
+                                                        @Html.TextBoxFor(m => m.ContactNo, new { @class = "form-control", @Placeholder = "Mobile No.", onkeypress = "return allowOnlyDigit(event, this)", MaxLength = "10", id = "txtMobile" })
+
+                                                        @Html.ValidationMessageFor(m => m.ContactNo, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="control-label " for="input-mob">Select State</label>
+                                                        @*<input type="text" name="Mobile" value="" id="input-mobile" class="form-control" />*@
+                                                        @Html.DropDownListFor(m => m.VenState, (IEnumerable<SelectListItem>)ViewBag.BindState, new
+                                                   {
+                                                       @class = "form-control",
+                                                       onchange = "BindState()"
+                                                   })
+                                                        @Html.ValidationMessageFor(m => m.VenState, "", new { @class = "text-danger" })
+
+                                                        @Html.ValidationMessageFor(m => m.VenState, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="control-label " for="input-mob">Select City</label>
+                                                        @*<input type="text" name="Mobile" value="" id="input-mobile" class="form-control" />*@
+                                                        @Html.DropDownListFor(m => m.vendorCity, (IEnumerable<SelectListItem>)ViewBag.BindCity, "- select city -", new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(m => m.vendorCity, "", new { @class = "text-danger" })
+
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="control-label " for="input-mob">Password.</label>
+                                                        @Html.TextBoxFor(m => m.Password, new { @class = "form-control", @type = "password", @Placeholder = "Password.", @id = "txtPassword" })
+                                                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="control-label " for="input-mob">Confirm Password.</label>
+                                                        @Html.TextBoxFor(m => m.ConformPassword, new { @class = "form-control", @type = "password", @Placeholder = "Confirm Password.", @id = "txtConfirmPassword" })
+                                                        @Html.ValidationMessageFor(m => m.ConformPassword, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <script>
+                                                function Validate(obj) {
+                                                    debugger;
+                                                    if ($("#txtName").val() == "") {
+                                                        alert("Please Enter Name..");
+                                                        return;
+                                                    }
+                                                    else if ($("#txtEmail").val() == "") {
+                                                        alert("Please Enter Email");
+                                                        return;
+                                                    }
+                                                    else if ($("#txtMobile").val() == "") {
+                                                        alert("Please Enter Mobile No..");
+                                                        return;
+                                                    }
+                                                    else if ($("#vendorCity").val() == "0")
+                                                    {
+                                                        alert("Please Select City.");
+                                                        return;
+                                                    }
+                                                    else if ($("#txtGSTNo").val() == "") {
+                                                        alert("Please Enter GST No.");
+                                                        return;
+                                                    }
+
+                                                    else if ($("#txtPassword").val() == "") {
+                                                        alert("Please Enter Password.");
+                                                        return;
+                                                    }
+
+                                                   OpenModalForOTP()
+
+                                                }
+                                            </script>
+
+                                            <div class="form-group">
+                                                <label class="control-label " for="input-mob">GST No.</label>
+                                                @*<input type="text" name="Mobile" value="" id="input-mobile" class="form-control" />*@
+                                                @Html.TextBoxFor(m => m.GSTNo, new { @class = "form-control", @Placeholder = "Enter GST No.", @id = "txtGSTNo", @onchange = "chkgst(this)" })
+
+                                                @Html.ValidationMessageFor(m => m.GSTNo, "", new { @class = "text-danger" })
+                                            </div>
+
+                                            @*<div class="form-group">
+                                                    <label class="control-label " for="input-mob">MEME No.</label>
+
+                                                    @Html.TextBoxFor(m => m.MSMENo, new { @class = "form-control", @Placeholder = "Enter MEME No.", id = "txtMSMENo" })
+
+                                                    @Html.ValidationMessageFor(m => m.MSMENo, "", new { @class = "text-danger" })
+                                                </div>*@
+
+
+
+
+                                        </div>
+                                        <div class="bottom-form">
+                                            <a style="color:red;font-size:10px" href="#" target="_blank"><i class="fa fa-download"></i> Read Agreement</a>
+                                            <div class="pull-right">
+                                                I have read and agree  <a class="agree"><b>Terms & Conditions</b></a>
+                                                @*<input class="box-checkbox" type="checkbox" name="agree" value="1">*@
+                                                @Html.CheckBoxFor(m => m.IsChecked)
+                                                @Html.ValidationMessageFor(m => m.IsChecked, "", new { @class = "text-danger" })
+                                                &nbsp;
+                                                <input type="submit" value="Continue" class="btn btn-primary" id="btnSubmit">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="myModal" class="modal fade" role="dialog">
+                                        <div class="modal-dialog">
+                                            <!-- Modal content-->
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title">OTP Verification<a href="CustomerAccount/SignUp"><span class="close_modal">&times;</span></a></h4>
+                                                    <input type="hidden" id="hdx" />
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p style="padding:20px;">We have sent an OTP(One Time Password) via SMS on +91 <span class="otp_mobile" id="ModalMobilNo"></span></p>
+                                                    <div class="input-group" style="padding:20px;">
+                                                        <input id="txtOtp" class="form-input verification_code form-control" placeholder="Enter OTP Here">
+                                                    </div>
+                                                    <span class="error otp-error"></span>
+                                                    <button style="margin:10px;" type="button" id="btnSubmitOtp" class="grn_btn btn-sm btn-success verify_otp_btn" onclick="verifyOTP('V')" @*onClick="ga('send', 'event', 'OTP', 'verify', 'to verify otp');"*@><span>Verify</span><img class="img1" src="/image/loader_white.gif" height="30" width="30"></button>
+                                                    <button type="button" class="grn_btn btn-sm btn-primary resend_otp_btn" onclick="verifyOTP('R')" @*onClick="ga('send', 'event', 'OTP', 'resend otp', 'to resend the otp');"*@><span>Resend OTP</span><img src="/image/loader_white.gif" class="img1" height="30" width="30"></button>
+                                                    <p class="otp_div" style="display:none"><i class="fa fa-check-circle"></i><span class="msg_otp">OTP Sent</span></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                }
+
+
+                                <div class="col-sm-6 new-customer">
+                                    <div class="well">
+                                        <h2><i class="fa fa-file-o" aria-hidden="true"></i>  Seller Login</h2>
+                                        <p>By creating an account you will be able to sell faster, be up to date on an order's, and able to list all your product on our site.</p>
+                                    </div>
+                                    <div class="bottom-form">
+                                        <a href="@Url.Action("VendorLogin","Vendor")" class="btn btn-default pull-right">Login</a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- //Main Container -->
+        <!-- Footer Container -->
+        @*<footer class="footer-container typefooter-1">
+
+            @{Html.RenderAction("footerbottom", "footer"); }
+            <!-- /Footer Bottom Container -->
+            <!--Back To Top-->
+            <div class="back-to-top"><i class="fa fa-angle-up"></i></div>
+            <!--Back To Top-->
+            <div class="back-to-top"><i class="fa fa-angle-up"></i></div>
+        </footer>*@
+        <!-- //end Footer Container -->
+    </div>
+    <!-- Include Libs & Plugins
+    ============================================ -->
+    <!-- Vendor js -->
+    <script src="../assets/js/vendor.min.js"></script>
+    <!-- App js -->
+    <script src="../assets/js/app.min.js"></script>
+    ============================================ -->
+    <script src="@Url.Content("~/js/jquery-2.2.4.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/bootstrap.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/owl-carousel/owl.carousel.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/themejs/libs.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/unveil/jquery.unveil.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/countdown/jquery.countdown.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/dcjqaccordion/jquery.dcjqaccordion.2.8.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/datetimepicker/moment.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/datetimepicker/bootstrap-datetimepicker.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/jquery-ui/jquery-ui.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/modernizr/modernizr-2.6.2.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/minicolors/jquery.miniColors.min.js")" type="text/javascript"></script>
+
+
+    <!-- Theme files
+    ============================================ -->
+    <script src="@Url.Content("~/js/themejs/application.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/themejs/homepage.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/themejs/toppanel.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/themejs/so_megamenu.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/themejs/addtocart.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/js/jquery.validate.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.9/jquery.validate.unobtrusive.js")" type="text/javascript"></script>
+
+    @*@section Scripts {
+            @Scripts.Render("~/bundles/jqueryval")
+        }*@
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+<div id="responsive-modelItem" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myLargeModalLabel">Fill OTP</h4>
+                @*<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>*@
+            </div>
+            @*<div class="modal-body">
+                    <div class="card">
+                        <div class="card-body">
+
+                            @Html.TextBoxFor(m=>m.OTP,new { @class="form-control",@placeholder="Enter OTP",@id="txtOTP" })
+
+                        </div>
+                    </div>
+                </div>*@
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-info waves-effect waves-light" id="btnSaveItem" onclick="SaveOtp()">Submit</button>
+                @*<button type="button" class="btn btn-danger waves-effect text-left" data-dismiss="modal">Close</button>*@
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+
+<script>
+    function chkgst(obj) {
+        if ($(obj).val().length != "15") {
+            alert("Invalid GST No.!");
+            $(obj).val('');
+            $(obj).focus();
+
+        }
+    }
+
+    $(document).ready(function () {
+        $('#ConformPassword').on('change', function () {
+            if ($('#Password').val() != $('#ConformPassword').val()) {
+                $('#ConformPassword').val('');
+                alert('Please Enter Currect Confirm Password');
+            }
+
+        })
+    })
+
+    $(document).ready(function () {
+
+        if ('@TempData["msg"]' == '1') {
+            //$('#responsive-modelItem').modal('show');
+            alert("You Have Successfully Registered with us your Account is under admin verification");
+        }
+        $('#responsive-modelItem').modal('hide');
+    })
+
+
+    function SaveOtp() {
+
+        if ($('#txtOTP').val() != "") {
+
+            //$.post('/Vendor/MatchOTP/', { OTP: $('#txtOTP').val() }, function (data) {
+
+            if (data && data == "True") {
+                $('#responsive-modelItem').modal('hide');
+                alert("You Have Successfully Registered with us your Account is under admin verification");
+                location.href = "/Vendor/VendorLogin";
+            }
+            //    else {
+
+            //        alert("OTP Not Match");
+            //    }
+
+
+
+
+
+            //})
+
+        }
+        else {
+            alert("Please Enter OTP");
+        }
+
+    }
+
+    function BindState() {
+   debugger
+        var Html = "";
+        $.post("/Vendor/BindCity", { StateId: $("#VenState").val() }, function (data) {
+
+            var arrdata = eval(data);
+            if (data != "") {
+                Html = "";
+                for (var i = 0; i < arrdata.length; i++) {
+                    Html += "<option value=" + arrdata[i].ID + ">" + arrdata[i].CityName + "</option>"
+                }
+            }
+            else {
+                Html += "<option value='0'>--Select City--</option>"
+            }
+            $("#vendorCity").html(Html);
+        });
+    }
+
+
+    function phonenumber(inputtxt) {
+        var phoneno = /^\d{10}$/;
+        if (inputtxt.match(phoneno)) {
+            return true;
+        }
+        else {
+            alert("Enter Valid Mobile No");
+            return false;
+        }
+    }
+    function verifyOTP(Action, otp) {
+        debugger;
+        var UserName = $('#txtName').val();
+        var UserEmail = $('#txtEmail').val();
+        var UserMobile = $('#txtMobile').val();
+        var Otp = $('#txtOtp').val();
+
+        if (Action == "R") {
+            return
+        }
+
+        $(".otp_div").css("display", "none");
+        $(".otp_div i").css("display", "block");
+        $(".otp_div span").css("display", "block");
+        if ($("#txtOtp").val() != "") {
+            if ($("#hdx").val() == $("#txtOtp").val()) {
+                $(".otp_div span").text("Mobile no. Verified");
+                $('#btnSubmitOtp').attr('type', 'Submit');
+                $(".otp_div").fadeIn(100);
+                setTimeout(function () {
+                    $("#myModal").fadeOut(300);
+                    $(".modal-dialog").animate({ "margin-top": "-128px" }, 600);
+                    //setLoginData()
+                }, 1000);
+                $("#dropdown_name").text($(".full_name").val());
+                $(".otp_div span").text("Mobile no. Verified");
+                $(".otp_div").fadeIn(100);
+                setTimeout(function () {
+                    $("#myModal").fadeOut(300);
+                    $(".modal-dialog").animate({ "margin-top": "-128px" }, 600);
+                    //setLoginData()
+                }, 1000);
+
+               // val("<input type='button' name='submit' value='Continue' onclick='val()' class='btn_1' id='btnSubmit'>");
+
+            }
+            else {
+                alert('Mobile No. Not verified');
+            }
+        }
+        else {
+            alert('Enter OTP to verify');
+        }
+
+    }
+
+    function OpenModalForOTP() {
+
+        if ($("#txtName").val() == "") {
+            alert("Please Enter Name..");
+            return;
+        }
+        else if ($("#txtEmail").val() == "") {
+            alert("Please Enter Email");
+            return;
+        }
+        else if ($("#txtMobile").val() == "") {
+            alert("Please Enter Mobile No..");
+            return;
+        }
+        else if ($("#vendorCity").val() == "0") {
+            alert("Please Select City.");
+            return;
+        }
+        else if ($("#txtGSTNo").val() == "") {
+            alert("Please Enter GST No.");
+            return;
+        }
+
+        else if ($("#txtPassword").val() == "") {
+            alert("Please Enter Password.");
+            return;
+        }
+        debugger;
+        var UserName = null;
+        var UserEmail = null;
+        var UserMobile = $("#txtMobile").val();
+
+        if (UserMobile == "") {
+            alert('Enter Mobile No');
+        }
+        if (phonenumber(UserMobile) == false) {
+            return;
+        }
+
+        $.post('/CustomerAccount/SENDOTPNEw', { Mobile: UserMobile }, function (data) {
+            $("#hdx").val(data);
+        })
+        //$("#myModal").fadeIn(300);
+        $("#myModal").modal('show');
+        $(".modal-dialog").animate({ "margin-top": "128px" }, 800);
+        $(".otp_div i").css("display", "block");
+        $(".otp_div span").css("display", "block");
+        $('#ModalMobilNo').text(UserMobile);
+
+    }
+
+</script>
+
+
+
+
+
+
+
+
+
+

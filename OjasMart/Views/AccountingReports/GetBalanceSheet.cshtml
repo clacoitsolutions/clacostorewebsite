@@ -1,0 +1,400 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Balance Sheet";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    decimal totExp = 0, totIncome = 0;
+    decimal totFixAmt = 0, totCurrAsset = 0;
+
+    decimal totCapAmt = 0, totLiabAmt = 0, totLoanLib = 0;
+
+    decimal totLoss = 0, totProfit = 0;
+    bool IsProfit = false;
+}
+
+@using System.Data;
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$("#txtStartDate").val($.datepicker.formatDate("dd-MM-yy", new Date()));
+        //$("#txtEndDate").val($.datepicker.formatDate("dd-MM-yy", new Date()));
+
+        $('#txtStartDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+        $('#txtEndDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+
+        //getDetails();
+
+
+    });
+
+    function getDetails() {
+        $("#showSpinner").show();
+        $.ajax({
+            url: "../AccountingReports/GetBalanceSheet",
+            type: "POST",
+            data: { 'StartDate': $.trim($('#txtStartDate').val()), 'EndDate': $.trim($('#txtEndDate').val()) },
+            datatype: "json",
+            success: function (data1) {
+
+                var htmlNew = data1;
+                $('#divDetails1').html($(htmlNew).find('#div1'));
+
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function getDetails1() {
+        $("#showSpinner").show();
+        $.ajax({
+            url: "../AccountingReports/ProfitLossStatement",
+            type: "POST",
+            data: { 'StartDate': $.trim($('#txtStartDate').val()), 'EndDate': $.trim($('#txtEndDate').val()), 'Type': 'S' },
+            datatype: "json",
+            success: function (data1) {
+                var htmlNew = data1;
+                $('#divsub').show();
+                $('#divsub').html($(htmlNew).find('#divsub1'));
+                $("#showSpinner").hide();
+            }
+        });
+    }
+</script>
+
+
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Balance Sheet Statement</h4>
+        </div>
+    </div>
+</div>
+<div class="row" style="display:none">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="inputEmail4" class="col-form-label">Start Date </label>
+                        <input type="text" class="form-control" id="txtStartDate" placeholder="Start Date" value="@Model.mDate" data-date-autoclose="true">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="inputPassword4" class="col-form-label">End Date</label>
+                        <input type="text" class="form-control" id="txtEndDate" placeholder="End Date" value="@Model.eDate" data-date-autoclose="true">
+                    </div>
+                    <div class="form-group col-md-3" style="margin-top:36px">
+                        <button type="submit" class="btn btn-primary waves-effect waves-light" onclick="getDetails()">Filter Record</button>
+                    </div>
+                </div>
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card" id="divDetails1">
+            <div class="card-body" id="div1">
+                <div class="form-row" style="margin-bottom:-34px">
+                    <div class="col-md-12" style="text-align:right"><span style="font-size: 11px;color: #1a6359;font-weight: bold;"> Dated: @DateTime.Now.ToString("dd-MMM-yyyy hh:mm:ss tt")</span></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                    </div>
+                    <div class="form-group col-md-8" style="text-align:center;margin:0px">
+                        <p style="font-size: 24px;font-weight: bold;color: #631a38;margin:0px">BALANCE SHEET</p>
+                        <p style="font-size: 20px;font-weight: bold;color: #1a6359;margin:0px">@Convert.ToString(Session["CompanyName"])</p>
+                        <p style="font-size: 13px;font-weight: bold;margin:0px">As on <span style="color:red">@Model.mDate</span> @*to <span style="color:red">@Model.eDate</span>*@</p>
+                    </div>
+                    <div class="form-group col-md-2">
+                    </div>
+                </div>
+                <hr />
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <div class="row">
+                            <div class="col-md-12" style="text-align: left;font-size: 20px;color: #631b1b;margin-right: 5px"><span>LIABLITIES</span></div>
+                        </div>
+                        <div class="row" style="background-color: #1a6359;margin-right: 5px">
+                            <div class="col-md-8">
+                                <h5 style="color: white;font-weight: bold;">Particulars</h5>
+                            </div>
+                            <div class="col-md-4" style="text-align:right">
+                                <h5 style="color: white;font-weight: bold;">Amount</h5>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 style="font-weight: bold;">Capital Account</h5>
+                            </div>
+                        </div>
+                        @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+                        {
+
+                            foreach (DataRow dr in Model.dt1.Rows)
+                            {
+                                if (Convert.ToString(dr["parentGroup"]) == "Capital Account" || Convert.ToString(dr["group_name"]) == "Capital Account")
+                                {
+                                    <div class="row" style="font-size:12px;margin-left:8px">
+                                        <div class="col-md-8">
+                                            @dr["AccountName"]
+                                        </div>
+                                        <div class="col-md-4" style="text-align:right">
+                                            @dr["Bal"]
+                                        </div>
+                                    </div>
+                                    totCapAmt += Convert.ToDecimal(dr["Bal"]);
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <span>No Record Added...</span>
+                                </div>
+                            </div>
+                        }
+                        <hr />
+                        <div class="row" style="color: #1a6359;font-family: -webkit-pictograph;">
+                            <div class="col-md-8">
+                                <span>Total Capital Amount: </span>
+                            </div>
+                            <div class="col-md-4" style="text-align:right">
+                                <span>@totCapAmt</span>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 style="font-weight: bold;">Loan (Liability)</h5>
+                            </div>
+                        </div>
+                        @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+                        {
+                            foreach (DataRow dr in Model.dt1.Rows)
+                            {
+                                if (Convert.ToString(dr["parentGroup"]) == "Loans (Liability)" || Convert.ToString(dr["group_name"]) == "Loans (Liability)")
+                                {
+                                    <div class="row" style="font-size:12px;margin-left:8px">
+                                        <div class="col-md-8">
+                                            @dr["AccountName"]
+                                        </div>
+                                        <div class="col-md-4" style="text-align:right">
+                                            @dr["Bal"]
+                                        </div>
+                                    </div>
+                                    totLoanLib += Convert.ToDecimal(dr["Bal"]);
+                                }
+
+                            }
+                        }
+                        <hr />
+                        <div class="row" style="color: #1a6359;font-family: -webkit-pictograph;">
+                            <div class="col-md-8">
+                                <span>Total Loan (Liability): </span>
+                            </div>
+                            <div class="col-md-4" style="text-align:right">
+                                <span>@totLoanLib</span>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 style="font-weight: bold;">Current Liabilities</h5>
+                            </div>
+                        </div>
+                        @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+                        {
+                            foreach (DataRow dr in Model.dt1.Rows)
+                            {
+                                if (Convert.ToString(dr["parentGroup"]) == "Current Liabilities" || Convert.ToString(dr["group_name"]) == "Current Liabilities")
+                                {
+                                    <div class="row" style="font-size:12px;margin-left:8px">
+                                        <div class="col-md-8">
+                                            @dr["AccountName"]
+                                        </div>
+                                        <div class="col-md-4" style="text-align:right">
+                                            @if (Convert.ToString(dr["Bal"]).Contains('-'))
+                                            {
+                                                <span style="color:red">@Convert.ToString(dr["Bal"]).Replace(@"-", "") Cr</span>
+                                            }
+                                            else
+                                            {
+                                                @dr["Bal"]
+                                            }
+                                        </div>
+                                    </div>
+
+                                    totLiabAmt += Convert.ToDecimal(dr["Bal"]);
+                                }
+
+                            }
+                        }
+                        <hr />
+                        <div class="row" style="color: #1a6359;font-family: -webkit-pictograph;">
+                            <div class="col-md-8">
+                                <span>Total Current Liabilities: </span>
+                            </div>
+                            <div class="col-md-4" style="text-align:right">
+                                <span>@totLiabAmt</span>
+                            </div>
+                        </div>
+                        <hr />
+                        @if (Model.IsActive == true)
+                        {
+                            <div class="row" style="margin-top:80px;font-family: initial;font-size: 17px;">
+                                <div class="col-md-8">
+                                    Net Profit (c/f):
+                                </div>
+                                <div class="col-md-4" style="text-align:right">
+                                    <span style="color:#1b6359">@Model.CloseBal Dr</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group col-md-6" style="border-left: 1px dotted #1a6359;">
+                        <div class="row">
+                            <div class="col-md-12" style="text-align: left;font-size: 20px;color: #631b1b;margin-right: 5px"><span>ASSETS</span></div>
+                        </div>
+                        <div class="row" style="background-color: #1a6359;margin-left: 5px">
+                            <div class="col-md-8">
+                                <h5 style="color: white;font-weight: bold;">Particulars</h5>
+                            </div>
+                            <div class="col-md-4" style="text-align:right">
+                                <h5 style="color: white;font-weight: bold;">Amount</h5>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 style="font-weight: bold;">Fixed Assets</h5>
+                            </div>
+                        </div>
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+
+                            foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                if (Convert.ToString(dr["parentGroup"]) == "Fixed Assets" || Convert.ToString(dr["group_name"]) == "Fixed Assets")
+                                {
+                                    <div class="row" style="font-size:12px;margin-left:8px">
+                                        <div class="col-md-8">
+                                            @dr["AccountName"]
+                                        </div>
+                                        <div class="col-md-4" style="text-align:right">
+                                            @dr["Bal"]
+                                        </div>
+                                    </div>
+                                    totFixAmt += Convert.ToDecimal(dr["Bal"]);
+                                }
+
+                            }
+                        }
+                        <hr />
+                        <div class="row" style="color: #1a6359;font-family: -webkit-pictograph;">
+                            <div class="col-md-8">
+                                <span>Total Fixed Assets: </span>
+                            </div>
+                            <div class="col-md-4" style="text-align:right">
+                                <span>@totFixAmt</span>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 style="font-weight: bold;">Current Assets</h5>
+                            </div>
+                        </div>
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                if (Convert.ToString(dr["parentGroup"]) == "Current Assets" || Convert.ToString(dr["group_name"]) == "Current Assets" || Convert.ToString(dr["parentGroup"]) == "Assets")
+                                {
+
+                                    <div class="row" style="font-size:12px;margin-left:8px">
+                                        <div class="col-md-8">
+                                            @dr["AccountName"]
+                                        </div>
+                                        <div class="col-md-4" style="text-align:right">
+                                            @if (Convert.ToString(dr["Bal"]).Contains('-'))
+                                            {
+                                                <span style="color:red">@Convert.ToString(dr["Bal"]).Replace(@"-", "") Cr</span>
+                                            }
+                                            else
+                                            {
+                                                @dr["Bal"]
+                                                totCurrAsset += Convert.ToDecimal(dr["Bal"]);
+                                            }
+                                        </div>
+                                    </div>
+
+                                }
+
+                            }
+                        }
+                        <hr />
+                        <div class="row" style="color: #1a6359;font-family: -webkit-pictograph;">
+                            <div class="col-md-8">
+                                <span>Total Current Assets: </span>
+                            </div>
+                            <div class="col-md-4" style="text-align:right">
+                                <span>@totCurrAsset</span>
+                            </div>
+                        </div>
+                        <hr />
+                        @if (Model.IsActive == false)
+                        {
+                            <div class="row" style="margin-top:80px;font-family: initial;font-size: 17px;">
+                                <div class="col-md-8">
+                                    Net Profit (c/d):
+                                </div>
+                                <div class="col-md-4" style="text-align:right">
+                                    <span style="color:red">@Model.CloseBal Cr</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @{
+                    totIncome = totFixAmt + totCurrAsset;
+                    totExp = totCapAmt + totLiabAmt + totLoanLib;
+                    if (totIncome >= totExp)
+                    {
+                        IsProfit = true;
+                        totProfit = totIncome - totExp;
+                    }
+                    else
+                    {
+                        totLoss = totExp - totIncome;
+                    }
+                }
+
+                <div class="row" style="background-color: #1a6359;margin-left: -11px;">
+                    <div class="col-md-6" style="text-align:right">
+                        <h5 style="color: white;font-weight: bold;">Total: @Model.todayPoAmt</h5>
+                    </div>
+                    <div class="col-md-6" style="text-align:right">
+                        <h5 style="color: white;font-weight: bold;">Total: @Model.todayPoAmt</h5>
+                    </div>
+                </div>
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>

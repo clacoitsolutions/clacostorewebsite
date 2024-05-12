@@ -1,0 +1,135 @@
+﻿
+@{
+    ViewBag.Title = "AddSubMenu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.ajax({
+            type: 'Post',
+            url: '@Url.Action("BindMainMenus")',
+            dataType: 'json',
+            data: {},
+            success: function (list) {
+                $("#ddlMainMenu").empty();
+                $("#ddlMainMenu").append('<option value="' + '' + '">' + 'Select' + '</option>');
+                $.each(list, function (i, list) {
+                    $("#ddlMainMenu").append('<option value="' + list.Id + '">' + list.MenuTitle + '</option>');
+                });
+
+            },
+            error: function (ex) {
+                alert('Failed to retrieve Data : ' + ex);
+            }
+        });
+
+        $("#btnAdd").click(function () {
+            if ($("#ddlMainMenu").val() == "") {
+                alert("Please Select Main Menu");
+                $("#ddlMainMenu").focus();
+                return;
+            }
+            if ($("#txtMenuTitle").val() == "") {
+                alert("Please Enter Menu Title");
+                $("#txtMenuTitle").focus();
+                return;
+            }
+            if ($("#txtURL").val() == "") {
+                alert("Please Enter Menu Url");
+                $("#txtURL").focus();
+                return;
+            }
+            var dataobject = {
+                MainmenuId:$("#ddlMainMenu").val(),
+                MenuTitle: $("#txtMenuTitle").val(),
+                url: $("#txtURL").val(),
+                iconclass: $("#txtIcon").val(),
+                Priority: $("#txtPriority").val()
+            };
+            $.ajax({
+
+                url: "/MenuConfiguration/insertSubMenuDetails",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                //data: dataobject,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    if (r == '1') {
+                        alert("Menu Details Successfully Saved !!!");
+                        //location.reload();                        
+                        $("#ddlMainMenu").val('');
+                        $("#txtMenuTitle").val('');
+                        $("#txtURL").val('');
+                        $("#txtIcon").val('');
+                        $("#txtPriority").val('');
+                        $("#txtMenuTitle").focus();
+                        //location.reload();
+                    }
+                    if (r == "0") {
+                        alert("Please Check values Entered by you!");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("Please Check values Entered by you!");
+                }
+            });
+        });
+    });
+</script>
+
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Add Sub Menu</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                @*<h4 class="header-title">Add Sub Menu</h4>*@
+                <form>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="input-1" class="lblColor">Select Main Menu</label>
+                            <select class="form-control single-select" id="ddlMainMenu"></select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputEmail4" class="col-form-label">Menu Title</label>
+                            <input type="text" class="form-control" id="txtMenuTitle" placeholder="Enter Menu Title">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputPassword4" class="col-form-label">URL</label>
+                            <input type="text" class="form-control" id="txtURL" placeholder="Enter URL">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputAddress" class="col-form-label">Icon Class</label>
+                            <input type="text" class="form-control" id="txtIcon" placeholder="Enter Icon Class">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputAddress2" class="col-form-label">Priority</label>
+                            <input type="text" class="form-control" id="txtPriority" placeholder="Enter Display Priority">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary waves-effect waves-light" id="btnAdd">Save Record</button>
+                </form>
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+

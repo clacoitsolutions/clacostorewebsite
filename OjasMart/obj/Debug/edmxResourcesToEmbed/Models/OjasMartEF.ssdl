@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="ozasmartModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="mst_Role">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Role" Type="nvarchar" MaxLength="50" />
+    <Property Name="IsActive" Type="bit" />
+    <Property Name="EntryDate" Type="datetime" />
+    <Property Name="EntryBy" Type="nvarchar" MaxLength="50" />
+    <Property Name="type" Type="varchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="State_Master">
+    <Key>
+      <PropertyRef Name="SNo" />
+    </Key>
+    <Property Name="SNo" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="State_name" Type="nvarchar" MaxLength="150" />
+    <Property Name="State_id" Type="varchar" MaxLength="50" />
+    <Property Name="State_Abr" Type="varchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="tbl_Login">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="UserName" Type="nvarchar" MaxLength="50" />
+    <Property Name="Password" Type="nvarchar" MaxLength="50" />
+    <Property Name="Role" Type="int" />
+    <Property Name="IsActive" Type="bit" />
+    <Property Name="EntryDate" Type="datetime" />
+    <Property Name="LastLoginDate" Type="datetime" />
+    <Property Name="CompanyCode" Type="varchar" MaxLength="50" />
+    <Property Name="EmailAddress" Type="varchar" MaxLength="50" />
+    <Property Name="ContactNo" Type="varchar" MaxLength="50" />
+    <Property Name="LoginCount" Type="int" />
+  </EntityType>
+  <EntityType Name="tbl_MainMenu">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="MainMenuName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="Url" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Priority" Type="int" />
+    <Property Name="MenuIcon" Type="nvarchar" MaxLength="100" />
+    <Property Name="EntryDate" Type="datetime" />
+    <Property Name="Controller" Type="nvarchar" MaxLength="100" />
+    <Property Name="Action" Type="nvarchar" MaxLength="100" />
+    <Property Name="IsVisible" Type="bit" />
+    <Property Name="AccesibleFor" Type="varchar" MaxLength="20" />
+  </EntityType>
+  <EntityType Name="tbl_MenuConfiguration">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="RoleId" Type="int" />
+    <Property Name="MainMenuId" Type="int" />
+    <Property Name="SubMenuId" Type="int" />
+    <Property Name="EntryDate" Type="datetime" />
+    <Property Name="EntryBy" Type="varchar" MaxLength="100" />
+    <Property Name="ThiredLevelMenuid" Type="int" />
+  </EntityType>
+  <EntityType Name="tbl_SubMenu">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="MainMenuId" Type="int" Nullable="false" />
+    <Property Name="SubMenuName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="url" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Priority" Type="int" />
+    <Property Name="MenuIcon" Type="nvarchar" MaxLength="100" />
+    <Property Name="EntryDate" Type="datetime" />
+    <Property Name="Controller" Type="nvarchar" MaxLength="100" />
+    <Property Name="Action" Type="nvarchar" MaxLength="100" />
+    <Property Name="IsVisible" Type="bit" />
+    <Property Name="AccesibleFor" Type="varchar" MaxLength="20" />
+  </EntityType>
+  <EntityType Name="tbl_VendorMaster">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="VendorCode" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="StoreName" Type="varchar" MaxLength="500" />
+    <Property Name="ContactName" Type="varchar" MaxLength="200" />
+    <Property Name="MobileNo" Type="varchar" MaxLength="50" />
+    <Property Name="EmailID" Type="varchar" MaxLength="100" />
+    <Property Name="StoreLogo" Type="nvarchar(max)" />
+    <Property Name="IsMobileVarified" Type="bit" />
+    <Property Name="IsEmailVarified" Type="bit" />
+    <Property Name="EntryDate" Type="datetime" />
+    <Property Name="IsActive" Type="bit" />
+    <Property Name="Description" Type="varchar" MaxLength="1000" />
+    <Property Name="LogisticType" Type="varchar" MaxLength="50" />
+    <Property Name="AdharNo" Type="varchar" MaxLength="25" />
+    <Property Name="PanNo" Type="varchar" MaxLength="25" />
+    <Property Name="GSTNo" Type="varchar" MaxLength="25" />
+    <Property Name="bussnessType" Type="varchar" MaxLength="50" />
+    <Property Name="bussnessStartDate" Type="varchar" MaxLength="24" />
+    <Property Name="MerchantRef" Type="varchar" MaxLength="32" />
+    <Property Name="CourierStatus" Type="int" />
+  </EntityType>
+  <EntityType Name="tbl_VendorRegistration">
+    <Key>
+      <PropertyRef Name="SrNo" />
+    </Key>
+    <Property Name="SrNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="VendorId" Type="varchar" MaxLength="50" />
+    <Property Name="FrenchiseId" Type="varchar" MaxLength="50" />
+    <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="EmailId" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="ContactNo" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="FullAddress" Type="varchar(max)" />
+    <Property Name="ProfitAmount" Type="varchar" MaxLength="50" />
+    <Property Name="ApproveStatus" Type="varchar" MaxLength="50" />
+    <Property Name="EntryDate" Type="datetime" Nullable="false" />
+    <Property Name="Password" Type="varchar" MaxLength="25" />
+    <Property Name="IsActive" Type="bit" />
+    <Property Name="GSTNo" Type="varchar" MaxLength="50" />
+    <Property Name="MSME" Type="varchar" MaxLength="50" />
+    <Property Name="CityName" Type="varchar" MaxLength="100" />
+    <Property Name="State" Type="varchar" MaxLength="50" />
+    <Property Name="userType" Type="varchar" MaxLength="50" />
+    <Property Name="UpdatedDate" Type="datetime" />
+    <Property Name="UpdatedBy" Type="varchar" MaxLength="100" />
+    <Property Name="OTP" Type="varchar" MaxLength="20" />
+    <Property Name="OTPStatus" Type="varchar" MaxLength="20" />
+    <Property Name="Locality" Type="varchar" MaxLength="100" />
+    <Property Name="Pincode" Type="varchar" MaxLength="100" />
+  </EntityType>
+  <Function Name="ApprovedVendor" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="Emailid" Type="varchar" Mode="In" />
+    <Parameter Name="Status" Type="varchar" Mode="In" />
+    <Parameter Name="msg" Type="int" Mode="InOut" />
+  </Function>
+  <EntityContainer Name="ozasmartModelStoreContainer">
+    <EntitySet Name="mst_Role" EntityType="Self.mst_Role" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="State_Master" EntityType="Self.State_Master" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_Login" EntityType="Self.tbl_Login" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_MainMenu" EntityType="Self.tbl_MainMenu" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_MenuConfiguration" EntityType="Self.tbl_MenuConfiguration" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_SubMenu" EntityType="Self.tbl_SubMenu" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_VendorMaster" EntityType="Self.tbl_VendorMaster" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_VendorRegistration" EntityType="Self.tbl_VendorRegistration" Schema="dbo" store:Type="Tables" />
+  </EntityContainer>
+</Schema>

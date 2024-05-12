@@ -1,0 +1,255 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Print Invoice";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{decimal totalgst = 0; decimal TotalMRP = 0;}
+@using System.Data;
+
+<!-- start page title -->
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="../Ecommarce/EcommarceCustomerDashboard">eCommarce</a></li>
+                    <li class="breadcrumb-item"><a href="../ecommarce/OnlineOrderReport">Order List</a></li>
+                    <li class="breadcrumb-item active">Invoice</li>
+                </ol>
+            </div>
+            <h4 class="page-title">Invoice</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card-box">
+            <div class="clearfix">
+                <div class="float-left">
+                    <img src="../img/logo.jpeg" alt="" style="height:70px">
+                </div>
+                <div class="float-right">
+                    <h4 class="m-0 d-print-none">Invoice</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mt-3">
+                        <p><b>Hello, @Model.dt.Rows[0]["Name"]</b></p>
+                        <p class="text-muted">
+                            Thanks a lot because you keep purchasing our products. Our company
+                            promises to provide high quality products for you as well as outstanding
+                            customer service for every transaction.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4 offset-md-2">
+                    <div class="mt-3 float-right">
+                        <p class="m-b-10"><strong>Order Date : </strong> <span class="float-right"> &nbsp;&nbsp;&nbsp;&nbsp; @Model.dt.Rows[0]["OrderDate"]</span></p>
+                        <p class="m-b-10"><strong>Payment Mode : </strong> <span class="float-right"><span class="badge badge-danger">@Model.dt.Rows[0]["PaymentMode"]</span></span></p>
+                        <p class="m-b-10"><strong>Order No. : </strong> <span class="float-right">@Model.dt.Rows[0]["OrderId"] </span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm-6">
+                    <h6>Billing Address</h6>
+                    <address>
+                        @Model.dt.Rows[0]["Name"]<br>
+                        @Model.dt.Rows[0]["Add1"]<br>
+                        @Model.dt.Rows[0]["Add2"]<br>
+                        <abbr title="Phone">P:</abbr>(+91) @Model.dt.Rows[0]["MobileNo"]
+                    </address>
+                </div> <!-- end col -->
+
+                <div class="col-sm-6">
+                    <h6>Shipping Address</h6>
+                    <address>
+                        @Model.dt.Rows[0]["Name"]<br>
+                        @Model.dt.Rows[0]["Add1"]<br>
+                        @Model.dt.Rows[0]["Add2"]<br>
+                        <abbr title="Phone">P:</abbr>(+91) @Model.dt.Rows[0]["MobileNo"]
+                    </address>
+                </div> <!-- end col -->
+            </div>
+            <!-- end row -->
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table mt-4 table-centered" width="99%" border="2" align="center" cellpadding="2" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Item</th>
+                                    <th style="width: 10%">Color</th>
+                                    <th style="width: 10%">Size</th>
+                                    <th style="width: 10%">Quantity</th>
+                                    <th style="width: 10%">MRP</th>
+                                    <th style="width: 10%">Rate</th>
+                                    @*<th style="width: 10%" class="text-right">Sub Total</th>*@
+                                    <th style="width: 15%" colspan="2">CGST </th>
+                                    <th style="width: 15%" colspan="2">SGST </th>
+                                    <th style="width: 10%">Total</th>
+                                </tr>
+
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th style="width: 10%; padding: 0px;"></th>
+                                    <th style="width: 10%; padding: 0px;"></th>
+                                    <th style="width: 10%; padding: 0px;"></th>
+                                    @*<th style="width: 10%; padding: 0px;" class="text-right"></th>*@
+                                    <th style="width: 7.5%; padding: 0px; text-align: center !important; " class="text-right">Rate %</th>
+                                    <th style="width: 7.5%; padding: 0px; text-align: center !important; " class="text-right">Amount</th>
+                                    <th style="width: 7.5%; padding: 0px; text-align: center !important; " class="text-right">Rate %</th>
+                                    <th style="width: 7.5%; padding: 0px; text-align: center !important; " class="text-right">Amount</th>
+                                    <th style="width: 10%; padding: 0px;"></th>
+                                </tr>
+
+
+                            </thead>
+
+                            <tbody>
+                                @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                                {
+
+                                    decimal subtotal = 0;
+                                    decimal gstamoumt = 0;
+                                    decimal netpayable = 0;
+
+                                    int i = 0;
+                                    foreach (DataRow dr in Model.dt.Rows)
+                                    {
+                                        TotalMRP += Convert.ToDecimal(dr["TotalMRP"]);
+                                        totalgst += Convert.ToDecimal(dr["GstAmount"]);
+                                        subtotal = Convert.ToDecimal(dr["OnlinePrice"]) + Convert.ToDecimal(@dr["GstAmount"]);
+                                        netpayable = subtotal + gstamoumt;
+                                        i++;
+                                <tr>
+                                    <td>@i</td>
+                                    <td>
+                                        <b>@dr["ItemName"]</b> - <span>@dr["VarriationName"]</span>
+                                    </td>
+                                    <td>
+                                        <b>@dr["Color"]</b>
+                                    </td>
+                                    <td>
+                                        <b>@dr["Size"]</b> 
+                                    </td>
+                                    <td>@dr["Quantity"]</td>
+                                    <td>&#8377;@dr["MRP"]</td>
+                                    <td>&#8377;@dr["UnitRate"]</td>
+                                    @*<td class="text-right">&#8377;@dr["OnlinePrice"]</td>*@
+
+                                    @if (Convert.ToDecimal(dr["CGstAmount"]) > 0)
+                                    {
+                                        <td>@dr["CGstPer"] %</td>
+                                        <td>&#8377;@dr["CGstAmount"]</td>
+                                        <td>@dr["SGstPer"] %</td>
+                                        <td>@dr["SGstAmount"]</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    }
+                                    <td>&#8377;@subtotal</td>
+                                </tr>
+                                    }
+                                }
+                            </tbody>
+
+
+
+                        </table>
+                    </div> <!-- end table-responsive -->
+                </div> <!-- end col -->
+            </div>
+            <!-- end row -->
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="clearfix pt-5">
+                        <h6 class="text-muted">Notes:</h6>
+
+                        <small class="text-muted">
+                            Thankyou for Shopping with us.
+                        </small>
+                    </div>
+                </div> <!-- end col -->
+                <div class="col-sm-6">
+                    <div class="float-right">
+                        <p><b>Total:</b> <span class="float-right">&#8377;@TotalMRP</span></p>
+                        <p><b>Discount:</b> <span class="float-right"> &nbsp;&nbsp;&nbsp; &#8377;@Model.dt.Rows[0]["DiscountAmount"]</span></p>
+                        <p><b>Sale Price:</b> <span class="float-right">&#8377;@Model.dt.Rows[0]["GrossAmount"]</span></p>
+                        <p><b>GST Amount:</b> <span class="float-right">&#8377;@totalgst</span></p>
+                        <p><b>Delivery charge:</b> <span class="float-right"> &nbsp;&nbsp;&nbsp; &#8377;@Model.dt.Rows[0]["DeliveryCharges"]</span></p>
+                        <p><b>PromoCode:</b> <span class="float-right"> &nbsp;&nbsp;&nbsp; &#8377;@Model.dt.Rows[0]["CoupenAmount"]</span></p>
+                        <p><b>Payable Amount:</b> <span class="float-right"> &nbsp;&nbsp;&nbsp; &#8377;@Model.dt.Rows[0]["NetPayable"]</span></p>
+                    </div>
+                    <div class="clearfix"></div>
+                </div> <!-- end col -->
+            </div>
+
+
+
+            @if (Model.dtcombooffer != null && Model.dtcombooffer.Rows.Count > 0)
+            {
+                int i = 0;
+        <div class="row">
+            <h3 style="margin-left:2%;" >Free Item:</h3>
+        </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="table-responsive">
+                            <table class="table mt-4 table-centered">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Item</th>
+                                        <th style="width: 10%">Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @foreach (DataRow dr in Model.dtcombooffer.Rows)
+                                    {
+                                    i++;
+                                    <tr>
+                                        <td>@i</td>
+                                        <td>
+                                            <b>@dr["ProductName"]</b> - <span>@dr["VarriationName"]</span>
+
+                                        </td>
+                                        <td>@dr["qty"]</td>
+                                    </tr>
+                                    }
+                                   
+                                </tbody>
+                            </table>
+                        </div> <!-- end table-responsive -->
+                    </div> <!-- end col -->
+                </div>
+            }
+
+
+
+                <!-- end row -->
+
+                <div class="mt-4 mb-1">
+                    <div class="text-right d-print-none">
+                        @*<a href="../Ecommarce/EcommarceCustomerDashboard" class="btn btn-warning waves-effect waves-light"><i class="fas fa-arrow-left"></i> COUTINUE SHOPPING </a>*@
+                        @*<a href="javascript:window.print()" class="btn btn-primary waves-effect waves-light"><i class="mdi mdi-printer mr-1"></i> Print</a>*@
+                        <a href="~/PrintInvoice.aspx?OrderId=  @Model.dt.Rows[0]["OrderId"]" target="_blank">Print</a>
+                    </div>
+                </div>
+            </div> <!-- end card-box -->
+    </div> <!-- end col -->
+</div>
+<!-- end row -->

@@ -1,0 +1,69 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Blog";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+@using System.Data;
+<div class="gambo-Breadcrumb">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="../WebHome/Index">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Term and Conditions</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="all-product-grid">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                @if (Model.BlogId != null)
+                {
+                    if (Model.dt != null && Model.dt.Rows.Count > 0)
+                    {
+                        int i = 0;
+                        foreach (DataRow dr in Model.dt.Rows)
+                        {
+                            <div class="card" style="width: 18rem;">
+                                <img class="card-img-top" src="~/BlogImage/@dr["Image"]" alt="Card image cap">
+                                
+                            </div>
+                        }
+                    }
+                }
+                else
+                {
+                    if (Model.dt != null && Model.dt.Rows.Count > 0)
+                    {
+                        int i = 0;
+                        foreach (DataRow dr in Model.dt.Rows)
+                        {
+                            <div class="card" style="width: 18rem;">
+                                <img class="card-img-top" src="~/BlogImage/@dr["Image"]" alt="Card image cap">
+                                <input type="hidden" id="" value="@dr["ID"]" />
+                                <div class="card-body">
+                                    <h5 class="card-title">Claco.in</h5>
+                                    <h5 class="card-title">@dr["Title"]</h5>
+                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                    <a href="#" class="btn btn-primary" onclick="function1(@dr["ID"])">Read More </a>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    function function1(Id) {
+        var BlogId = Id;
+        window.location.href = '../webhome/blog?BlogId=' + BlogId +'';
+    }
+</script>

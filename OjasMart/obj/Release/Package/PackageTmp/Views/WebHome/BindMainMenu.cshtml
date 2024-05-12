@@ -1,0 +1,49 @@
+﻿
+@model OjasMart.Models.PropertyClass
+@{
+    Layout = null;
+}
+@using System.Data;
+
+
+@if (Model.dtMenuTop != null && Model.dtMenuTop.Rows.Count > 0)
+{
+    <ul class="top-posts">
+        @foreach (DataRow dr in Model.dtMenuTop.Rows)
+        {
+            if (Convert.ToInt32(dr["cnt"]) > 0)
+            {
+
+                <li class="media-list">
+                    <div class="blog-top-item media">
+
+                      
+
+                        <div class="media-left">
+
+                            @if (string.IsNullOrEmpty(Convert.ToString(@dr["CatImg"])))
+                        {
+                                <img class="ft-plus-square icon-bg-circle bg-cyan mr-0" src="~/img/noimageicon.png" />
+                            }
+                            else
+                            {
+                                <img class="ft-plus-square icon-bg-circle bg-cyan mr-0" src=@dr["CatImg"] alt="" />
+                            }
+
+
+
+                           
+                        </div>
+                        <div class="media-body">
+                            <a href="../ProductDetail/SearchCategory?CatName=@dr["ProductCategory"]&&CatId=@dr["SrNo"]&&SubCatId=0" class="top-post-link"> @dr["ProductCategory"]    </a>
+
+                        </div>
+                    </div>
+                </li>
+
+
+                
+            }
+        }
+    </ul>
+}

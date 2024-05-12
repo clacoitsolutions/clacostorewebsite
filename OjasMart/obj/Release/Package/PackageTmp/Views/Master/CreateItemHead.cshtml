@@ -1,0 +1,347 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Create Item Head";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using System.Data;
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="~/OperationalJs/ItemHeadOperations.js"></script>
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+            </div>
+            <h4 class="page-title">Create Item Head<a href="javascript:void(0);" style="float: right;font-size: 17px;color: #1a6359;text-decoration: underline;" onclick="choosingmethod('Back')">Change Type</a></h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card-columns btn" id="chooseingDiv">
+            @*<div class="card" style="cursor:pointer" onclick="choosingmethod('Inventory')">
+                <div class="card-body">
+                    <img class="card-img-top img-fluid" src="~/assets/Inventory.png" alt="Card image cap" style="background-color:#1a6359;display: inline-block; width: 84px; height: 84px; border-radius: 50%; position: relative;transition: all .08s ease-in; margin: 20px 15px 20px 30px">
+                    <h5 class="card-title"><strong>Finished Goods</strong></h5>
+                    <p class="card-text">
+                        Products Ready To Sell.
+                    </p>
+                </div>
+            </div>
+            <div class="card " style="cursor:pointer" onclick="choosingmethod('Non-inventory')">
+                <div class="card-body">
+                    <img class="card-img-top img-fluid" src="~/assets/noInventry.png" alt="Card image cap" style="background-color:#1a6359;display: inline-block; width: 84px; height: 84px; border-radius: 50%; position: relative;transition: all .08s ease-in; margin: 20px 15px 20px 30px">
+                    <h5 class="card-title"><strong>Raw Products</strong></h5>
+                    <p class="card-text">
+                        Items using in Product Manufacturing.
+                    </p>
+                </div>
+            </div>*@
+            @*<div class="card " style="cursor:pointer" onclick="choosingmethod('Service')">
+                    <div class="card-body">
+                        <img class="card-img-top img-fluid" src="~/assets/Services.png" alt="Card image cap" style="background-color:#1a6359;display: inline-block; width: 84px; height: 84px; border-radius: 50%; position: relative;transition: all .08s ease-in; margin: 20px 15px 20px 30px">
+                        <h5 class="card-title"><strong>Service</strong></h5>
+                        <p class="card-text">
+                            Services that you provide to customers,eg. Room Booking or Laundry Service.
+                        </p>
+                    </div>
+                </div>*@
+            @*<div class="card " style="cursor:pointer" onclick="choosingmethod('Bundle')">
+                    <div class="card-body">
+                        <img class="card-img-top img-fluid" src="~/assets/Bundel.png" alt="Card image cap" style="background-color:#1a6359;display: inline-block; width: 84px; height: 84px; border-radius: 50%; position: relative;transition: all .08s ease-in; margin: 20px 15px 20px 30px">
+                        <h5 class="card-title"><strong>Bundle</strong></h5>
+                        <p class="card-text">
+                            A collection of products and/or services that you sell together, for example, a gift basket of fruit, cheese, and wine.
+                        </p>
+                    </div>
+                </div>*@
+        </div>
+        <div class="card mainDiv">
+            <div class="card-body">
+                <input type="hidden" id="itemlist" />
+                <input type="hidden" id="AccountType" />
+
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputPassword4" class="col-form-label">Item Group <span style="color:red">*</span></label>
+                        @Html.DropDownList("ddlItemGroup", (List<SelectListItem>)ViewBag.ItemGroupList, new { @id = "ddlItemGroup", @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Item Name <span style="color:red">*</span> </label>
+                        <input type="text" class="form-control" id="txtProductName" placeholder="Enter Item Name">
+                        <input type="hidden" id="hdItemCode" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Is this Common Inventry Product?<span style="color:red"></span> </label>
+                        <input type="checkbox" class="form-control" id="chkcommon" style="height:calc(0.5em + 0.9rem + 5px)">
+                        
+                    </div>
+                    
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputPassword4" class="col-form-label">Batch No</label>
+                        <input type="text" class="form-control" id="txtBatchNo" placeholder="Enter Batch No">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress" class="col-form-label">HSN Code</label>
+                        <input type="text" class="form-control" id="txtHsnCode" placeholder="Enter HSN Code">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputPassword4" class="col-form-label">Bar Code</label>
+                        <input type="text" class="form-control" id="txtBarCode" placeholder="Enter Item Bar Code">
+                    </div>
+                </div>
+                <div class="form-row clsnonbundle">
+                    <div class="form-group col-md-6" style="border:solid 1px">
+                        <h4 style="color:red">Price Details</h4>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="inputAddress2" class="col-form-label">Purchase Rate</label>
+                                <input type="text" class="form-control" id="txtPurchaseRateLoose" placeholder="Purchase Rate">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="inputAddress2" class="col-form-label">Sale Rate</label>
+                                <input type="text" class="form-control" id="txtSaleRateLoose" placeholder="Sale Rate">
+                            </div>
+                        </div>
+                        <div class="form-row" style="display:none">
+                            <div class="form-group col-md-6" style="display:none">
+                                <label for="inputAddress2" class="col-form-label">Purchase Rate (Bulk)</label>
+                                <input type="text" class="form-control" id="txtPurchaseRateBulk" placeholder="Purchase Rate (Bulk)">
+                            </div>
+                            <div class="form-group col-md-6" style="display:none">
+                                <label for="inputAddress2" class="col-form-label">Sale Rate (Bulk)</label>
+                                <input type="text" class="form-control" id="txtSaleRateBulk" placeholder="Sale Rate (Bulk)">
+                            </div>
+
+                        </div>
+                        <div class="form-row" >
+                            <div class="form-group col-md-6">
+                                <label for="inputAddress2" class="col-form-label">MRP </label>
+                                <input type="text" class="form-control" id="txtMRP" placeholder="Enter MRP">
+                            </div>
+                            <div class="form-group col-md-6" style="display:none;">
+                                <label for="inputAddress2" class="col-form-label">Store Price</label>
+                                <input type="text" class="form-control" id="txtStorePrice" placeholder="Store Price">
+                            </div>
+                        </div>
+                        <div class="form-row" style="display:none">
+                            <div class="form-group col-md-6">
+                                <label for="inputAddress2" class="col-form-label">Online Price</label>
+                                <input type="text" class="form-control" id="txtOnlinePrice" placeholder="Online Price">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <p class="text-muted mt-3 mb-2">Purchase Rate</p>
+                                <div class="radio radio-info form-check-inline">
+                                    <input type="radio" id="inlineRadio1" value="Include" name="radioInline0" checked>
+                                    <label for="inlineRadio1"> Tax Include </label>
+                                </div>
+                                <div class="radio form-check-inline">
+                                    <input type="radio" id="inlineRadio2" value="Exclude" name="radioInline0">
+                                    <label for="inlineRadio2"> Tax Exclude </label>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <p class="text-muted mt-3 mb-2">Sale Rate</p>
+                                <div class="radio radio-info form-check-inline">
+                                    <input type="radio" id="inlineRadio3" value="Include" name="radioInline1" checked>
+                                    <label for="inlineRadio3"> Tax Include </label>
+                                </div>
+                                <div class="radio form-check-inline">
+                                    <input type="radio" id="inlineRadio4" value="Exclude" name="radioInline1">
+                                    <label for="inlineRadio4"> Tax Exclude </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 style="color:red">Other Details</h4>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="inputAddress" class="col-form-label">MFG. Date</label>
+                                <input type="date" id="txtmfgDate" class="form-control" placeholder="Basic" data-date-autoclose="true">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="inputAddress2" class="col-form-label">Expiry Date</label>
+                                <input type="date" id="txtExpiryDate" class="form-control" placeholder="Basic" data-date-autoclose="true">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6" style="border:solid 1px">
+                        <h4 style="color:red">GST Details</h4>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="inputAddress" class="col-form-label">IGST % <span style="color:red">*</span></label>
+                                <input type="text" class="form-control" id="txtIGSt" placeholder="Enter IGST %" onchange="calcRate()">
+                            </div>
+                            <div class="form-group col-md-6" style="display:none">
+                                <label for="inputAddress" class="col-form-label">Bulk UOM</label>
+                                @Html.DropDownList("ddlUOMBulk", (List<SelectListItem>)ViewBag.UOMList, new { @id = "ddlUOMBulk", @class = "form-control" })
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="inputAddress2" class="col-form-label">UOM <span style="color:red">*</span></label>
+                                @Html.DropDownList("ddlUOMLoose", (List<SelectListItem>)ViewBag.UOMList, new { @id = "ddlUOMLoose", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="inputAddress2" class="col-form-label">CGST % <span style="color:red">*</span></label>
+                                <input type="text" class="form-control" id="txtcgst" placeholder="CGST %" disabled>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="inputAddress2" class="col-form-label">SGST % <span style="color:red">*</span></label>
+                                <input type="text" class="form-control" id="txtsgst" placeholder="SGST %" disabled>
+                            </div>
+                        </div>
+
+
+                        <div class="form-row nonInventory">
+                            <div class="form-group col-md-4">
+                                <label for="inputAddress" class="col-form-label">Initial quantity on hand </label>
+                                <input type="text" class="form-control" id="txtInitialQty" placeholder="Initial quantity on hand" onkeypress="allowonlyDegitandDot()">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="inputAddress2" class="col-form-label">Low stock alert</label>
+                                <input type="text" class="form-control" id="txtLowStock" placeholder="Low stock alert" onkeypress="allowonlyDegitandDot()">
+                            </div>
+                            <div class="form-group col-md-4 nonInventory">
+                                <label for="inputAddress2" class="col-form-label">As of date </label>
+                                <input type="date" class="form-control" id="txtdate" placeholder="As of date" data-date-autoclose="true">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6" style="display:none">
+                                <label for="inputAddress2" class="col-form-label">1 Bulk Unit Equals to</label>
+                                <input type="text" class="form-control" id="txtBulkUnitQty"> Loose Unit
+                            </div>
+
+                            <div class="form-group col-md-6 Servicetype" style="display:none">
+                                <label for="inputAddress2" class="col-form-label">Service type </label>
+                                <input type="text" class="form-control" id="txtServicetype" placeholder="Service type">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-row clsbundle" style="display:none">
+                    <div class="table-responsive">
+                        <table class="table table-centered mb-0" id="inlineeditable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Products/services</th>
+                                    <th>QTY</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>
+
+                                        @Html.DropDownList("ddlbundleitem", (List<SelectListItem>)ViewBag.itemlist, new { @id = "ddlbundleitem", @class = "form-control" })
+                                    </td>
+                                    <td>1</td>
+                                    <td><a href="#" class="btn" onclick="removeBuddlerow(this)"><i class="mdi mdi-delete" style="color:red"></i></a></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="6">
+                                        <label for="inputEmail4" class="col-form-label"><a href="#" onclick="addBuddlerow()"><i class="fa fa-plus"></i> Add Lines</a> </label>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <button type="button" id="btnSave" class="btn btn-primary waves-effect waves-light" onclick="InsertItemHead()">Save Record</button>
+                <button type="button" id="btnUpdate" style="display:none" class="btn btn-warning waves-effect waves-light" onclick="UpdateItemHead()">Update Record</button>
+                <button type="button" id="btnCancel" style="display:none" class="btn btn-danger waves-effect waves-light" onclick="CancelUpdate()">Cancel</button>
+            </div>
+        </div>
+    </div> <!-- end card-body -->
+</div> <!-- end card-->
+
+<div class="row mainDiv" id="divmainheadtbl">
+    <div class="col-sm-12" id="divmainheadtbl2">
+        <div class="card-box">
+            <h4 class="header-title">Item Head Details</h4>
+            <div class="table-responsive">
+                <table id="tblItemHead" class="table table-borderless table-hover table-centered m-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sr.No</th>
+                            @*<th>Inventory Type</th>*@
+                            <th>Product</th>
+                            <th>HSN Code</th>
+                            <th>MRP</th>
+                            <th>GST %</th>
+                            <th>Added Date</th>
+                            <th>Active/InActive</th>
+                            <th style="width:82px">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                i++;
+                                <tr>
+                                    <td>@i</td>
+                                    @*<td>@dr["Inventorytype"]</td>*@
+                                    <td>
+                                        <h5 class="m-0 font-weight-normal">@dr["ItemName"]</h5>
+                                        <p class="mb-0 text-muted"><small>@dr["ItemCode"]</small></p>
+                                    </td>
+                                    @*<td>@dr["BatchNo"]</td>*@
+                                    <td>@dr["HSNCode"]</td>
+                                    <td>@dr["MRP"]</td>
+                                    <td>@dr["GSTPer"]</td>
+                                    <td>@dr["AddedDate"]</td>
+
+                                    <td>
+                                        @if (dr["IsActive"].ToString() == "True")
+                                        {
+                                            <a href="javascript:void(0);" title="Inactive" class="action-icon" onclick="ChangeStatus('@dr["ItemCode"]')">
+                                                <i class="fa fa-check" aria-hidden="true" style="color:green;"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="javascript:void(0);" title="Inactive" class="action-icon" onclick="ChangeStatus('@dr["ItemCode"]')">
+                                                <i class="fa fa-ban" aria-hidden="true" style="color:red"></i>
+                                            </a>
+                                        }
+
+
+                                    </td>
+
+                                    <td>
+                                        @*<a href="javascript: void(0);" class="btn btn-xs btn-secondary" onclick="GetDetailsForEdit('@dr["ItemCode"]')"><i class="mdi mdi-pencil"></i></a>*@
+
+                                        @*<a href="../Ecommarce/ItemEditforEccomarce?ProductId=@dr["ItemCode"]" title="Update for Online Sale" class="action-icon"> <i class="fe-shopping-cart"></i></a>*@
+                                        <a href="javascript:void(0);" title="Edit" class="action-icon" onclick="GetDetailsForEdit('@dr["ItemCode"]')"> <i class="mdi mdi-square-edit-outline" style="color:#51bfd0"></i></a>
+                                        <a href="javascript:void(0);" title="Delete" class="action-icon" onclick="DeleteItemHeadDetails('@dr["ItemCode"]')"> <i class="mdi mdi-delete" style="color:red"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>

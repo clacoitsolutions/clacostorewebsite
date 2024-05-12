@@ -1,0 +1,647 @@
+﻿@model OjasMart.Models.clsSaleReturn
+@{
+    ViewBag.Title = "GenerateSaleReturn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data
+
+<style>
+
+      .card-body {
+        padding-top: 1% !important;
+    }
+
+    .table .thead-light th {
+        color: white !important;
+        background-color: #f16236 !important;
+        /* border-color: #dee2e6; */
+    }
+
+    .table td, .table th {
+        padding: 0px;
+        vertical-align: top;
+        border-top: 1px solid #dee2e6;
+    }
+
+
+    
+        /*the container must be positioned relative:*/
+        .autocomplete {
+            position: relative;
+            display: inline-block;
+        }
+
+        input {
+            border: 1px solid transparent;
+            background-color: #f1f1f1;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+            input[type=text] {
+                background-color: #f1f1f1;
+                width: 100%;
+            }
+
+            input[type=submit] {
+                background-color: DodgerBlue;
+                color: #fff;
+                cursor: pointer;
+            }
+
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid #d4d4d4;
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
+            /*position the autocomplete items to be the same width as the container:*/
+            top: 100%;
+            left: 0;
+            right: 0;
+            
+        }
+
+            .autocomplete-items div {
+                padding: 10px;
+                cursor: pointer;
+                background-color: #fff;
+                border-bottom: 1px solid #d4d4d4;
+            }
+
+                /*when hovering an item:*/
+                .autocomplete-items div:hover {
+                    background-color: #e9e9e9;
+                }
+
+        .autocomplete-active {
+            background-color: DodgerBlue !important;
+            color: #ffffff;
+        }
+
+
+</style>
+
+
+
+
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+
+
+
+
+
+
+<div class="row" style="margin-top:2%;">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+
+                <div class="page-title-box" style="line-height:0px;">
+                    <div class="page-title-right" style="margin-top:12px;">
+                        <span style="color: Red">Fields Marked with * are Mandatory</span>
+                    </div>
+                    <h4 class="page-title" style="margin:0px;padding:0px;line-height:20px;">Generate Sale Return</h4>
+                </div>
+                <hr style="border-top: 2px solid #f16236;" />
+
+
+                <div class="form-row">
+                  
+                    <div class="form-group col-md-2">
+                        <label for="inputEmail4" class="col-form-label">Search By Invoice No <span style="color:red"></span></label>
+                        <input type="text" class="form-control" id="InvoiceNo" placeholder="Invoice No" onchange="GetInvoiceDetails()">
+                    </div>
+
+
+                    <div class="form-group col-md-2">
+                        <label for="inputEmail4" class="col-form-label">Mobile No <span style="color:red"></span></label>
+                        <input type="text" class="form-control" id="MobileNo" placeholder="Mobile No" readonly >
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="inputEmail4" class="col-form-label"> Customer Name <span style="color:red"></span>
+                       
+                        </label>
+                        <input type="text" class="form-control" id="CustomerName" placeholder="Customer Name" readonly>
+                    
+                     </div>
+
+                    <div class="form-group col-md-2" >
+                        <label for="inputEmail4" class="col-form-label">A/C Code </label>
+                        <input type="text" class="form-control" id="txtAcCode" placeholder="A/C Code" readonly>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="inputEmail4" class="col-form-label">Voucher No </label>
+                        <input type="text" class="form-control" id="txtVoucherNo" placeholder="Voucher No" readonly>
+                    </div>
+
+
+                    <div class="form-group col-md-1" style="display:none;">
+                        <label for="inputEmail4" class="col-form-label">Invoice Date <span style="color:red"></span></label>
+                        <input type="text" class="form-control" id="txtBillDate" placeholder="Date" value="">
+                    </div>
+
+                    <div class="form-group col-md-2">
+                        <label for="inputEmail4" class="col-form-label">Billing Address</label>
+                        <textarea id="BillAddress" class="form-control" placeholder="Billing Address" style="height:37px;"></textarea>
+                    </div>
+
+                </div>
+
+
+
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-borderless table-hover table-centered m-0" id="tblItemDetail">
+                                <thead class="thead-light">
+                                    <tr>
+
+                                        <th> Item Name</th>
+                                        <th>Size</th>
+                                        <th>Quantity</th>
+                                        <th>Tax</th>
+                                        <th>Taxable</th>
+                                        <th>Disc Amt</th>
+                                        <th>Net Total</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                              
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end card-body -->
+        </div> <!-- end card-->
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-7" style="border-right: 1px dotted silver;">
+                        
+                    </div>
+                    <div class="form-group col-md-5" style="padding: 0px 0px 0px 20px;">
+                        <h4 class="text-primary">Payment Details</h4>
+                        <hr style="border-top: 2px solid #f16236;" />
+                        <div class="form-row">
+                            <div class="form-group col-md-12" style="margin-bottom:-2px">
+                                <label>Taxable Amount: </label>
+                                <div style="float:right"> <span id="lbltaxableAmt">0.00</span> </div>
+                            </div>
+                        </div>
+                        <div class="form-row" style="display:none">
+                            <div class="form-group col-md-10" style="margin-bottom:-2px">
+                                <label>Adjustment </label>
+                                <div style="float:right"> <input type="text" class="form-control" id="txtAdjustment" value="0.00"> </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12" style="margin-bottom:-2px">
+                                <label>Total Tax: </label>
+                                <div style="float:right"> <span id="lblTotaltax">0.00</span> </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row" style="display:none;">
+                            <div class="form-group col-md-12" style="margin-bottom:-2px">
+                                <label>Total Discount: </label>
+                                <div style="float:right"> <span id="lblTotalDisc">0.00</span> </div>
+                            </div>
+                        </div>
+
+
+                        <div class="form-row" style="display:none">
+                            <div class="form-group col-md-10" style="margin-bottom:-2px">
+                                <label>Total Roundoff: </label>
+                                <div style="float:right"> <span id="lblRoundOff" style="color:red">0.00</span> </div>
+                            </div>
+                        </div>
+                        <hr style="border-top: 2px solid #f16236;" />
+                        <div class="form-row">
+                            <div class="form-group col-md-12" style="margin-bottom:-2px">
+                                <label>Net Payable: </label>
+                                <div style="float:right"> <span id="lblNetPayable">0.00</span> </div>
+                                <input type="hidden" id="hdTotIgst" />
+                                <input type="hidden" id="hdTotCgst" />
+                                <input type="hidden" id="hdTotSgst" />
+                            </div>
+                        </div>
+                        <hr style="border-top: 2px solid #f16236;" />
+                        <div class="form-row" style="display:none;">
+                            <div class="form-group col-md-8">
+                                <label>Paid Amount: </label>
+                            </div>
+                            <div class="form-group col-md-4" style="text-align:right">
+                                <input type="text" id="txtPaidAmount" class="form-control" disabled style="text-align:right;" />
+                            </div>
+                        </div>
+                        <div class="form-row" id="div_cbk" style="display:none">
+                            <div class="form-group col-md-12">
+                                <div class="alert alert-success" role="alert">
+                                    @*<i class="mdi mdi-check-all mr-2"></i>*@<strong>Rs.<span id="lblchb_Amt">0.00</span></strong> will be detacted from your cashback wallet.Please Pay <strong>Rs.<span id="lblmainWallet_Amt">0.00</span> </strong>from your Main wallet !
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-8">
+                                <label>Pay Mode: </label>
+                            </div>
+                            <div class="form-group col-md-4" style="text-align:right">
+                               
+                                <input type="text" id="PaymentMode" readonly />
+
+                            </div>
+                        </div>
+                       
+                        
+                           <div class="form-row" id="divInvoice" style="display:block">
+                            <div class="form-group col-md-12" style="margin-bottom:-2px">
+                                <button style="background:#f16236;width:100%;" type="submit" id="btnSave" class="btn btn-primary waves-effect waves-light" onclick="InsertSaleReturnOrder()">Sale Return</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div> <!-- end col -->
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="~/scripts/sweetalert.min.js"></script>
+<script type="text/javascript">
+
+    // Ready Function
+    $(document).ready(function () {
+        $(this).removeClass('enlarged');
+
+     
+        $('body').addClass("sidebar-enable enlarged");
+
+    });
+
+
+    // Auto Completed Start
+    function autocomplete(inp, arr) {
+        /*the autocomplete function takes two arguments,
+        the text field element and an array of possible autocompleted values:*/
+        var currentFocus;
+        /*execute a function when someone writes in the text field:*/
+        inp.addEventListener("input", function (e) {
+            var a, b, i, val = this.value;
+            /*close any already open lists of autocompleted values*/
+            closeAllLists();
+            if (!val) { return false; }
+            currentFocus = -1;
+            /*create a DIV element that will contain the items (values):*/
+            a = document.createElement("DIV");
+            a.setAttribute("id", this.id + "autocomplete-list");
+            a.setAttribute("class", "autocomplete-items");
+            /*append the DIV element as a child of the autocomplete container:*/
+            this.parentNode.appendChild(a);
+            /*for each item in the array...*/
+            for (i = 0; i < arr.length; i++) {
+                /*check if the item starts with the same letters as the text field value:*/
+                if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                    /*create a DIV element for each matching element:*/
+                    b = document.createElement("DIV");
+                    /*make the matching letters bold:*/
+                    b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                    b.innerHTML += arr[i].substr(val.length);
+                    /*insert a input field that will hold the current array item's value:*/
+                    b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                    /*execute a function when someone clicks on the item value (DIV element):*/
+                    b.addEventListener("click", function (e) {
+                        /*insert the value for the autocomplete text field:*/
+                        inp.value = this.getElementsByTagName("input")[0].value;
+                        /*close the list of autocompleted values,
+                        (or any other open lists of autocompleted values:*/
+                        closeAllLists();
+                    });
+                    a.appendChild(b);
+                }
+            }
+        });
+        /*execute a function presses a key on the keyboard:*/
+        inp.addEventListener("keydown", function (e) {
+            var x = document.getElementById(this.id + "autocomplete-list");
+            if (x) x = x.getElementsByTagName("div");
+            if (e.keyCode == 40) {
+                /*If the arrow DOWN key is pressed,
+                increase the currentFocus variable:*/
+                currentFocus++;
+                /*and and make the current item more visible:*/
+                addActive(x);
+            } else if (e.keyCode == 38) { //up
+                /*If the arrow UP key is pressed,
+                decrease the currentFocus variable:*/
+                currentFocus--;
+                /*and and make the current item more visible:*/
+                addActive(x);
+            } else if (e.keyCode == 13) {
+                /*If the ENTER key is pressed, prevent the form from being submitted,*/
+                e.preventDefault();
+                if (currentFocus > -1) {
+                    /*and simulate a click on the "active" item:*/
+                    if (x) x[currentFocus].click();
+                }
+            }
+        });
+        function addActive(x) {
+            /*a function to classify an item as "active":*/
+            if (!x) return false;
+            /*start by removing the "active" class on all items:*/
+            removeActive(x);
+            if (currentFocus >= x.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (x.length - 1);
+            /*add class "autocomplete-active":*/
+            x[currentFocus].classList.add("autocomplete-active");
+        }
+        function removeActive(x) {
+            /*a function to remove the "active" class from all autocomplete items:*/
+            for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+            }
+        }
+        function closeAllLists(elmnt) {
+            /*close all autocomplete lists in the document,
+            except the one passed as an argument:*/
+            var x = document.getElementsByClassName("autocomplete-items");
+            for (var i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                    x[i].parentNode.removeChild(x[i]);
+                }
+            }
+        }
+        /*execute a function when someone clicks in the document:*/
+        document.addEventListener("click", function (e) {
+            closeAllLists(e.target);
+        });
+    }
+
+
+    var test = [];
+    $.ajax({
+        type: 'Post',
+        url: '@Url.Action("GetInvNo")',
+        dataType: 'json',
+        success: function (CitiesList) {
+            var j = 0;
+            $.each(CitiesList, function (i, CitiesList) {
+                test[j] = CitiesList.Text;
+                j++;
+            });
+
+        },
+        error: function (ex) {
+            alert('Failed to retrieve Products : ' + ex);
+        }
+    });
+
+    autocomplete(document.getElementById("InvoiceNo"), test);
+
+    // Auto Completed End
+
+      
+    // Get Details
+    function GetInvoiceDetails() {
+
+        var InvNo = $("#InvoiceNo").val();
+        
+        var dataobject = {
+            InvNo: InvNo
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Sales/GetInvoiceDetails",
+            type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (r) {
+
+                if (r.msg == "1") {
+
+                    $("#MobileNo").val(r.MobileNo);
+                    $("#CustomerName").val(r.CustomerName);
+                    $("#txtAcCode").val(r.CustomerAccountCode);
+                    $("#txtBillDate").val(r.InvoiceDate);
+                    $("#BillAddress").val(r.BillingAddress);
+                    $("#lbltaxableAmt").text(r.GrossPayable);
+                    $("#lblTotaltax").text(r.Totaltax);
+                    $("#lblNetPayable").text(r.NetTotal);
+                    $("#txtPaidAmount").val(r.NetTotal);
+                    $("#lblTotalDisc").text(r.DiscountAmount);
+                    $("#PaymentMode").val(r.PaymentMode);
+                    $("#txtVoucherNo").val(r.VoucherId);
+
+                    if (r.InvDetails != "") {
+                        var EvalVarationData = eval(r.InvDetails);
+                        for (var i = 0; i < EvalVarationData.length; i++) {
+                          //  Html += "<option  SaleRate=" + EvalVarationData[i].SalePrice + " Purchaserate=" + EvalVarationData[i].PurchaseRate + " value=" + EvalVarationData[i].VariationId + " >" + EvalVarationData[i].VarriationName + "</option>"
+
+                            var tBody = $("#tblItemDetail > TBODY")[0];
+
+                            //Add Row.
+                            var row = tBody.insertRow(-1);
+
+
+
+
+
+
+                            var cell = $(row.insertCell(-1));
+                            cell.html(EvalVarationData[i].ItemName);
+
+                            cell = $(row.insertCell(-1));
+                            cell.html(EvalVarationData[i].Size);
+                           
+                            cell = $(row.insertCell(-1));
+                            cell.html(EvalVarationData[i].Quantity);
+                           
+                            cell = $(row.insertCell(-1));
+                            cell.html(EvalVarationData[i].TaxAmount);
+
+                            cell = $(row.insertCell(-1));
+                            cell.html(EvalVarationData[i].TaxableAmount);
+
+                            cell = $(row.insertCell(-1));
+                            cell.html(EvalVarationData[i].DiscountAmount);
+
+                            cell = $(row.insertCell(-1));
+                            cell.html(EvalVarationData[i].NetAmount);
+                           
+                            cell = $(row.insertCell(-1));
+                            var btnRemove = $("<a ></a>");
+                            btnRemove.attr("onclick", "Remove(this);");
+                            btnRemove.html("<i class='fa fa-trash' aria-hidden='true' style='color:Red;'></i>");
+                            cell.append(btnRemove);
+                           // cell.hide();
+
+                            //Add item Id
+                            cell = $(row.insertCell(-1));
+                            cell.html(EvalVarationData[i].ItemCode);
+                            cell.hide();
+
+                          
+                            cell = $(row.insertCell(-1));
+                            cell.html(EvalVarationData[i].VariationId);
+                            cell.hide();
+
+
+
+
+                        }
+                    }
+                   
+
+                    CalculateTotal();
+
+
+
+
+
+                }
+                else {
+                    swal("Warning!!", "Record not found!!", "error");
+                }
+
+               
+                $("#showSpinner").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+
+
+
+
+
+    }
+
+    function Remove(button) {
+        //Determine the reference of the Row using the Button.
+
+        var row1 = $(button).closest("TR");
+        var name = $("TD", row1).eq(0).html();
+        
+
+        if (confirm("Do you want to delete: " + name)) {
+            //Get the reference of the Table.
+            var table = $("#tblItemDetail")[0];
+            //Delete the Table row using it's Index.
+
+            table.deleteRow(row1[0].rowIndex);
+
+            CalculateTotal();
+           
+
+
+        }
+    };
+
+    function CalculateTotal() {
+
+        var taxable = 0, tax = 0, discount = 0, net = 0;
+        $("#tblItemDetail TBODY TR").each(function () {
+            var row = $(this);
+            taxable += parseFloat(row.find("TD").eq(4).html());
+            tax += parseFloat(row.find("TD").eq(3).html());
+            discount += parseFloat(row.find("TD").eq(5).html());
+            net += parseFloat(row.find("TD").eq(6).html());
+        });
+
+
+        $("#lbltaxableAmt").text(taxable.toFixed(2));
+        $("#lblTotaltax").text(tax.toFixed(2));
+        $("#lblTotalDisc").text(discount.toFixed(2));
+        $("#lblNetPayable").text(net.toFixed(2));
+        $("#txtPaidAmount").val(net.toFixed(2));
+
+    }
+
+
+    function InsertSaleReturnOrder() {
+
+       
+        if ($("#InvoiceNo").val() == "0") {
+            alert("Please enter invoice no !!");
+            $("#InvoiceNo").focus();
+            return;
+        }
+        if ($("#txtAcCode").val() == "") {
+            alert("Please enter account code !!");
+            $("#txtAcCode").focus();
+            return;
+        }
+
+      
+
+
+
+
+        var itemdetails = [];
+        $("#tblItemDetail TBODY TR").each(function () {
+            var row = $(this);
+            item = {};
+            item["ItemCode"] = row.find("TD").eq(8).html();
+            item["VariationId"] = row.find("TD").eq(9).html();
+            item["Quantity"] = row.find("TD").eq(2).html();
+            itemdetails.push(item);
+        });
+
+
+        var dataobject = {
+            CustomerAccCode: $("#txtAcCode").val(),
+            InvoiceNo: $("#InvoiceNo").val(),
+            VoucherNo: $("#txtVoucherNo").val(),
+            GrossPayable: $("#lbltaxableAmt").text(),
+            Payablegst: $("#lblTotaltax").text(),
+            NetTotal: $("#lblNetPayable").text(),
+            ItemList: itemdetails
+        };
+
+        $.ajax({
+            url: "/Sales/InsertSaleOrderReturn",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+
+                if (r != "0") {
+                    alert("Sales Return Invoice Successfully Saved !!!");
+                    location.reload();
+
+                }
+                else {
+                    alert("Error !!!");
+                }
+
+
+            }
+        });
+    }
+
+
+
+
+
+
+
+
+
+</script>

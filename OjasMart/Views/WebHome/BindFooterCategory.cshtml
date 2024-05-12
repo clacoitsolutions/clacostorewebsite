@@ -1,0 +1,19 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    Layout = null;
+}
+@using System.Data;
+
+@if (Model.dtMainCategory != null && Model.dtMainCategory.Rows.Count > 0)
+{
+    <div class="second-row-item">
+        <h4>Category</h4>
+        <ul>
+            @foreach (DataRow dr1 in Model.dtMainCategory.Rows)
+            {
+                <li><a href="../ProductDetail/SearchCategory?CatName=@dr1["ProductCategory"]&&CatId=@dr1["SrNo"]&&SubCatId=0">@dr1["ProductCategory"]</a></li>
+            }
+        </ul>
+    </div>
+}
+

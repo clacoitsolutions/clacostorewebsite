@@ -1,0 +1,160 @@
+﻿﻿@model OjasMart.Models.ServiceRequestModel
+
+
+@{
+    ViewBag.Title = "our_services";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+<link href="~/Content/Services.css" rel="stylesheet" />
+<h2>our_services</h2>
+<div class="container-fluid" style="min-height:600px;">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-10">
+                <div class="row">
+                    <div class="col-sm-5" id="left" style="">
+                        <table class="table table-bordered" id="serviceTable">
+                            <thead>
+                                <tr>
+                                    <th style="background-color:#ed1a63;color:white">Sr.no</th>
+                                    <th style="background-color:#ed1a63;color:white">Services menu</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>IT Services</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>House Keeper</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Electrician</td>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Security Guard</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>Carpanter</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>Plumber</td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td>Mechenic</td>
+                                </tr>
+                                <tr>
+                                    <td>7</td>
+                                    <td>Driver</td>
+                                <tr>
+                                    <td>8</td>
+                                    <td>Sweeper</td>
+                                </tr>
+                                <tr>
+                                    <td>9</td>
+                                    <td>House Made</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-sm-5" id="right">
+                        <div class="row" style="border: 1px solid #eeeeee ">
+                            <div class="col-sm-12" id="head">
+
+                                <h3 style="margin-top:1%">Services Request</h3>
+                            </div>   <form method="post" onsubmit="return validateForm()">
+                                <div class="col-sm-12" style="margin-top:2%">
+
+                                    <label style="font-size:16px;">Services Request Menu</label>
+                                    <select class="form-control" id="ServiceType" name="ServiceType">
+                                        <option selected>Open this select menu</option>
+                                        <option value="IT Services">IT Services</option>
+                                        <option value="2">House Keeper</option>
+                                        <option value="3">Electrician</option>
+                                        <option value="3">Security Guard</option>
+                                        <option value="3">Carpanter</option>
+                                        <option value="3">Plumber</option>
+                                        <option value="3">Mechenic</option>
+                                        <option value="3">Driver</option>
+                                        <option value="3">Sweeper</option>
+                                        <option value="3">House Made</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-12">
+                                    <label style="font-size:16px;">Full Name</label>
+                                    <input type="text" id="FullName" placeholder="Enter your Full Name " name="FullName" class="form-control" />
+                                </div>
+                                <div class="col-sm-12">
+                                    <label style="font-size:16px">Mobile Number</label>
+                                    <input type="number" id="MobileNumber" placeholder="Enter your Number " name="MobileNumber" class="form-control" />
+                                </div>
+                                <div class="col-sm-12">
+                                    <label style="font-size:16px">Email ID</label>
+                                    <input type="email" placeholder="Enter your Emaill" id="Email" name="Email" class="form-control" />
+                                </div>
+                                <label style="font-size:16px;margin-left:3%">Address </label>
+                                <div class="col-sm-12" style="margin-top:1%">
+
+
+                                    <textarea id="Address" name="Address" rows="3" cols="70" placeholder=" Enter Your Full  Address..."> 
+</textarea>
+                                </div>
+
+                                <div class="col-sm-6"></div>
+                                <div class="col-sm-3">
+
+
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="submit" value="send" class="btn btn-danger" style="width:100%" />
+
+                                </div>
+                            </form>
+                            <div class="col-sm-12" style="height:50px;">
+                                @if (TempData["SuccessMessage"] != null)
+                                {
+                                    <div class="alert alert-success">
+                                        @TempData["SuccessMessage"]
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-sm-1"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function validateForm() {
+    var serviceType = document.getElementById('ServiceType');
+    var fullName = document.getElementById('FullName');
+    var mobileNumber = document.getElementById('MobileNumber');
+    var email = document.getElementById('Email');
+    var address = document.getElementById('Address');
+
+    if (serviceType.value == "Open this select menu" || fullName.value == "" || mobileNumber.value == "" || email.value == "" || address.value == "") {
+        alert("Please fill out all fields");
+    return false;
+    }
+
+    if (isNaN(mobileNumber.value)) {
+        alert("Mobile number must be a number");
+    return false;
+    }
+
+    return true;
+}
+</script>

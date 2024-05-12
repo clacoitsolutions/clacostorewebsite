@@ -1,0 +1,582 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Add Product";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+        $('select').select2();
+
+        $('#customCheck2').click(function () {
+            $('#divInventItem').fadeToggle();
+        });
+
+        $("#fuMainFile").change(function () {
+            var file = this.files[0];
+            var fileType = file["type"];
+            var validImageTypes = ["image/gif", "image/jpeg", "image/png"];
+            if ($.inArray(fileType, validImageTypes) < 0) {
+                alert('Please Upload only image file!');
+                $("#fuMainFile").val('');
+                $('#imgMainImage').attr('src', '../img/noimageicon.png');
+                return;
+            }
+            else {
+                readURL(this);
+            }
+        });
+    });
+
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#imgMainImage').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+        else {
+            $('#imgMainImage').attr('src', '../img/noimageicon.png');
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function BindItemsByGroup() {
+        $("#ddlItemHead").empty();
+        $.ajax({
+            type: 'Post',
+            url: '@Url.Action("GetItemsByGroup","Sales")',
+            dataType: 'json',
+            data: { GroupCode: $("#ddlItemGroup").val() },
+            success: function (data) {
+                $.each(data, function (i, data) {
+                    $("#ddlItemHead").append('<option value="'
+                        + data.Value + '">' +
+                        data.Text + '</option>');
+                });
+                $("#ddlItemHead").val('');
+            },
+            error: function (ex) {
+                alert('Failed to retrieve Items : ' + ex);
+            }
+        });
+    }
+
+    function BindSubCategoryByCategory() {
+        $("#ddlSubCat").empty();
+        var CatId = $("#ddlMainCategory").val();
+        var html = "";
+        $.post("/Ecommarce/getItemsBySubCatId", { 'CatId': CatId }, function (data) {
+            $.each(data, function (i, data) {
+                $("#ddlSubCat").append('<option value="'
+                    + data.Value + '">' +
+                    data.Text + '</option>');
+            });
+        });
+    }
+
+
+    function InsertProductDetails() {
+        debugger;
+        var username = '@Request.RequestContext.HttpContext.Session["UserName"]';
+        if (username == '') {
+            window.location.href = '../account/index';
+        }
+        var Desc = CKEDITOR.instances.txtDescription.getData();
+        var ProductFeatures = CKEDITOR.instances.txtSpecification.getData();
+        var IsInvntItem;
+        IsInvntItem = $('#customCheck2').is(":checked") ? '1' : '0';
+
+        if (IsInvntItem == '1') {
+            if ($("#ddlItemGroup").val() == "0" || $("#ddlItemGroup").val() == "") {
+                alert("Please Select Item Group !");
+                $("#ddlItemGroup").focus();
+                return;
+            }
+            if ($("#ddlItemHead").val() == "0" || $("#ddlItemHead").val() == "") {
+                alert("Please Select Item !");
+                $("#ddlItemHead").focus();
+                return;
+            }
+        }
+
+        if ($("#txtProductName").val() == "") {
+            alert("Please Enter Product Name !");
+            $("#txtProductName").focus();
+            return;
+        }
+        if ($("#ddlMainCategory").val() == "0" || $("#ddlMainCategory").val() == "") {
+            alert("Please Select Main Category !");
+            $("#ddlMainCategory").focus();
+            return;
+        }
+        if ($("#ddlProductType").val() == "Simple Product") {
+            if ($("#txtRegularPrice").val() == "") {
+                alert("Please Enter Regular Price !");
+                $("#txtRegularPrice").focus();
+                return;
+            }
+            if ($("#txtSalePrice").val() == "") {
+                alert("Please Enter Sale Price !");
+                $("#txtSalePrice").focus();
+                return;
+            }
+        }
+
+        if (Desc == "") {
+            alert("Please Enter Product Description");
+            $("#txtDescription").focus();
+            return;
+        }
+        if ($("#fuMainFile").val() == "") {
+            alert("Please Upload Image !");
+            $("#fuMainFile").focus();
+            return;
+        }
+
+        var itemdetailsD = [];
+        $("#tblAttList TBODY TR").each(function () {
+            var row = $(this);
+            if (row.find('input[type="checkbox"]').is(':checked')) {
+                if (row.find("TD").eq(2).find('input[type="text"]').val() == '') {
+                    st = '1';
+                }
+                if (row.find("TD").eq(3).find('input[type="text"]').val() == '') {
+                    st = '1';
+                }
+
+                item = {};
+                item["AttributeId"] = row.attr('attrid');
+                item["variationId"] = row.attr('varid');
+                item["RegularPrice"] = row.find("TD").eq(2).find('input[type="text"]').val();
+                item["SalePrice"] = row.find("TD").eq(3).find('input[type="text"]').val();
+                itemdetailsD.push(item);
+            }
+        });
+
+
+
+        var Imagefile = $("#fuMainFile").get(0).files;
+        var Images = $("#fumultiFile").get(0).files;
+        var data = new FormData;
+        data.append("MainImage", Imagefile[0]);
+
+        data.append("GroupCode", $("#ddlItemGroup").val());
+        data.append("ItemCode", $("#ddlItemHead").val());
+        data.append("OnlinePrice", $("#txtSalePrice").val() != "" ? parseFloat($("#txtSalePrice").val()) : 0);
+        data.append("Quantity", $("#txtQty").val() != "" ? parseInt($("#txtQty").val()) : 0);
+        data.append("Description", Desc);
+        data.append("IsActive", 1);
+        data.append("ProductSpacification", ProductFeatures);
+        data.append("ProductName", $("#txtProductName").val());
+        data.append("MainCategoryCode", $("#ddlMainCategory").val());
+        data.append("SubCategoryCode", $("#ddlSubCat").val());
+        data.append("ProductType", $("#ddlProductType").val());
+        data.append("IsInventoryProduct", IsInvntItem);
+        data.append("RegularPrice", $("#txtRegularPrice").val() != "" ? parseFloat($("#txtRegularPrice").val()) : 0);
+        data.append("SalePrice", $("#txtSalePrice").val() != "" ? parseFloat($("#txtSalePrice").val()) : 0);
+        data.append("DiscPer", 0);
+        data.append("KeyWords", $("#txtKeywords").val());
+        data.append("VariationList", JSON.stringify(itemdetailsD));
+        data.append("GSTPer", $("#txtgstRate").val() != '' ? parseFloat($("#txtgstRate").val()) : 0);
+        data.append("CessRate", $("#txtCessRate").val() != '' ? parseFloat($("#txtCessRate").val()) : 0);
+
+        var files = $("#fumultiFile").get(0).files;
+        for (var i = 0; i < files.length; i++) {
+            data.append("fumultiFile", files[i]);
+        }
+
+        $("#showSpinner").show();
+        $.ajax({
+            url: "../Ecommarce/InsertProductDetailsNew",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                if (r.strId == '1') {
+                    alert(r.msg);
+                    $("#showSpinner").hide();
+                    location.reload();
+                }
+                else {
+                    alert(r.msg);
+                    $("#showSpinner").hide();
+                }
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function ChangepType() {
+        if ($('#ddlProductType').val() == "Simple Product") {
+            $('#divSimpPrice').show();
+            $('#divAttrProduct').hide();
+            $('#divInQty').show();
+        }
+        else {
+            $('#divSimpPrice').hide();
+            $('#divAttrProduct').show();
+            $('#divInQty').hide();
+        }
+        $('#txtQty').val('');
+    }
+
+    function GetAttributeData() {
+        if ($('#ddlAttribute').val() == '' || $('#ddlAttribute').val() == '0') {
+            alert('Please Select Attribute');
+            $('#ddlAttribute').focus();
+            return;
+        }
+        var dataobject = {
+            SrNo: $('#ddlAttribute').val()
+        };
+        $.ajax({
+            url: "@Url.Action("GetAttributeData", "Ecommarce")",
+            type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (data) {
+                $('#tblAttributes tbody').empty();
+                $.each(data.poList, function (i, item) {
+                    var rows = "<tr  AttrId='" + item.ItemCode + "'>" +
+                        "<td style='display:none'>" + item.ItemCode + "</td>" +
+                        "<td><input type='checkbox' style='margin-right: 25px;' /></td>" +
+                        "<td>" + item.ItemName + "</td>" +
+
+                        "</tr>";
+                    $('#tblAttributes tbody').append(rows);
+                });
+            },
+            error: function () {
+
+            }
+        });
+    }
+
+
+    function GetAttributeDataNew() {
+        if ($('#ddlAttribute').val() == '' || $('#ddlAttribute').val() == '0') {
+            alert('Please Select Attribute');
+            $('#ddlAttribute').focus();
+            return;
+        }
+        var dataobject = {
+            SrNo: $('#ddlAttribute').val()
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "@Url.Action("GetAttributeData", "Ecommarce")",
+            type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (data) {
+                $('#tblAttributes tbody').empty();
+                $.each(data.poList, function (i, item) {
+                    var rows = "<tr  AttrId='" + item.AccountCode + "' varId='" + item.ItemCode + "'>" +
+                        "<td><input type='checkbox' style='margin-right: 25px;' /></td>" +
+                               "<td>" + item.ItemName + "</td>" +
+                               "<td><input type='text' placeholder='0' style='width: 118px;' /></td>" +
+                               "<td><input type='text' placeholder='0' style='width: 118px;' /></td>" +
+                               "</tr>";
+                    $('#tblAttList tbody').append(rows);
+                });
+                $('#divVarList').css('display', 'block !important');
+                $("#showSpinner").hide();
+            },
+            error: function () {
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function InsertVariantionList() {
+
+        if ($("#hdReqId").val() == "") {
+            alert("Attribute can not be add !!!");
+            return;
+        }
+        if ($("#ddlAttribute").val() == "0" || $("#ddlAttribute").val() == "") {
+            alert("Please Select Attribute !!!");
+            $("#ddlAttribute").focus();
+            return;
+        }
+        var offerAppliedList = [];
+        $("#tblAttributes TBODY TR").each(function () {
+            var row = $(this);
+            itm = {};
+            if (row.find('input[type="checkbox"]').is(':checked')) {
+                itm["OfferCode"] = $.trim(row.attr("attrid"));
+                offerAppliedList.push(itm);
+            }
+        });
+        if (offerAppliedList.length <= 0) {
+            alert('Please add Some attributes in List!');
+            return;
+        }
+        var dataobject = {
+            RequestId: $("#hdReqId").val(),
+            AttrId: $("#ddlAttribute").val(),
+            ItemList: offerAppliedList
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Ecommarce/insertProductVariation",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                if (data.strId == "1") {
+                    $('#tblAttList tbody').empty();
+
+                    $.each(data.poList, function (i, item) {
+                        var rows = "<tr  AttrId='" + item.AccountCode + "'>" +
+                            "<td>" + item.ItemName + "</td>" +
+                            "<td>" + item.VariationId + "</td>" +
+                            "<td><a href='javascript:void(0);' title='Remove' class='action-icon'> <i class='mdi mdi-delete' style='color:red'></i></a></td>" +
+
+                            "</tr>";
+                        $('#tblAttList tbody').append(rows);
+                    });
+                    $('#divAllAttr').show();
+                    $("#showSpinner").hide();
+                }
+                else {
+                    alert("Error !!!");
+                    $("#showSpinner").hide();
+                }
+            }
+        });
+    }
+
+    function RegPriceDiv() {
+        divReg_PriceSetup
+        if ($('#ddlPriceType').val() == "Regular Price") {
+            $('#divReg_PriceSetup').show();
+        }
+        else {
+            $('#divReg_PriceSetup').hide();
+        }
+    }
+
+</script>
+
+<script src="../ckeditor/ckeditor.js"></script>
+
+<input type="hidden" id="hdReqId" value="@Model.RespoCode" />
+
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 20%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<!-- start page title -->
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">UBold</a></li>
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">eCommerce</a></li>
+                    <li class="breadcrumb-item active">Product Edit</li>
+                </ol>
+            </div>
+            <h4 class="page-title">Add / Edit Product</h4>
+        </div>
+    </div>
+</div>
+<!-- end page title -->
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card-box">
+            <h5 class="text-uppercase bg-light p-2 mt-0 mb-3">General</h5>
+            <div class="form-group col-md-12">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="customCheck2">
+                    <label class="custom-control-label" for="customCheck2">Inventory Product</label>
+                </div>
+            </div>
+            <div id="divInventItem" style="display:none">
+                <div class="form-group mb-3">
+                    <label for="product-name">Select group <span class="text-danger">*</span></label>
+                    @Html.DropDownList("ddlItemGroup", (List<SelectListItem>)ViewBag.ItemGroupList, new { @id = "ddlItemGroup", @class = "form-control", @onchange = "BindItemsByGroup()" })
+                </div>
+                <div class="form-group mb-3">
+                    <label for="product-description">Select Item <span class="text-danger">*</span></label>
+                    @Html.DropDownList("ddlItemHead", (List<SelectListItem>)ViewBag.ItemHeadList, new { @id = "ddlItemHead", @class = "form-control", @onchange = "GetItemHeadDetails()" })
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="product-name">Product Name <span class="text-danger">*</span></label>
+                <input type="text" id="txtProductName" class="form-control" placeholder="e.g : Apple iMac">
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="product-category">Main Category <span class="text-danger">*</span></label>
+                @Html.DropDownList("ddlMainCategory", (List<SelectListItem>)ViewBag.MainCategoryList, new { @id = "ddlMainCategory", @class = "form-control", @onchange = "BindSubCategoryByCategory()" })
+            </div>
+            <div class="form-group mb-3">
+                <label for="product-category">Sub Category</label>
+                <select id="ddlSubCat" class="form-control"></select>
+            </div>
+            <h5 class="text-uppercase bg-light p-2 mt-0 mb-3">Price Setup</h5>
+            <div class="form-group mb-3">
+                <label for="product-category">Product Type</label>
+                <select id="ddlProductType" class="form-control" onchange="ChangepType()">
+                    <option>Simple Product</option>
+                    <option>Attribute Product</option>
+                </select>
+            </div>
+            <div class="row" id="divSimpPrice">
+                <div class="col-md-6">
+                    <label for="product-category">Regular Price</label>
+                    <input type="number" class="form-control" id="txtRegularPrice" />
+                </div>
+                <div class="col-md-6">
+                    <label for="product-category">Sale Price</label>
+                    <input type="number" class="form-control" id="txtSalePrice" />
+                </div>
+            </div>
+            <div class="row" id="divAttrProduct" style="display:none">
+                <div class="col-md-7">
+                    <label for="product-category">Select Attribte</label>
+                    @Html.DropDownList("ddlAttribute", (List<SelectListItem>)ViewBag.AttributeList, new { @id = "ddlAttribute", @class = "form-control" })
+                </div>
+                <div class="col-md-2">
+                    <input type="submit" class="btn btn-warning" style="margin-top: 27px;" value="Go" onclick="GetAttributeDataNew()" />
+                </div>
+                <div class="col-md-12" div="divVarList">
+                    <hr />
+                    <div class="table-responsive">
+                        <table id="tblAttList" class="table table-borderless table-hover table-centered m-0">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th></th>
+                                    <th>Term</th>
+                                    <th>RegularPrice</th>
+                                    <th>Sale Price</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <hr />
+                    @*<div div class="col-md-6">
+                            <select id="ddlPriceType" class="form-control" onchange="RegPriceDiv()">
+                                <option>Regular Price</option>
+                                <option>Variable Price</option>
+                            </select>
+                        </div><hr />
+                        <div class="row" id="divReg_PriceSetup">
+                            <div class="col-md-6">
+                                <label for="product-category">Regular Price</label>
+                                <input type="number" class="form-control" id="txtVar_RegPrice" />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="product-category">Sale Price</label>
+                                <input type="number" class="form-control" id="txtVar_SalePrice" />
+                            </div>
+                        </div>*@
+                </div>
+
+
+                @*<div class="col-md-5" style="margin-top:23px">
+                        <table id="tblAttributes" class="table-responsive">
+                            <tbody></tbody>
+                        </table><hr style="margin:0px" />
+                        <a href="javascript:void(0);" onclick="InsertVariantionList()">Add Attribute</a>
+                    </div>*@
+
+            </div>
+
+        </div> <!-- end card-box -->
+    </div> <!-- end col -->
+    <div class="col-lg-6">
+        <div class="card-box">
+            <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Product Images</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="product-category">Upload Main Image</label>
+                    <input type="file" class="form-control" id="fuMainFile" />
+                </div>
+                <div class="col-md-6">
+                    <label for="product-category">Image Preview</label>
+                    <img src="../img/noimageicon.png" id="imgMainImage" style="width:65%" class="img-responsive img-thumbnail" />
+                </div>
+            </div><hr />
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="product-category">Upload more Images (max. 4 Images can be upload)</label>
+                    <input type="file" class="form-control" id="fumultiFile" multiple max="4" />
+                </div>
+            </div>
+        </div> <!-- end col-->
+        <div class="card-box">
+            <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Meta Keywords</h5>
+            <div class="form-group mb-3">
+                <label for="product-meta-keywords">Meta Keywords</label>
+                <input type="text" class="form-control" id="txtKeywords" placeholder="Enter keywords">
+            </div>
+            <div class="form-group mb-3" id="divInQty">
+                <label for="product-meta-keywords">Initial Stock</label>
+                <input type="number" class="form-control" id="txtQty" placeholder="0">
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="product-meta-keywords">GST Rate</label>
+                    <input type="number" class="form-control" id="txtgstRate" placeholder="0">
+                </div>
+                <div class="col-md-6">
+                    <label for="product-meta-keywords">Cess Rate</label>
+                    <input type="number" class="form-control" id="txtCessRate" placeholder="0">
+                </div>
+            </div>
+        </div> <!-- end card-box -->
+    </div> <!-- end col-->
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card-box">
+            <h5 class="text-uppercase bg-light p-2 mt-0 mb-3">Product Specification </h5>
+            <textarea id="txtSpecification" class="form-control" rows="5" style="width:100%"></textarea>
+            <script type="text/javascript">
+                CKEDITOR.replace('txtSpecification');
+            </script>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card-box">
+            <h5 class="text-uppercase bg-light p-2 mt-0 mb-3">Product Description <span class="text-danger">*</span></h5>
+
+            <textarea id="txtDescription" class="form-control" rows="5" style="width:100%"></textarea>
+            <script type="text/javascript">
+                CKEDITOR.replace('txtDescription');
+            </script>
+        </div>
+    </div>
+</div>
+
+
+<!-- end row -->
+<div class="row">
+    <div class="col-12">
+        <div class="text-center mb-3">
+            <button type="button" class="btn w-sm btn-light waves-effect">Cancel</button>
+            <button type="button" class="btn w-sm btn-success waves-effect waves-light" onclick="InsertProductDetails()">Save</button>
+            @*<button type="button" class="btn w-sm btn-danger waves-effect waves-light">Delete</button>*@
+        </div>
+    </div> <!-- end col -->
+</div>
+<!-- end row -->

@@ -1,0 +1,283 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Daily Deals";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#tblItemHead").DataTable();
+    });
+
+    function InsertUOM() {
+        if ($("#DealName").val() == "") {
+            alert("Enter DealName  Name !!!");
+            $("#DealName").focus();
+            return;
+        }
+        var dataobject = {
+            DealName: $("#DealName").val(),
+            DisPrice: $("#DisCount").val(),
+            FromTime: $("#FromTime").val(),
+            ToTime: $("#ToTime").val(),
+            Date: $("#Date").val(),
+           
+            Action: "1"
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Master/InsertDailyDealsDetails",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r != '0') {
+                    alert(r);
+                    location.reload();
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+
+    function UpdateItemHead() {
+        if ($("#hdItemCode").val() == "") {
+            alert("DealName Unit Code Not Found !!!");
+            return;
+        }
+        if ($("#DealName").val() == "") {
+            alert("Enter DealName Unit Name !!!");
+            $("#DealName").focus();
+            return;
+        }
+        var dataobject = {
+            dId: $("#hdItemCode").val(),
+            DealName: $("#DealName").val(),
+            DisPrice: $("#DisCount").val(),
+            FromTime: $("#FromTime").val(),
+            ToTime: $("#ToTime").val(),
+            Date: $("#Date").val(),
+           
+            Action: "3"
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Master/InsertDailyDealsDetails",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r != '0') {
+                    alert(r);
+                    location.reload();
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function GetDetailsForEdit(ItemCode) {
+        var dataobject = {
+            dId: ItemCode
+        };
+        $.ajax({
+            type: "POST",
+            url: "/Master/GetDailyDealsDetailsForEdit",
+            data: dataobject,
+            dataType: "json",
+            success: function (r) {
+                if (r != null) {
+                   $("#DealName").val(r.DealName);
+                   $("#ToTime").val(r.ToTime);
+                   $("#FromTime").val(r.FromTime);
+                   $("#Date").val(r.Date);
+                   $("#DisCount").val(r.DisPrice);
+                   $("#hdItemCode").val(r.dId);      
+                   $("#txtUOMName").focus();
+
+                    $("#btnSave").hide();
+                    $("#btnUpdate").show();
+                    $("#btnCancel").show();
+                }
+                else {
+                    alert("Mesaurement Unit Details Not Found !!!");
+                }
+            }
+        });
+    }
+    function CancelUpdate() {
+        location.reload();
+    }
+
+    function DeleteItemHeadDetails(ItemCode) {
+        var x = confirm("Are you sure you want to delete?");
+        if(x)
+        {
+            var dataobject = {
+                dId: ItemCode,
+                Action: "5"
+            };
+            $.ajax({
+                type: "POST",
+                url: "/Master/InsertDailyDealsDetails",
+                data: dataobject,
+                dataType: "json",
+                success: function (r) {
+                     if (r != '0') {
+                    alert(r);
+                    location.reload();
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+                }
+            });
+        }
+        else{
+            return false;
+        }
+    }
+</script>
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Daily Deals Master</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Deal Name<span style="color:red">*</span> </label>
+                        <input type="text" class="form-control" id="DealName" placeholder="Deal Name">
+                        <input type="hidden" id="hdItemCode" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">DisCount Price<span style="color:red">*</span> </label>
+                        <input type="number" class="form-control" id="DisCount" placeholder="Enter DisCount Price">
+                     
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">From Time <span style="color:red">*</span> </label>
+                        <input type="time" class="form-control" id="FromTime">
+                    
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">To Time<span style="color:red">*</span> </label>
+                        <input type="time" class="form-control" id="ToTime" >
+                     
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Date<span style="color:red">*</span> </label>
+                        <input type="date" class="form-control" id="Date" >
+                     
+                    </div>
+                    @*<div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Mesaurement Unit Name <span style="color:red">*</span> </label>
+                        <input type="text" class="form-control" id="txtUOMName" placeholder="Enter Mesaurement Unit Name">
+                       
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Mesaurement Unit Name <span style="color:red">*</span> </label>
+                        <input type="text" class="form-control" id="txtUOMName" placeholder="Enter Mesaurement Unit Name">
+                       
+                    </div>*@
+                </div>
+                <button type="submit" id="btnSave" class="btn btn-primary waves-effect waves-light" onclick="InsertUOM()">Save Record</button>
+                <button type="submit" id="btnUpdate" style="display:none" class="btn btn-warning waves-effect waves-light" onclick="UpdateItemHead()">Update Record</button>
+                <button type="submit" id="btnCancel" style="display:none" class="btn btn-danger waves-effect waves-light" onclick="CancelUpdate()">Cancel</button>
+
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <h4 class="header-title">Daily Deals  Details</h4>
+            <div class="table-responsive">
+                <table id="tblItemHead" class="table table-borderless table-hover table-centered m-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sr.No</th>
+                            <th>Deal Name</th>
+                            <th>From Time</th>
+                            <th>To Time</th>
+                            <th>Deal Start Date</th>
+                            <th>Discount Price</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                i++;
+                                <tr>
+                                    <td>@i</td>
+
+                                    <td>@dr["DealName"]</td>
+
+                                    <td>@dr["FromTime"]</td>
+                                    <td>@dr["ToTime"]</td>
+                                    <td>@dr["Date"]</td>
+                                    <td>@dr["DisPrice"]</td>
+
+                                    <td>
+                                        @*<a href="javascript: void(0);" class="btn btn-xs btn-secondary" onclick="GetDetailsForEdit('@dr["UnitCode"]')"><i class="mdi mdi-pencil"></i></a>*@
+                                        <a href="javascript:void(0);" title="Edit" class="action-icon" onclick="GetDetailsForEdit('@dr["dId"]')"> <i class="mdi mdi-square-edit-outline" style="color:#51bfd0"></i></a>
+                                        <a href="javascript:void(0);" title="Delete" class="action-icon" onclick="DeleteItemHeadDetails('@dr["dId"]')"> <i class="mdi mdi-delete" style="color:red"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>
+

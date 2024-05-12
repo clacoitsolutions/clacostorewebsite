@@ -1,0 +1,315 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Edit Product";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="../ckeditor/ckeditor.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    function BindItemsByGroup() {
+        $("#ddlItemHead").empty();
+        $.ajax({
+            type: 'Post',
+            url: '@Url.Action("GetItemsByGroup","Sales")',
+            dataType: 'json',
+            data: { GroupCode: $("#ddlItemGroup").val() },
+            success: function (data) {
+                $.each(data, function (i, data) {
+                    $("#ddlItemHead").append('<option value="'
+                        + data.Value + '">' +
+                        data.Text + '</option>');
+                });
+                $("#ddlItemHead").val('');
+            },
+            error: function (ex) {
+                alert('Failed to retrieve Items : ' + ex);
+            }
+        });
+    }
+    function GetItemHeadDetails() {
+        var dataobject = {
+            ItemCode1: $("#ddlItemHead").val()
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Ecommarce/GetOnlineItemDetails",
+            type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (r) {
+                $("#ddlItemGroup").val(r.GroupCode);
+                $("#txtOnlinePrice").val(r.OnlinePrice);
+                $("#txtQuantity").focus();
+                $("#showSpinner").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function insertData() {
+
+        //if ($("#ddlItemGroup").val() == "0") {
+        //    alert("Please Select Item Group !!!");
+        //    $("#ddlItemGroup").focus();
+        //    return;
+        //}
+        //if ($("#ddlItemHead").val() == "") {
+        //    alert("Please Select Product !!!");
+        //    $("#ddlItemHead").focus();
+        //    return;
+        //}
+        var Desc = CKEDITOR.instances.txtDescription.getData();
+        var Spacifc = CKEDITOR.instances.txtSpecification.getData();
+        var isavl = document.getElementById("customCheck2").checked ? true : false;
+        var data = new FormData;
+        data.append("GroupCode", $("#ddlItemGroup").val());
+        data.append("ItemCode", $("#ddlItemHead").val());
+        data.append("OnlinePrice", $.trim($("#txtOnlinePrice").val()) != "" ? parseFloat($("#txtOnlinePrice").val()) : 0);
+        data.append("Quantity", $.trim($("#txtQuantity").val()) != "" ? parseFloat($("#txtQuantity").val()) : 0);
+        data.append("Description", Desc);
+        data.append("ProductSpacification", Spacifc);
+        data.append("IsActive", isavl);
+
+        Dropzone.options.dropzoneJsForm = {
+            autoQueue: false,
+            init: function () {
+                this.on("addedfile", function (file) {
+                    data.append("file", file);
+                });
+            }
+        };
+
+        //var myDropone = $(".dz-complete");
+        ////$(myDropone).each(function () {
+        ////    var row = $(this);
+        ////    var imagename = row.find('.dz-filename').text();
+        ////    data.append("multipleImages", imagename);
+        ////})
+        $(myDropone).each(function () {
+            var row = $(this);
+            var imagename = row.find('.dz-image').find('img').attr('src');
+            var filemjjk = base64_to_jpeg(imagename, row.find('.dz-filename').text())
+            //data.append("multipleImages", imagename);
+        })
+
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Ecommarce/InsertProductDetails",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                alert(r);
+                //location.reload();
+                $("#showSpinner").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function base64_to_jpeg($base64_string, $output_file) {
+        // open the output file for writing
+        $ifp = fopen($output_file, 'wb');
+
+        // split the string on commas
+        // $data[ 0 ] == "data:image/png;base64"
+        // $data[ 1 ] == <actual base64 string>
+        $data = explode(',', $base64_string);
+
+        // we could add validation here with ensuring count( $data ) > 1
+        fwrite($ifp, base64_decode($data[1]));
+
+        // clean up the file resource
+        fclose($ifp);
+
+        return $output_file;
+    }
+</script>
+
+<script>
+    $(function () {
+        $("#showSpinner").show();
+        Dropzone.options.dropzoneJsForm = {
+            url: "/Ecommarce/InsertProductDetails",
+            autoProcessQueue: false,
+            uploadMultiple: true,
+            parallelUploads: 100,
+            maxFiles: 100,
+            acceptedFiles: "image/*",
+            init: function () {
+                var submitButton = document.querySelector("#btnSave");
+                var wrapperThis = this;
+
+                submitButton.addEventListener("click", function () {
+                    wrapperThis.processQueue();
+                });
+
+                //this.on("addedfile", function (file) {
+
+                //    // Create the remove button
+                //    var removeButton = Dropzone.createElement("<button class='btn btn-lg dark'>Remove File</button>");
+
+                //    // Listen to the click event
+                //    removeButton.addEventListener("click", function (e) {
+                //        // Make sure the button click doesn't submit the form:
+                //        e.preventDefault();
+                //        e.stopPropagation();
+
+                //        // Remove the file preview.
+                //        wrapperThis.removeFile(file);
+                //        // If you want to the delete the file on the server as well,
+                //        // you can do the AJAX request here.
+                //    });
+                //    // Add the button to the file preview element.
+                //    file.previewElement.appendChild(removeButton);
+                //});
+
+                this.on('sendingmultiple', function (data, xhr, formData) {
+                    var Desc = CKEDITOR.instances.txtDescription.getData();
+                    var Spacifc = CKEDITOR.instances.txtSpecification.getData();
+                    var isavl = document.getElementById("customCheck2").checked ? true : false;                    
+                    formData.append("GroupCode", $("#ddlItemGroup").val());
+                    formData.append("ItemCode", $("#ddlItemHead").val());
+                    formData.append("OnlinePrice", $.trim($("#txtOnlinePrice").val()) != "" ? parseFloat($("#txtOnlinePrice").val()) : 0);
+                    formData.append("Quantity", $.trim($("#txtQuantity").val()) != "" ? parseFloat($("#txtQuantity").val()) : 0);
+                    formData.append("Description", Desc);
+                    formData.append("ProductSpacification", Spacifc);
+                    formData.append("IsActive", isavl);
+
+                    this.on("success", function (r) {
+                        alert('Product Details Successfully Updated. !!!');
+                        location.reload();
+                    });                    
+                });
+                $("#showSpinner").hide();
+            }
+        };
+    });
+</script>
+
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <i class="fa fa-refresh fa-spin nexo-refresh-icon" style="color: rgb(0, 0, 0); font-size: 50px; position: absolute; top: 50%; left: 50%; margin-top: -25px; margin-left: -25px; width: 44px; height: 50px;">
+        </i>
+    </div>
+</my-spinner>
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Master</a></li>
+                    <li class="breadcrumb-item"><a href="../Master/CreateItemHead">Item Head</a></li>
+                    <li class="breadcrumb-item active">Product Edit</li>
+                </ol>
+            </div>
+            <h4 class="page-title">Edit Product Details for Online</h4>
+        </div>
+    </div>
+</div>
+<!-- end page title -->
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card-box">
+            <h5 class="text-uppercase bg-light p-2 mt-0 mb-3">General</h5>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="inputPassword4" class="col-form-label">Product Group <span class="text-danger">*</span></label>
+                    @Html.DropDownList("ddlItemGroup", (List<SelectListItem>)ViewBag.ItemGroupList, new { @id = "ddlItemGroup", @class = "form-control", @onchange = "BindItemsByGroup()" })
+                </div>
+                <div class="form-group col-md-8">
+                    <label for="inputEmail4" class="col-form-label">Product Name <span class="text-danger">*</span> </label>
+                    @Html.DropDownList("ddlItemHead", (List<SelectListItem>)ViewBag.ItemHeadList, new { @id = "ddlItemHead", @class = "form-control", @onchange = "GetItemHeadDetails()" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label for="product-description">Online Price <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="txtOnlinePrice" value="@Model.OnlinePrice" placeholder="Online Price" />
+                </div>
+                <div class="form-group col-md-4" style="display:none">
+                    <label for="product-description">Stock Quantity <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="txtQuantity" placeholder="Stock Quantity" />
+                </div>
+                <div class="form-group col-md-4">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck2" checked>
+                        <label class="custom-control-label" for="customCheck2" style="margin:38px">Availabe for Sale</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label for="product-description">Product Specification <span class="text-danger">*</span></label>
+                    <textarea id="txtSpecification" class="form-control" rows="5" style="width:100%"></textarea>
+                    <script type="text/javascript">
+                        CKEDITOR.replace('txtSpecification');
+                    </script>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label for="product-description">Product Description <span class="text-danger">*</span></label>
+                    <textarea id="txtDescription" class="form-control" rows="5" style="width:100%"></textarea>
+                    <script type="text/javascript">
+                        CKEDITOR.replace('txtDescription');
+                    </script>
+                </div>
+            </div>
+        </div> <!-- end card-box -->
+    </div> <!-- end col -->
+    <!-- end col-->
+</div>
+<div class="row" style="display:none">
+    <div class="col-lg-12">
+        <div class="card-box">
+            <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Product Main Images</h5>
+            <form action="/" method="post" class="dropzone" id="dropzoneJsForm" enctype="multipart/form-data">
+                <div class="fallback">
+                    <input name="file" id="fileupload" type="file" multiple />
+                </div>
+                <div class="dz-message needsclick">
+                    <i class="h1 text-muted dripicons-cloud-upload"></i>
+                    <h3>Drop files here or click to upload.</h3>
+                    <span class="text-muted font-13">(Image size should be 330px*330px for best view.)</span>
+                </div>
+            </form>
+        </div> <!-- end col-->
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card-box">
+            <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Product Images</h5>
+            <form action="/" method="post" class="dropzone" id="dropzoneJsForm" enctype="multipart/form-data">
+                <div class="fallback">
+                    <input name="file" id="fileupload" type="file" multiple />
+                </div>
+                <div class="dz-message needsclick">
+                    <i class="h1 text-muted dripicons-cloud-upload"></i>
+                    <h3>Drop files here or click to upload.</h3>
+                    <span class="text-muted font-13">(Image size should be 330px*330px for best view.)</span>
+                </div>
+            </form>
+        </div> <!-- end col-->
+    </div>
+</div>
+<!-- end row -->
+<div class="row">
+    <div class="col-12">
+        <div class="text-center mb-3">
+            <button type="button" class="btn w-sm btn-light waves-effect">Cancel</button>
+            <button type="button" class="btn w-sm btn-success waves-effect waves-light" id="btnSave">Save</button>            
+        </div>
+    </div> <!-- end col -->
+</div>
+<!-- end row -->

@@ -1,0 +1,515 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "GenerateJournalVoucher";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+
+    $(document).ready(function () {
+        var RoleId = '@Request.RequestContext.HttpContext.Session["Role"]';
+        var BranchCode = '@Request.RequestContext.HttpContext.Session["UserName"]';
+        if (RoleId == '3') {
+            $('#ddlBranch').val(BranchCode);
+            $('#ddlBranch').attr('disabled', 'disabled');
+        }
+        else {
+            $('#ddlBranch').val($('#hdCompanyCode').val()).trigger('change');
+        }
+
+        $('select').select2();
+        $('#txtVoucherDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+    });
+
+    function InsertVoucher() {
+        if ($('#ddlBranch').val() == '' || $('#ddlBranch').val() == '0') {
+            alert('Please Select Branch !!!');
+            $('#ddlBranch').focus();
+            return;
+        }
+        if ($('#txtVoucherDate').val() == "") {
+            alert('Please Enter Date !!!');
+            $('#txtVoucherDate').focus();
+            return;
+        }
+        if ($("#ddlAccountList").val() == "" || $("#ddlAccountList").val() == "0") {
+            alert("Please Select Account For Credit !!!");
+            $("#ddlAccountList").focus();
+            return;
+        }
+        if ($('#txtAmount').val() == "") {
+            alert('Please Enter Amount !!!');
+            $('#txtAmount').focus();
+            return;
+        }
+        if ($('#txtNarration').val() == "") {
+            alert('Please Enter Narration !!!');
+            $('#txtNarration').focus();
+            return;
+        }
+        if ($("#ddlAccountList1").val() == "" || $("#ddlAccountList1").val() == "0") {
+            alert("Please Select Account For Debit !!!");
+            $("#ddlAccountList1").focus();
+            return;
+        }
+
+        calculateAmount();
+
+        var dataobject = {
+            InvoiceDate: $("#txtVoucherDate").val(),
+            FinancialYear: $('#txtFinYear').val(),
+            PayMode: 'Journal',
+            AccountCode: $('#ddlAccountList1').val(),
+            AccountName: $("#ddlAccountList1 option:selected").text(),
+            PaidAmount: $('#txtAmount').val(),
+            vType: "Journal",
+            AccCode: $('#ddlAccountList').val(),
+            AccName: $("#ddlAccountList option:selected").text(),
+            narration: $('#txtNarration').val()
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/AccountingReports/InsertJournalVoucherDetails",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r.strId != '0') {
+                    alert(r.msg);
+                    location.reload();
+                    var url = "../VoucherPrint/printVoucher?VoucherNo=" + r.InvoiceNo;
+                    window.open(url, '_blank');
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+    function allowonlyDegitandDot() {
+        if (event.which < 46 || event.which >= 58 || event.which == 47) {
+            event.preventDefault();
+        }
+
+        if (event.which == 46 && $(this).val().indexOf('.') != -1) {
+            this.value = '';
+        }
+    }
+    var lblCurrBalance = 0;
+    function GetBalance() {
+        if ($('#ddlAccountList').val() != '' && $('#ddlAccountList').val() != '0') {
+            var dataobject = {
+                AccCode: $('#ddlAccountList').val()
+            };
+            $.ajax({
+                type: "POST",
+                url: "/AccountingReports/GetAccountBalance",
+                data: dataobject,
+                dataType: "json",
+                success: function (r) {
+                    if (r != null) {
+                        lblCurrBalance = r.WalletBalance
+                        $("#lblCurrBalance").text(r.WalletBalance);
+                        $("#lblType").text(r.OfferType);
+                    }
+                    else {
+                        lblCurrBalance = 0
+                        $("#lblCurrBalance").text('0.00');
+                        $("#lblType").text('');
+                    }
+                }
+            });
+        }
+        else {
+
+            $("#lblCurrBalance").text('0.00');
+            $("#lblType").text('');
+        }
+    }
+    function calculateAmount() {
+        var amt = $('#txtAmount').val() !=''?parseFloat($('#txtAmount').val()):0;
+        var Balance = $("#lblCurrBalance").text() != '' ? parseFloat($("#lblCurrBalance").text()) : 0;
+        if (amt > Balance) {
+            alert('Insufficient Balance');
+            $('#txtAmount').val('');
+            $('#txtAmount').focus()
+        }
+        else {
+            var amt = 0
+            if ($('#txtAmount').val() == '')
+            {
+                 amt = 0;
+            }
+            else {
+                 amt = parseFloat($('#txtAmount').val());
+            }
+
+            var Balance = parseFloat(lblCurrBalance)
+            $("#lblCurrBalance").text(Balance - amt);
+        }
+    }
+
+
+    function NewbtnClick() {
+        location.reload();
+    }
+    function FindbtnClick(val) {
+        var dataobject = {
+            Action: "1",
+            strId: val,
+            InvoiceNo: null,
+            AccCode: $.trim($("#spnInvNo").text()),
+            OfferType: 'Journal Voucher'
+        };
+        $("#showSpinner").show();
+        //clearcshbk();
+        $.ajax({
+            url: "/AccountingReports/BindVoucherData",
+            type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (r) {
+                debugger;
+                if (r.msg == "1") {
+                    $('#divOldInv').show();
+                    $("#hdInvoiceNo").val(r.InvoiceNo);
+                    $("#spnInvNo").text(r.InvoiceNo);
+                    $("#ddlBranch").val(r.BranchCode).trigger('change');
+                    $("#txtVoucherDate").val(r.eDate);
+                    $("#txtAmount").val(r.PurchaseBy);
+                    $("#txtNarration").val(r.narration);
+                    $("#ddlAccountList").val(r.AccountCode).trigger('change');
+                    $("#ddlAccountList1").val(r.AccCode).trigger('change');
+                    debugger;
+
+                    $('#btnupdate').show();
+                    $('#btnSave').hide();
+
+                }
+                $("#showSpinner").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function printBill() {
+        if ($.trim($('#hdInvoiceNo').val()) == '') {
+            alert('Please select voucher first.');
+            return;
+        }
+        var type = $('input:radio[name=BillType]:checked').val();
+        var url = '';
+        url = '../VoucherPrint/printVoucher?VoucherNo=' + $.trim($('#hdInvoiceNo').val());
+        window.open(url, '_blank');
+    }
+
+    function DeleteItemHeadDetails() {
+        if ($.trim($('#hdInvoiceNo').val()) == '') {
+            alert('Please select voucher first.');
+            return;
+        }
+        var InvoiceNo = $.trim($('#hdInvoiceNo').val());
+        var x = confirm("Are you sure you want to delete?");
+        if (x) {
+            var data = new FormData();
+            data.append("VoucherNo", InvoiceNo);
+            $.ajax({
+                url: "@Url.Action("DeleteVoucherMasterDetail", "Report")",
+                type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                if (r.strId != '0') {
+                    alert(r.msg);
+                    location.reload();
+                }
+                if (r == "0") {
+                    alert("Please Check Values Entered by you!");
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $('.loader').hide();
+            }
+        });
+    }
+    else {
+            return false;
+    }
+    }
+
+    function Searchfunc(val) {
+        if ($.trim($('#txtInvNo').val()) == '') {
+            alert('Please Enter Voucher No.');
+            $('#txtInvNo').focus();
+            return;
+        }
+        var dataobject = {
+            Action: "1",
+            strId: val,
+            InvoiceNo: null,
+            AccCode: $.trim($("#txtInvNo").val()),
+            OfferType: 'Journal Voucher'
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/AccountingReports/BindVoucherData",
+            type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (r) {
+                debugger;
+                if (r.msg == "1") {
+                    $('#divOldInv').show();
+                    $("#hdInvoiceNo").val(r.InvoiceNo);
+                    $("#spnInvNo").text(r.InvoiceNo);
+                    $("#ddlBranch").val(r.BranchCode).trigger('change');
+                    $("#txtVoucherDate").val(r.eDate);
+                    $("#txtAmount").val(r.PurchaseBy);
+                    $("#txtNarration").val(r.narration);
+                    $("#ddlAccountList").val(r.AccountCode).trigger('change');
+                    $("#ddlAccountList1").val(r.AccCode).trigger('change');
+                    debugger;
+
+                    $('#btnupdate').show();
+                    $('#btnSave').hide();
+
+                }
+                else {
+                    alert('No Record found.');
+                }
+                $('#txtInvNo').val('');
+                $('#modalFind').modal('hide');
+
+                $("#showSpinner").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+
+
+
+    function UpdateVoucher() {
+
+        if ($.trim($('#hdInvoiceNo').val()) == '') {
+            alert('Please select voucher first.');
+            return;
+        }
+
+        if ($('#ddlBranch').val() == '' || $('#ddlBranch').val() == '0') {
+            alert('Please Select Branch !!!');
+            $('#ddlBranch').focus();
+            return;
+        }
+        if ($('#txtVoucherDate').val() == "") {
+            alert('Please Enter Date !!!');
+            $('#txtVoucherDate').focus();
+            return;
+        }
+        if ($("#ddlAccountList").val() == "" || $("#ddlAccountList").val() == "0") {
+            alert("Please Select Account For Credit !!!");
+            $("#ddlAccountList").focus();
+            return;
+        }
+        if ($('#txtAmount').val() == "") {
+            alert('Please Enter Amount !!!');
+            $('#txtAmount').focus();
+            return;
+        }
+        if ($('#txtNarration').val() == "") {
+            alert('Please Enter Narration !!!');
+            $('#txtNarration').focus();
+            return;
+        }
+        if ($("#ddlAccountList1").val() == "" || $("#ddlAccountList1").val() == "0") {
+            alert("Please Select Account For Debit !!!");
+            $("#ddlAccountList1").focus();
+            return;
+        }
+
+        //calculateAmount();
+
+        var dataobject = {
+            InvoiceDate: $("#txtVoucherDate").val(),
+            FinancialYear: $('#txtFinYear').val(),
+            PayMode: 'Journal',
+            AccountCode: $('#ddlAccountList1').val(),
+            AccountName: $("#ddlAccountList1 option:selected").text(),
+            PaidAmount: $('#txtAmount').val(),
+            vType: "Journal",
+            AccCode: $('#ddlAccountList').val(),
+            AccName: $("#ddlAccountList option:selected").text(),
+            narration: $('#txtNarration').val(),
+            vNo: $.trim($('#hdInvoiceNo').val())
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/AccountingReports/UpdateJournalVoucherDetails",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r.strId != '0') {
+                    alert(r.msg);
+                    location.reload();
+                    var url = "../VoucherPrint/printVoucher?VoucherNo=" + r.InvoiceNo;
+                    window.open(url, '_blank');
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+</script>
+<input type="hidden" value="@Model.CompanyCode" id="hdCompanyCode" />
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Generate Journal Voucher</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-8">
+                        <input type="submit" value="New" onclick="NewbtnClick()" class="btn btn-info btn-sm" />
+                        <input type="submit" value="Find" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalFind" />
+                        <input type="submit" value="Delete" onclick="DeleteItemHeadDetails()" class="btn btn-danger btn-sm" />
+                        <input type="submit" value="First" onclick="FindbtnClick('First')" class="btn btn-success btn-sm" />
+                        <input type="submit" value="Next" onclick="FindbtnClick('Next')" class="btn btn-primary btn-sm" />
+                        <input type="submit" value="Previous" onclick="FindbtnClick('Previous')" class="btn btn-warning btn-sm" />
+                        <input type="submit" value="Last" onclick="FindbtnClick('Last')" class="btn btn-success btn-sm" />
+                        <input type="submit" value="Print" onclick="printBill()" class="btn btn-danger btn-sm" />
+                    </div>
+                    <div class="form-group col-md-4" id="divOldInv" style="margin-top: 6px;font-size: 18px;display:none">
+                        <span>Invoice No:#</span><span style="color:red;font-weight:bold" id="spnInvNo"></span>
+                        <input type="hidden" id="hdInvoiceNo" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress" class="col-form-label">Branch <span style="color:red">*</span></label>
+                        @Html.DropDownList("ddlBranch", (List<SelectListItem>)ViewBag.BranchList, new { @id = "ddlBranch", @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Date <span style="color:red">*</span> </label>
+                        <input type="text" class="form-control" id="txtVoucherDate" value="@Model.mDate" placeholder="Voucher Date" data-date-autoclose="true">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="inputEmail4" class="col-form-label">Financial Year</label>
+                        <input type="text" class="form-control" id="txtFinYear" value="@Model.FinancialYear" disabled placeholder="Financial Year">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <h4>CREDIT</h4>
+                    <hr />
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress" class="col-form-label">Account Head <span style="color:red">*</span></label>
+                        @Html.DropDownList("ddlAccountList", (List<SelectListItem>)ViewBag.AccountList, new { @id = "ddlAccountList", @class = "form-control", @onchange = "GetBalance()" })
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="inputEmail4" class="col-form-label">Amount <span style="color:red">*</span> </label>
+                        <input type="text" class="form-control" maxlength="7" id="txtAmount" placeholder="Amount" onchange="calculateAmount()" onkeypress="allowonlyDegitandDot()" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Narration</label>
+                        <input type="text" class="form-control" id="txtNarration" placeholder="Narration" />
+                    </div>
+                    <div class="form-group col-md-2" style="margin-top:36px">
+                        Curr. Balance: <span id="lblCurrBalance" style="color:red">0.00</span> <span id="lblType"></span>
+                    </div>
+                </div>
+                <hr />
+                <div class="form-row">
+                    <h4>DEBIT</h4>
+                    <hr />
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress" class="col-form-label">Account Head <span style="color:red">*</span></label>
+                        @Html.DropDownList("ddlAccountList1", (List<SelectListItem>)ViewBag.AccountList, new { @id = "ddlAccountList1", @class = "form-control" })
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="form-group col-md-12" style="text-align:right">
+                        <button type="submit" id="btnCancel" class="btn btn-danger btn-sm waves-effect waves-light" onclick="NewbtnClick()">Cancel</button>
+                        <button type="submit" id="btnSave" class="btn btn-primary btn-sm waves-effect waves-light" onclick="InsertVoucher()">Save & Print Voucher</button>
+
+                        <button type="submit" id="btnupdate" style="display:none" class="btn btn-primary btn-sm waves-effect waves-light" onclick="UpdateVoucher()">Update Voucher</button>
+                    </div>
+                </div>
+
+
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+
+<div id="modalFind" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Find Invoice</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="field-1" class="control-label">Voucher No.<span style="color:red">*</span></label>
+                            <input type="text" class="form-control" id="txtInvNo" placeholder="Voucher No.">
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="margin-top: 28px;">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary waves-effect" onclick="Searchfunc('Find')">Find</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

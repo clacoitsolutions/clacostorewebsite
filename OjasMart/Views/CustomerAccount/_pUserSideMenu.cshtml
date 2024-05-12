@@ -1,0 +1,152 @@
+﻿@{
+    Layout = null;
+}
+
+<style>
+
+
+    .user-item:hover .uil,
+    .user-item:hover {
+        background: #fa2365 !important;
+        color: white !important;
+        transition: none;
+        font-weight: bold;
+    }
+
+    .r1 {
+        background: #fa2365 !important;
+    }
+
+    .dropdown-links {
+        display: none;
+    }
+
+    .show-dropdown {
+        display: block;
+    }
+
+    @@media screen and (min-width: 768px) {
+        .dropdown-toggle {
+            display: none;
+        }
+
+        .dropdown-links {
+            display: block;
+        }
+    }
+
+    @@media screen and (max-width: 767px) {
+        .profile-info {
+            align-items: center;
+        }
+
+            .profile-info img {
+                height: 40px;
+                width: 40px;
+                margin: 5px;
+            }
+
+            .profile-info h4 {
+                color: #ef0966;
+                margin-top: 10px;
+            }
+
+        .dropdown-toggle {
+            display: block;
+            cursor: pointer;
+        }
+
+        .r1 {
+            border: 0px !important;
+        }
+    }
+
+    .user-item.active {
+        background: #fa2365 !important;
+    }
+</style>
+
+<script>
+    function toggleDropdown() {
+        var dropdown = document.getElementById("dropdownLinks");
+        dropdown.classList.toggle("show-dropdown");
+    }
+
+
+</script>
+
+<script>
+    // Function to set active link based on current page
+    function setActiveLink() {
+        var currentPagePath = window.location.pathname;
+        var links = document.querySelectorAll('.user-item');
+
+        links.forEach(function (link) {
+            var href = link.getAttribute('href');
+
+            // Check if the current page path contains the href attribute
+            if (currentPagePath.includes(href)) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active'); // Remove active class from other links
+            }
+        });
+    }
+
+    // Call the setActiveLink function when the page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        setActiveLink();
+    });
+
+    // Call the setActiveLink function when a link is clicked
+    document.querySelectorAll('.user-item').forEach(item => {
+        item.addEventListener('click', function () {
+            setActiveLink();
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+<div class="col-lg-3 col-md-4">
+    <div class="left-side-tabs">
+        <div class="dashboard-left-links" style="margin-top:-10px">
+            <div class="profile-info">
+                <div class="row r1" style="min-height: 50px; border: 1px solid #fa007a; margin: 5px; border-radius: 8px 8px 0px 0px; margin: 20px 0;">
+                    <div class="col-sm-3 col-3 C1" style="float:left">
+                        <img src="../img/Abhi.png" style="height:40px;width:40px;margin:5px" class="fw-bold;" />
+                    </div>
+                    <div class="col-sm-7 col-7 C2" style="float:left">
+                        <p style="color:white;margin-top:15px;font-size:13px;font-weight:bold">Hii @ViewBag.UserProfileName</p>
+                    </div>
+                    <div class="col-sm-2 col-2 dropdown-toggle" onclick="toggleDropdown()" style="float:right;margin-top:15px">
+                        <span style="cursor: pointer;" class="C3"></span>
+                    </div>
+                </div>
+            </div>
+            <div id="dropdownLinks" class="dropdown-links">
+                <a href="/CustomerAccount/MyProfile" class="user-item text-black-50"><i class="uil uil-user "></i>My Profile</a>
+                <a href="/CustomerAccount/MyOrders" class="user-item text-black-50"><i class="uil uil-box"></i>My Orders</a>
+
+                @*<a href="/CustomerAccount/AddToCart" class="user-item text-black-50"><i class="uil uil-cart "></i>My cart</a>*@
+                <!-- <a href="/CustomerAccount/MyReferrerCode" class="user-item text-black-50"><i class="uil uil-wallet"></i>My Referral</a> -->
+
+                <a href="/CustomerAccount/Level" class="user-item text-black-50"><i class="uil uil-exit"></i>Level</a>
+                <a href="/CustomerAccount/MyWallet" class="user-item text-black-50"><i class="uil uil-exit"></i>MyWallet</a>
+
+
+                <a href="/CustomerAccount/MyReferrerCode" class="user-item text-black-50"><i class="uil uil-box"></i>MyRefrel</a>
+                <a href="/CustomerAccount/ChangePassword" class="user-item text-black-50"><i class="uil uil-box"></i>Change Password</a>
+                <a href="/CustomerAccount/Manage_UserAddress" class="user-item text-black-50"><i class="uil uil-exit"></i>Manage Address</a>
+                <a href="../Account/Logout" class="user-item text-black-50 r1" style="color: white !important; border-radius: 0px 0px 8px 8px"><i class="uil uil-exit" style="color:white"></i>Logout</a>
+            </div>
+        </div>
+    </div>
+</div>

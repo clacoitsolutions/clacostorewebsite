@@ -1,0 +1,105 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "SaveTOPincode";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using System.Data;
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+        <input type="hidden" value="@Model.strId" id="hdid"/>
+            <h4 class="header-title">All Pincode List   <button class="btn btn-outline-danger" onclick="addpicode()">Add Pincode</button></h4>
+            <div class="table-responsive">
+                <table id="tblItemHead" class="table table-borderless table-hover table-centered m-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sr.No</th>
+                            <th>Select All</th>
+                            <th>Pincode</th>
+                            <th>Pincode Area</th>
+                            <th>Delivery Days</th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody class="teamlist1">
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                i++;
+                        <tr>
+                            <td>@i</td>
+
+                            @if (dr["pincodeid"].ToString() == dr["SrNo"].ToString())
+                            {
+                            <td>
+                        <input type="checkbox" class="pincode" value="@dr["SrNo"]" checked/>
+                            </td>
+                                    }
+                                    else
+                                    {
+                               <td>
+                         <input type = "checkbox" class="pincode" value="@dr["SrNo"]" />
+                               </td>
+                                }
+
+                            <td>@dr["PinCode"]</td>
+                            <td>@dr["Area"]</td>
+                            <td>@dr["Delivery_Days"]</td>
+
+
+                        </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>
+<script>
+    function addpicode() {
+        var ItemList = [];
+        $('.teamlist1 tr').each(function () {
+            item = {};
+            var row = $(this);
+            var MemberId = "";
+            if (row.find('input[type="checkbox"]').is(':checked')) {
+                MemberId = $(this).find('.pincode').val();
+                item["PincodeList"] = MemberId;
+                ItemList.push(item);
+            }
+
+
+        });
+        if ($('#hdid').val() == "") {
+            alert('server not responding...!!!');
+            return false;
+        }
+        else if (ItemList.length <= 0) {
+            alert('please select minimum one pincode');
+            return false;
+        }
+        else {
+            $.ajax({
+                url: '/Master/Addpincodewithdeliverycharge',
+                method: 'post',
+                data: { PincodeList: JSON.stringify(ItemList), id: $('#hdid').val() },
+                success: function (data) {
+                    if (data.strId == "1") {
+                        alert(data.msg);
+                    }
+                    else {
+                        alert(data.msg)
+                    }
+                   
+                }
+            })
+        }
+    }
+</script>

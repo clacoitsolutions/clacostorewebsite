@@ -1,0 +1,43 @@
+﻿﻿@model OjasMart.Models.modelMenuDetails
+@{
+    Layout = null;
+}
+<ul class="metismenu" id="side-menu">
+    @*<li class="menu-title">Navigation</li>*@
+    @foreach (var item in Model.MainMenuList)
+    {
+        if (item.SubMenuModelList.Count > 0)
+        {
+            @*<li class="nav-small-cap"><i class="mdi mdi-dots-horizontal"></i><span class="hide-menu">@item.MenuName</span></li>*@
+            <li>
+                <a href="javascript: void(0);">
+                    <i class="@item.Menuicon"></i><span>@item.MenuName </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <ul class="nav-second-level" aria-expanded="false">
+                    @foreach (var subMenu in item.SubMenuModelList)
+                    {
+                        <li><a href="@subMenu.MenuUrl">@subMenu.MenuName</a></li>
+                    }
+                </ul>
+            </li>
+
+
+
+        }
+        else
+        {
+            <li>
+                <a href="@item.MenuUrl"><i class="@item.Menuicon"></i><span>@item.MenuName </span></a>
+            </li>
+        }
+    }
+    <li>
+        <a href="/Ecommarce/Vendor_ContactDetails"> <i class="fa fa-phone"></i><span>Contact Details</span></a>
+    </li>
+    <li>
+        <a href="/Ecommarce/View_Services"> <i class="fa fa-cogs text-danger"></i><span>Our_Services</span></a>
+    </li>
+    <li class="menu-title">Setting</li>
+    <li><a href="@Url.Action("Logout","Account")" class="waves-effect"><i class="icon-cloud-upload text-danger"></i><span>Logout</span></a></li>
+</ul>

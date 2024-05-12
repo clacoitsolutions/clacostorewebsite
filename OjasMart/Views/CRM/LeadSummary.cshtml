@@ -1,0 +1,194 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "LeadSummary";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+        $("#tbitem2").DataTable();
+    })
+    function showme(obj) {
+        window.history.back();
+    }
+</script>
+@using System.Data;
+<section id="persondata">
+    <div class="card">
+        <div class="card-header"><a onclick="showme(this)" class="ti-back-left btn btn-secondary"></a> @*<button class="fa fa-edit btn btn-info"></button> <button class="fa fa-trash-o btn btn-danger"></button>*@</div>
+        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+        {
+            <div class="row">
+                <div class="col-lg-4 col-xl-4">
+                    <div class="card-box text-center">
+                        <img src="~/assets/images/users/vuser.png" height="90" width="120" class="rounded-circle avatar-lg img-thumbnail"
+                             alt="profile-image">
+
+                        <h4 class="mb-2"><strong style="background-color:#155045;padding: 3px;color:white">@Model.dt.Rows[0]["LeadTitle"].ToString()</strong></h4>
+                        <p class="text-muted"><b>Name:</b> @Model.dt.Rows[0]["Name"].ToString()</p>
+
+                        <p class="text-muted"><b>Contact No: </b><span class="badge badge-primary">@Model.dt.Rows[0]["MobileNo"].ToString()</span></p>
+
+                        <p class="text-muted">
+                            Status
+                            <span class="badge badge-warning"><i class="fa fa-check"></i>@Model.dt.Rows[0]["Status"].ToString()</span>
+                        </p>
+
+                    </div> <!-- end card-box -->
+
+                </div> <!-- end col-->
+                <div class="col-lg-8 col-xl-8">
+                    <div class="card-box">
+                        <div class="text-left mt-3">
+                            <p class="text-muted mb-2 font-13">
+                                <strong>Lead Name :</strong> <span class="ml-2">
+                                    @Model.dt.Rows[0]["Name"].ToString()
+                                </span>
+                            </p>
+                            <p class="text-muted mb-2 font-13">
+                                <strong>Company Name:</strong><span class="ml-2">
+                                    @Model.dt.Rows[0]["CompanyName"].ToString()
+                                </span>
+                            </p>
+                            <p class="text-muted mb-2 font-13"><strong>Email :</strong> <span class="ml-2 ">@Model.dt.Rows[0]["EmailId"].ToString()</span></p>
+
+                            <hr />
+                            <h5><strong style="background-color:red;padding: 5px;color:white">Lead Info</strong></h5>
+                            <p class="text-muted mb-2 font-13">
+                              <span class="ml-2">
+                                  @*<strong>Lead For :</strong>*@
+
+                                </span>
+                            </p>
+                            <div class="mt-4">
+                                @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+                                {
+                                    <div class="table-responsive pre-scrollable" style="max-height:400px;">
+                                        <table class="table" id="tbitem">
+                                            <thead>
+                                                <tr>
+                                                    <th>
+                                                        Item
+                                                    </th>
+                                                    <th>
+                                                        Quantity
+                                                    </th>
+                                                    <th>
+                                                        unit
+                                                    </th>
+                                                    <th>
+                                                        Rate
+                                                    </th>
+                                                    <th>
+                                                        total
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (DataRow dr1 in Model.dt1.Rows)
+                                                {
+                                                    <tr>
+                                                        @*<td><img src="@dr1["Item_ImagePath"]" class="img-circle" height="50" width="50" /></td>*@
+                                                        <td>@dr1["ItemName"]</td>
+                                                        <td>@dr1["Qty"]</td>
+                                                        <td>@dr1["UnitName"]</td>
+                                                        <td>@dr1["UnitRate"]</td>
+                                                        <td>@dr1["totalrate"]</td>
+                                                    </tr>
+
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3"><strong>Employee Name :</strong></div>
+                                <div class="col-sm-3"><span class="ml-2">@Model.dt.Rows[0]["EmpName"].ToString()</span></div>
+                                <div class="col-sm-3"><strong>Lead date :</strong></div>
+                                <div class="col-sm-3"><span class="ml-2">@Model.dt.Rows[0]["LeadDate"].ToString()</span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3"><strong>Next FollowUp date :</strong> </div>
+                                <div class="col-sm-3"><span class="ml-2">@Model.dt.Rows[0]["NextFollowUpDate"].ToString()</span></div>
+                                <div class="col-sm-3"><strong>Address</strong></div>
+                                <div class="col-sm-3"><span class="ml-2">@Model.dt.Rows[0]["Address"].ToString()</span></div>
+                            </div>
+
+                        </div>
+                        <hr />
+                        <h5><strong style="background-color:red;padding: 5px;color:white">Follow Up History</strong></h5>
+
+                        <div class="mt-4">
+                            @if (Model.dt2 != null && Model.dt2.Rows.Count > 0)
+                            {
+                                <div class="table-responsive">
+                                    <table class="table" id="tbitem2">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    LeadId
+                                                </th>
+                                                <th>
+                                                    Followupdate
+                                                </th>
+                                                <th>
+                                                    Next Followupdate
+                                                </th>
+                                                <th>
+                                                    Status
+                                                </th>
+                                                <th>
+                                                    Lead price
+                                                </th>
+                                                <th>
+                                                    closed By
+                                                </th>
+                                                <th>
+                                                    Paid Amount
+
+                                                </th>
+                                                <th>
+                                                    Transaction Date
+                                                </th>
+                                                <th>
+                                                    Payment Mode
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (DataRow dr1 in Model.dt2.Rows)
+                                            {
+                                                <tr>
+
+                                                    <td>@dr1["LeadId"]</td>
+                                                    <td>@dr1["FollowupDate"]</td>
+                                                    <td>@dr1["NextFollowUpDate"]</td>
+                                                    <td>@dr1["Status"]</td>
+                                                    <td>@dr1["totalprice"]</td>
+                                                    <td>@dr1["Empname"]</td>
+                                                    <td>@dr1["PaidAmount"]</td>
+                                                    <td>@dr1["TransDate"]</td>
+
+                                                    <td>@dr1["paymentMode"]</td>
+                                                </tr>
+
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+
+                        </div>
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>

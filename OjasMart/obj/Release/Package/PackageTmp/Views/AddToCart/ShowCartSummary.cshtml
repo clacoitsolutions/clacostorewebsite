@@ -1,0 +1,177 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+
+    ViewBag.Title = "WishList";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+@using System.Data;
+<div class="container-fluid" style="margin-top:45%">
+
+    @if (Model.dt != null && Model.dt.Rows.Count > 0)
+    {
+        int i = 0;
+        <div class="bs-canvas-body" style="height:650px;">
+
+
+            <div class="side-cart-items" style="margin-top:8%;">
+                @foreach (DataRow dr in Model.dt.Rows)
+                {
+                    i++;
+                    <div class="cart-item">
+                        <div class="cart-product-img">
+                            <img src="@dr["MainPicture"]" alt="">
+                            @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                            {
+                                <div class="offer-badge">@dr["Discper"]% OFF</div>
+                            }
+                        </div>
+                        <div class="cart-text">
+                            <h4>@dr["pName"]</h4>
+                            @if (Convert.ToString(dr["VarriationName"]) != "")
+                            {
+                                <div class="cart-radio">
+                                    <ul class="kggrm-now">
+
+                                        <li> <input type="radio" id="@dr["CartListID"]" name="cart1" disabled></li>
+                                        <li>
+                                            <label for="@dr["CartListID"]" style="background-color:#f55d2c">@dr["ColorName"]</label>
+                                        </li>
+                                        <li>
+                                            <label for="@dr["CartListID"]" style="background-color:#f55d2c">@dr["Sizename"]</label>
+                                        </li>
+                                    </ul>
+                                </div>
+                            }
+
+                            <div class="qty-group">
+                                <div class="quantity buttons_added">
+                                    <input type="button" value="-" class="minus minus-btn" onclick="sumofcart(@i,-1,'@dr["ProductCode"]','@dr["varId"]')">
+                                    <input type="number" step="1" name="quantity" value="@dr["Quantity"]" class="input-text qty text" id="qty_@i">
+                                    <input type="button" value="+" class="plus plus-btn" onclick="sumofcart(@i,1,'@dr["ProductCode"]','@dr["varId"]')">
+                                </div>
+                                <div class="cart-item-price">
+                                    @*&#8377;@dr["SalePrice"]*@
+
+                                    <!--Added By Prahlad Singh-->
+                                    @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                    {
+                                        <span>&#8377;@dr["SalePrice"] </span>
+                                        <label>&#8377;<label id="saleprice_@i">@dr["salevalue"]</label></label>
+                                    }
+                                    else
+                                    {
+                                        <label>&#8377;<label id="saleprice_@i">@dr["salevalue"]</label></label>
+                                    }
+                                </div>
+
+                            </div>
+                            <button type="button" class="cart-close-btn" onclick="RemoveFromCart(@dr["CartListID"])"><i class="uil uil-multiply"></i></button>
+                        </div>
+
+                    </div>
+
+                }
+
+            </div>
+        </div>
+
+        <div class="bs-canvas-footer">
+            <div class="cart-total-dil saving-total" style="display:none">
+                <h4>Total Saving</h4>
+                <span>&#8377;@Model.WalletBal</span>
+            </div>
+            <div class="main-total-cart">
+                <h2>Total</h2>
+                <span>&#8377;<label id="totalCart"> @Model.todayPoAmt</label></span>
+            </div>
+            <div class="checkout-cart">
+                <a href="#" class="promo-code">Have a promocode?</a>
+                <a href="../Checkout/Index?cType=c" class="cart-checkout-btn hover-btn">Proceed to Checkout</a>
+            </div>
+        </div>
+
+    }
+    else
+    {
+
+    }
+</div>
+
+<script>
+    function sumofcart(id, num, productId,  VarId) {
+            var AttrId = 0;
+            var qty = $('#qty_' + id).val();
+            var Qty = parseInt(qty) + parseInt(num);
+            var saleprice = $('#saleprice_' + id).text();
+            var totalsaleprice = parseFloat(saleprice);
+            var TLCart = $('#totalCart').text();
+            var totalcart
+            if (Qty > 0) {
+                if (num == -1) {
+                    $("#showSpinner").show();
+                    var dataobject = {
+                        ProductId: productId,
+                        Qty: Qty,
+                        AttrId: AttrId,
+                        VarId: VarId,
+                        Type: 'update'
+                    };
+
+                    $.ajax({
+                        url: "@Url.Action("ShowCartSummary", "AddToCart")",
+                        type: "POST",
+                        data: dataobject,
+                        datatype: "json",
+                        success: function (data) {
+                            if (data[0] == "1") {
+                                $.notify("Item Added to Cart", "success");
+                                $("#showSpinner").hide();
+                            }
+                            $("#div1").load('@Url.Action("ShowCartSummary", "AddToCart")')
+                            $("#divHeadCount").load('@Url.Action("CartCount", "AddToCart")')
+                            $("#showSpinner").hide();
+                        },
+                        error: function () {
+                            alert('Error!')
+                            $("#showSpinner").hide();
+                            //cart.add('69');
+                        }
+                    });
+                }
+                else if (num == 1) {
+                    $("#showSpinner").show();
+                    var dataobject = {
+                        ProductId: productId,
+                        Qty: Qty,
+                        AttrId: AttrId,
+                        VarId: VarId,
+                        Type: 'update'
+                    };
+
+                    $.ajax({
+                        url: "@Url.Action("ShowCartSummary", "AddToCart")",
+                        type: "POST",
+                        data: dataobject,
+                        datatype: "json",
+                        success: function (data) {
+                            if (data[0] == "1") {
+                                $.notify("Item Added to Cart", "success");
+                                $("#showSpinner").hide();
+                            }
+                            $("#div1").load('@Url.Action("ShowCartSummary", "AddToCart")')
+                            $("#divHeadCount").load('@Url.Action("CartCount", "AddToCart")')
+                            $("#showSpinner").hide();
+                        },
+                        error: function () {
+                            alert('Error!')
+                            $("#showSpinner").hide();
+                            //cart.add('69');
+                        }
+                    });
+                }
+            }
+            else {
+                totalcart = parseFloat(TLCart)
+            }
+    }
+</script>

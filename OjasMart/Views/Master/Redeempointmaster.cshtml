@@ -1,0 +1,247 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Redeempointmaster";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+
+<script>
+
+    function Insertredeempoint() {
+
+       
+        if ($("#txtredeempoint").val() == "") {
+            alert("Please Enter Redeem Point !!!");
+
+            $("#txtredeempoint").focus();
+        }
+        else if ($("#txtnooftimeredeem").val() == "") {
+            alert("Please Enter No Of Times Redeem Point !!!");
+
+            $("#txtnooftimeredeem").focus();
+        }
+        else {
+
+
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Master/InsertRedeemPointmaster",
+                type: "POST",
+                data: {
+                    
+                    Points: $("#txtredeempoint").val(),
+                   
+                    Action: parseInt(1),
+                    NoOfTimesRedeem: $("#txtnooftimeredeem").val()
+                },
+                success: function (r) {
+                    if (r.strId == '1') {
+                        alert("Record saved successfully!!");
+                        $("#showSpinner").hide();
+                        location.reload();
+
+                    }
+                    else if (r == '0') {
+                        alert("Something went wrong!!");
+                        $("#showSpinner").hide();
+                    }
+                    else {
+                        alert('Server not Responding !!!');
+                        $("#showSpinner").hide();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });
+
+
+        }
+
+    }
+
+
+
+    function DeleteRedeemMasterDetails(Id) {
+        var x = confirm("Are you sure you want to delete?");
+        if (x) {
+            var data = new FormData;
+            data.append("RespoCode", Id);
+            data.append("Action", '3');
+
+
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Master/InsertRedeemdeletemaster",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: data,
+                success: function (r) {
+                    if (r.strId == '1') {
+                        alert(r.msg);
+                        location.reload();
+                    }
+                    else if (r.strId == '2') {
+                        alert(r.msg);
+                        $("#showSpinner").hide();
+                    }
+                    else {
+                        alert('Server not Responding !!!');
+                        $("#showSpinner").hide();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });
+        }
+        else {
+            return false;
+        }
+    }
+
+
+    function isNumberKey(evt) {
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+        return true;
+    }
+
+
+
+</script>
+
+
+
+
+
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Create Redeem Point Master</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+
+
+
+                <div class="row">
+
+                    <div class="col-md-12">
+
+                        <div class="row">
+
+
+                            <div class="col-md-3">
+
+                                <div class="form-group">
+
+                                    <label for="inputEmail4" class="col-form-label">Redeem Point <span style="color:red">*</span> </label>
+                                    <input type="text" id="txtredeempoint" class="form-control" maxlength="15" onkeypress="return isNumberKey(event);" />
+                                </div>
+
+
+                            </div>
+                         
+                            <div class="col-md-3">
+
+                                <div class="form-group">
+
+                                    <label for="inputEmail4" class="col-form-label">No Of Times Redeem <span style="color:red">*</span> </label>
+                                    <input type="text" class="form-control" id="txtnooftimeredeem" maxlength="3" onkeypress="return isNumberKey(event);"/>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-2">
+                            <button style="margin-top:24%;width:100%;background:#e97e22;" type="submit" id="btnSave" class="btn btn-primary waves-effect waves-light" onclick="Insertredeempoint()">Save</button>
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+                </div>
+
+
+
+
+
+
+            </div> <!-- end row -->
+
+
+
+
+        </div>
+    </div>
+</div> <!-- end card-body -->
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <h4 class="header-title">Redeem Point Listing</h4>
+            <div class="table-responsive">
+                <table id="tblItemHead" class="table table-borderless table-hover table-centered m-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sr.No</th>
+                            <th>Redeem Point</th>
+                          
+                            <th>No Of Times Redeem</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                i++;
+                                <tr>
+                                    <td>@i</td>
+
+                                    <td>@dr["RedeemPoint"]</td>
+                                    <td>@dr["NoOfTimesRedeem"]</td>
+                                   
+                                    <td>
+
+                                        <a href="javascript:void(0);" title="Delete" class="action-icon" onclick="DeleteRedeemMasterDetails(@dr["Id"])"> <i class="mdi mdi-delete" style="color:red"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>
+

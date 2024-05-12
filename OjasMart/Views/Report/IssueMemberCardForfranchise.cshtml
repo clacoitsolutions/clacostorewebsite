@@ -1,0 +1,313 @@
+﻿@model OjasMart.Models.ClsMemberShip
+@{
+    ViewBag.Title = "IssueMemberCardForfranchise";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        debugger;
+        if ('@TempData["flag"]'=='True') {
+            if ('@TempData["msg"]' != '') {
+                alert('@TempData["msg"]');
+            }
+            window.location.href = "/Report/PrintmemberCard?MemberId=" + '@TempData["memberCardID"]';
+        }
+        else
+        {
+            if ('@TempData["msg"]' != '') {
+                alert('@TempData["msg"]');
+
+            }
+        }
+  
+    });
+</script>
+
+<style>
+    .radio--group-inline-container_1 li {
+        display: inline-block;
+        width: 48.333%;
+        margin-right: 10px;
+    }
+
+    .radio--group-inline-container_1 .radio-item_1 input[type="radio"] {
+        position: relative;
+        opacity: 1;
+        color: orange;
+    }
+
+    .wrapper {
+        padding-top: 132px;
+        padding-bottom: 50px;
+    }
+
+    .top-posts li {
+        padding: 3px 20px;
+        border-bottom: 1px solid #fffefe;
+    }
+
+    .blog-time {
+        font-size: 12px;
+        font-weight: 500;
+        color: #3e3d3d;
+        text-align: left;
+    }
+
+    .pdpt-title h4 {
+        border-bottom: 1px solid #efefef;
+        padding: 15px 20px;
+        font-size: 16px;
+        font-weight: 600;
+        background: bisque;
+        color: #2b2f4c;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif !important;
+    }
+
+    .title129 h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-top: 0px !important;
+        color: #fff;
+        text-align: center;
+        line-height: 30px;
+    }
+
+    .life-gambo {
+        padding: 59px 0;
+        background: #fff3f3;
+    }
+</style>
+<div class="life-gambo">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-6">
+                <div class="contact-title">
+                    <h2>Membership</h2>
+                    <p>If you have a question about our service or have an issue to report, please send a request and we will get back to you as soon as possible.</p>
+                </div>
+                @using (Html.BeginForm("IssueMemberCardForfranchise", "Report",FormMethod.Post,new {@enctype="multipart/form-data" }))
+                {
+                    <div class="contact-form">
+                        <form>
+                            <div class="form-group mt-1">
+                                <label class="control-label">User Name*</label>
+                                <div class="ui search focus">
+                                    <div class="ui left icon input swdh11 swdh19">
+                                        @Html.TextBoxFor(model => model.CustomerName, new { @class = "form-control", @placeholder = "Your Full Name" })
+                                        @*<input class="prompt srch_explore" type="text" name="sendername" id="sendername" required="" placeholder="Your Full">*@
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-1">
+                                <label class="control-label">Contact No*</label>
+                                <div class="ui search focus">
+                                    <div class="ui left icon input swdh11 swdh19">
+                                        @*<input class="prompt srch_explore" type="text" name="emailaddress" id="mobileNo" required="" placeholder="Your Mobile No">*@
+                                        @Html.TextBoxFor(model => model.MobileNo, new { @class = "form-control", @placeholder = "Your Mobile No" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-1">
+                                <label class="control-label">Email Address*</label>
+                                <div class="ui search focus">
+                                    <div class="ui left icon input swdh11 swdh19">
+                                        @*<input class="prompt srch_explore" type="email" name="emailaddress" id="emailaddress" required="" placeholder="Your Email Address">*@
+                                        @Html.TextBoxFor(model => model.EmailAddress, new { @class = "form-control", @placeholder = "Your Email Address" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-1">
+                                <label class="control-label">User Password*</label>
+                                <div class="ui search focus">
+                                    <div class="ui left icon input swdh11 swdh19">
+                                        @Html.TextBoxFor(model => model.Password, new { @class = "form-control", @placeholder = "Your Password..", @type = "password" })
+                                        @*<input class="prompt srch_explore" type="password" name="emailaddress" id="emailaddress" required="" placeholder="Your Password">*@
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-1">
+                                <label class="control-label">MemberShip Type</label>
+                                <div class="ui search focus">
+                                    <div class="ui left icon input swdh11 swdh19">
+                                        @Html.DropDownListFor(model => model.MemberShip, (List<SelectListItem>)ViewBag.dtMemberShipType, "Select MemberShip", new { @id = "ddlMemberShipType", @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-1">
+                                <label class="control-label">Upload Profile Pic</label>
+                                <div class="ui search focus">
+                                    <div class="ui left icon input swdh11 swdh19">
+                                        <input type="file" name="ProfileImage" class="form-control"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-1">
+                                <label class="control-label">Card Valid From</label>
+                                <div class="ui search focus">
+                                    <div class="ui left icon input swdh11 swdh19">
+                                        @Html.TextBoxFor(model => model.CardValidFrom, new {@type="date", @class = "form-control", @placeholder = "dd-mm-yyyyy",})
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-1">
+                                <label class="control-label">Card Valid To</label>
+                                <div class="ui search focus">
+                                    <div class="ui left icon input swdh11 swdh19">
+                                        @Html.TextBoxFor(model => model.CardValidTo, new { @type = "date", @class = "form-control", @placeholder = "dd-mm-yyyyy", })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-1">
+                                <label class="control-label">Bar Code</label>
+                                <div class="ui search focus">
+                                    <div class="ui left icon input swdh11 swdh19">
+                                        @Html.TextBoxFor(model => model.MemberBarCode, new { @class = "form-control",@placeholder="Enter Member Bar Code.." })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="checkout-step-body">
+                                <label class="control-label">Payment Mode</label>
+
+                                <div class="payment_method-checkout">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="rpt100">
+                                                <ul class="radio--group-inline-container_1">
+                                                    <li style="width: 44.333%;">
+                                                        <div class="radio-item_1">
+                                                            <label for="card1" class="radio-label_1">@Html.RadioButtonFor(model => model.PaymentMode, "Cash") Cash</label>
+                                                        </div>
+                                                    </li>
+                                                    <li style="width: 44.333%;">
+                                                        <div class="radio-item_1">
+                                                            <label for="card1" class="radio-label_1">@Html.RadioButtonFor(model => model.PaymentMode, "Online") Credit / Debit Card</label>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="next-btn16 btn-danger" id="btnSubmit" type="button" data-btntext-sending="Sending..." onclick="Val()">New MemberShip</button>
+                        </form>
+                    </div>
+                }
+            </div>
+
+            <script>
+                function Val()
+                {
+                    debugger;
+                    if ($("#CustomerName").val()=="") {
+                        alert("Please Enter Member Name..");
+                        $("#CustomerName").focus();
+                        return;
+                    }
+                    if ($("#MobileNo").val() == "") {
+                        alert("Please Enter Mobile No..");
+                        $("#MobileNo").focus();
+                        return;
+                    }
+                    if ($("#EmailAddress").val() == "") {
+                        alert("Please Enter Email Address..");
+                        $("#EmailAddress").focus();
+                        return;
+                    }
+                    if ($("#Password").val() == "") {
+                        alert("Please Enter Password..");
+                        $("#Password").focus();
+                        return;
+                    }
+                    if ($("#ddlMemberShipType").val() == "") {
+                        alert("Please Select MemberShip Type..");
+                        $("#ddlMemberShipType").focus();
+                        return;
+                    }
+                    $("#btnSubmit").attr('type', 'submit');
+                }
+            </script>
+
+            <div class="col-lg-6">
+                @*<div class="about-img">
+                        <img src="/img/about.svg" alt="">
+                    </div>*@
+                <div class="pdpt-bg-left mt-0">
+                    <div class="pdpt-title">
+                        <h4>1:  TIKBASKET PRIME MEMBER CARD   RS: 110 </h4>
+                    </div>
+                    <ul class="top-posts">
+                        <li>
+                            <div class="blog-top-item">
+
+                                <span class="blog-time"> BENEFIT:  </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="blog-top-item">
+
+                                <span class="blog-time"> •	ONE YEARS 5 DELEVIRY  UPTO RS 500  IS FREE </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="blog-top-item">
+
+                                <span class="blog-time"> •	FIRST BILLING FLAT 5% OFF </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="blog-top-item">
+
+                                <span class="blog-time"> •	FESTIVAL & BUMPER SELL DISCOUNT  UPTO 5% EXTRA</span>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+
+                <div class="pdpt-bg-left mt-0">
+                    <div class="pdpt-title">
+                        <h4> 2: TIKBASKET FAIMLY MEMBER CARD RS: 4999</h4>
+                    </div>
+                    <ul class="top-posts">
+                        <li>
+                            <div class="blog-top-item">
+                                <span class="blog-time"> BENEFIT:  </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="blog-top-item">
+
+                                <span class="blog-time"> • MONEY WILL BE ADJUST IN FIRST BILLING </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="blog-top-item">
+                                <span class="blog-time"> • FIRST BILLING FLAT 10% OFF </span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="blog-top-item">
+                                <span class="blog-time"> • ONE YEARS ALL DELIVERY UPTO RS 500 IS FREE</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="blog-top-item">
+
+                                <span class="blog-time"> • FESTIVAL & BUMPER SELL DISCOUNT UPTO 10% EXTRA</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+</div>

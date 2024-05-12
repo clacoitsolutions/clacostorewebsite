@@ -1,0 +1,79 @@
+﻿@{
+    ViewBag.Title = "Contact";
+    Layout = "~/Views/Shared/seller_layout.cshtml";
+}
+
+@model OjasMart.Models.ClsVendorContactUs
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<section data-bs-version="5.1" class="header3 cid-tdxNMUdm2F" id="header03-2" style="background-color:white">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <!-- Details and Map Column -->
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">HEAD OFFICE ADDRESS</h3>
+                        <div class="mb-4">
+                            <h4 style="font-weight: bold; color: #333;">Claco <span style="color: #ef0058;">Store</span></h4>
+                            <p style="color: #555;">Indrarekha Developers</p>
+                            <p style="color: #555;">12B 989, Sector 12B, Vrindavan Township Lucknow Uttar Pradesh-226029,</p>
+                            <p style="color: #555;">Nearby Utraitia Junction +91-7275949944</p>
+                        </div>
+                        <div class="embed-responsive embed-responsive-16by9" style="height:390px">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d28499.62811020557!2d80.971907!3d26.761810000000004!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399bfb0046fd10d1%3A0x7369742aea592bf2!2sClaco%20it%20solution!5e0!3m2!1sen!2sin!4v1712043944794!5m2!1sen!2sin" class="embed-responsive-item" style="border: 0; height: 350px"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-lg-6">
+                <!-- Form Column -->
+                @using (Html.BeginForm())
+                {
+                    <div class="contact-form p-4" style="background-color: #f8f9fa; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
+                        <span id="responseMessage" style="display:none;color:green">@TempData["msg"]</span>
+
+                        <script>
+                            $(document).ready(function () {
+                                var message = $('#responseMessage').text();
+                                if (message !== '') {
+                                    $('#responseSpan').text(message);
+                                    $('#responseSpan').show();
+                                }
+                            });
+                        </script>
+
+                        <span id="responseSpan" style="color:green;font-weight:bold"></span>
+
+                        <h2 class="mb-4">Customer Support</h2>
+                        <p>If you have a question about our service or have an issue to report, please send a request and we will get back to you as soon as possible.</p>
+
+                        <div class="mb-3">
+                            <label for="txtFullName" class="form-label">Full Name*</label>
+                            @Html.TextBoxFor(model => model.Name, new { @id = "txtFullName", @placeholder = "Enter Full Name...", @class = "form-control", @Required = true })
+                        </div>
+                        <div class="mb-3">
+                            <label for="txtmobileNo" class="form-label">Mobile No*</label>
+                            @Html.TextBoxFor(model => model.mobileNo, new { @id = "txtmobileNo", @placeholder = "Enter mobileNo ...", @class = "form-control", @Required = true })
+                        </div>
+                        <div class="mb-3">
+                            <label for="txtemailaddress" class="form-label">Email Address*</label>
+                            @Html.TextBoxFor(model => model.Email, new { @id = "txtemailaddress", @placeholder = "Enter Email Address...", @class = "form-control", @Required = true })
+                        </div>
+                        <div class="mb-3">
+                            <label for="sendermessage" class="form-label">Message</label>
+                            @Html.TextAreaFor(model => model.Message, new { @rows = "3", @id = "sendermessage", @placeholder = "Write Message ...", @class = "form-control" })
+                        </div>
+                        <button class="btn btn-primary" type="submit" style="color:white!important">Submit Request</button>
+                    </div>
+                }
+            </div>
+
+
+
+
+        </div>
+    </div>
+</section>

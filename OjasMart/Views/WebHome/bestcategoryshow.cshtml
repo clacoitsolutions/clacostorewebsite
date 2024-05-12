@@ -1,0 +1,72 @@
+﻿
+@model OjasMart.Models.PropertyClass
+@using System.Data;
+@using OjasMart.Models;
+
+<style>
+    .cardbox {
+        height: 200px;
+        width: 100%;
+        border: none;
+        overflow: hidden;
+        transition: 0.5s;
+    }
+
+        .cardbox:hover {
+            box-shadow: 2px 2px 10px #adaaaa;
+            transition: 0.2s;
+        }
+</style>
+
+@{
+    int counter = 0;
+    int maxItems = Model.dtCatProduct.Rows.Count >= 4 ? 4 : Model.dtCatProduct.Rows.Count;
+
+    foreach (DataRow dr in Model.dtCatProduct.Rows)
+    {
+        if (counter >= maxItems)
+        {
+            break;
+        }
+
+        <div class="col-md-6  col-6 ">
+            <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]&&VarId=@dr["VarId"]" target="_blank" class="product-img">
+                <div class="card my-3 cardbox" style="">
+                    <img src="@dr["ProductMainImageUrl"]" class="card-img-top imagecard">
+                    <div class="card-body" style="overflow:hidden">
+                        <p style="overflow:hidden" class="card-text product-text">
+                            @dr["ProductName"]
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        counter++;
+    }
+}
+
+<script>
+    // Get all elements containing the product text
+    var productTextElements = document.querySelectorAll(".product-text");
+
+    // Iterate through each product text element
+    productTextElements.forEach(function (element) {
+        // Get the text content
+        var productText = element.innerText;
+
+        // Check if the text exceeds 10 characters
+        if (productText.length > 10) {
+            // Truncate the text to 10 characters
+            var truncatedText = productText.substring(0, 10);
+            // Add ellipsis
+            truncatedText += '...';
+            // Set the truncated text back to the element
+            element.innerText = truncatedText;
+        }
+    });
+</script>
+
+
+
+

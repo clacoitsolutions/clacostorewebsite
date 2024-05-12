@@ -1,0 +1,355 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Add UOM";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#tblItemHead").DataTable();
+    });
+
+    function InsertUpdatePinCode() {
+        if ($("#txtPinCode").val() == "") {
+            alert("Enter Pin Code !!!");
+            $("#txtPinCode").focus();
+            return;
+        }
+        if ($("#txtArea").val() == "") {
+            alert("Enter Pincode Area !!!");
+            $("#txtArea").focus();
+            return;
+        }
+
+        var dataobject = {
+            PinCode: $("#txtPinCode").val(),
+            Area: $("#txtArea").val(),
+            DeliveryDays: $("#txtDeliveryDays").val(),
+            MinDelCharges: $("#txtMinDelAmt").val(),
+            DelCharges: $("#txtDeliveryAmount").val(),
+            RespoCode: $("#hdPId").val(),
+            Action: "1"
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Master/InsertUpdatePincode",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r.strId == '1') {
+                    alert(r.msg);
+                    location.reload();
+                }
+                else if (r.strId == '2') {
+                    alert(r.msg);
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function EditPinCode(PinCode) {
+        if (PinCode == '') {
+            alert('Pin Code not Found !');
+            return;
+        }
+        var dataobject = {
+            PinCode: PinCode
+        };
+        $.ajax({
+            type: "POST",
+            url: "/Master/GetPinCodeForEdit",
+            data: dataobject,
+            dataType: "json",
+            success: function (r) {
+                if (r != null) {
+                    $("#txtPinCode").val(r.PinCode);
+                    $("#hdPId").val(r.RespoCode);
+                    $("#txtArea").val(r.Area);
+                    $("#txtDeliveryDays").val(r.DeliveryDays);
+                    $("#txtDeliveryAmount").val(r.DelCharges);
+                    $("#txtMinDelAmt").val(r.MinDelCharges);
+
+
+                    $("#txtPinCode").focus();
+                    $("#btnSave").hide();
+                    $("#btnUpdate").show();
+                    $("#btnCancel").show();
+                }
+                else {
+                    alert("Details Not Found !!!");
+                }
+            }
+        });
+
+    }
+
+    function UpdatePinCode() {
+        if ($("#hdPId").val() == "") {
+            alert("Pin Code Can not be update !!!");
+            return;
+        }
+        if ($("#txtPinCode").val() == "") {
+            alert("Enter Pin Code !!!");
+            $("#txtPinCode").focus();
+            return;
+        }
+        if ($("#txtArea").val() == "") {
+            alert("Enter Pincode Area !!!");
+            $("#txtArea").focus();
+            return;
+        }
+
+        var dataobject = {
+            PinCode: $("#txtPinCode").val(),
+            Area: $("#txtArea").val(),
+            DeliveryDays: $("#txtDeliveryDays").val(),
+            MinDelCharges: $("#txtMinDelAmt").val(),
+            DelCharges: $("#txtDeliveryAmount").val(),
+            RespoCode: $("#hdPId").val(),
+            Action: "4"
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Master/InsertUpdatePincode",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r.strId == '1') {
+                    alert(r.msg);
+                    location.reload();
+                }
+                else if (r.strId == '2') {
+                    alert(r.msg);
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function UpdatePinCodeBlockUnBlock(SNo, st) {
+        var mm = confirm('Are you sure to perform this action?');
+
+        if (mm) {
+            if (SNo == "") {
+                alert("Pin Code Can not be update !!!");
+                return;
+            }
+            var status;
+            if (st == "1") {
+                status = '0';
+            }
+            else {
+                status = '1';
+            }
+
+            var dataobject = {
+                SrNo: SNo,
+                Status: status,
+                Action: "5"
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Master/InsertUpdatePincode",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                //data: dataobject,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    if (r != '') {
+                        alert(r);
+                        location.reload();
+                    }
+                    else {
+                        alert('Server not Responding !!!');
+                        $("#showSpinner").hide();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });
+        }
+        else {
+            return;
+        }
+
+    }
+
+    function CancelEdit() {
+        location.reload();
+    }
+   
+    function DeletePinCode(ItemCode) {
+        var x = confirm("Are you sure you want to delete?");
+        if (x) {
+            var dataobject = {               
+                RespoCode: ItemCode,
+                Action: "6"
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Master/InsertUpdatePincode",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                //data: dataobject,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    if (r.strId == '1') {
+                        alert(r.msg);
+                        location.reload();
+                    }
+                    else if (r.strId == '2') {
+                        alert(r.msg);
+                    }
+                    else {
+                        alert('Server not Responding !!!');
+                        $("#showSpinner").hide();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });
+        }
+        else {
+            return false;
+        }
+    }
+
+</script>
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Manage Pincode</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="inputEmail4" class="col-form-label">Pincode<span style="color:red">*</span> </label>
+                        <input type="text" id="txtPinCode" placeholder="Enter 6 digit Pincode" maxlength="6" class="form-control allownumericwithdecimal" />
+                        <input type="hidden" id="hdPId" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="inputEmail4" class="col-form-label">Area</label>
+                        <input type="text" id="txtArea" placeholder="Enter Pincode Area" class="form-control" />
+                    </div>
+                    <div class="form-group col-md-3" style="display:none">
+                        <label for="inputEmail4" class="col-form-label">Order Amount</label>
+                        <input type="text" id="txtMinDelAmt" placeholder="e.g. 500.00" maxlength="10" class="form-control allownumericwithdecimal" />
+                        <small style="color: #7b0404;margin-left: 7px;font-weight:bold">After this Amount delivery will be free.</small>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="inputEmail4" class="col-form-label">Expected Delivery Days</label>
+                        <input type="text" id="txtDeliveryDays" placeholder="e.g. 2-4 days" class="form-control" />
+                    </div>
+                </div>
+            <div class="form-row" >
+                <div class="form-group col-md-3" style="display:none">
+                    <label for="inputEmail4" class="col-form-label">Delivery Charges</label>
+                    <input type="text" id="txtDeliveryAmount" placeholder="e.g. 50.00" maxlength="10" class="form-control allownumericwithdecimal" />
+                </div>
+                
+            </div>
+                <button type="submit" id="btnSave" class="btn btn-primary waves-effect waves-light" onclick="InsertUpdatePinCode()">Save Record</button>
+                <button type="submit" id="btnUpdate" style="display:none" class="btn btn-warning waves-effect waves-light" onclick="UpdatePinCode()">Update Record</button>
+                <button type="submit" id="btnCancel" style="display:none" class="btn btn-danger waves-effect waves-light" onclick="CancelEdit()">Cancel</button>
+
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <h4 class="header-title">All Pincode List</h4>
+            <div class="table-responsive">
+                <table id="tblItemHead" class="table table-borderless table-hover table-centered m-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sr.No</th>
+                            <th>Pincode</th>
+                            <th>Pincode Area</th>
+                            <th>Delivery Days</th>
+                            <th>Added Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                i++;
+                                <tr>
+                                    <td>@i</td>
+                                    <td>@dr["PinCode"]</td>
+                                    <td>@dr["Area"]</td>
+                                    <td>@dr["Delivery_Days"]</td>
+                                    <td>@dr["AddedDate"]</td>
+                                    <td>
+                                        @*<a href="javascript: void(0);" class="btn btn-xs btn-secondary" onclick="GetDetailsForEdit('@dr["UnitCode"]')"><i class="mdi mdi-pencil"></i></a>*@
+                                        <a href="javascript:void(0);" title="Edit" class="action-icon" onclick="EditPinCode('@dr["PinCode"]')"> <i class="mdi mdi-square-edit-outline" style="color:#51bfd0"></i></a>
+                                        <a href="javascript:void(0);" title="Delete" class="action-icon" onclick="DeletePinCode('@dr["SrNo"]')"> <i class="mdi mdi-delete" style="color:red"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>
+

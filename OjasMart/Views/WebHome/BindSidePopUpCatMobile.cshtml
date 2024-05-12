@@ -1,0 +1,45 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+
+    Layout = null;
+}
+@using System.Data;
+
+<!-- Category Model Start-->
+
+<div id="search_model" class="header-cate-model main-gambo-model modal fade" tabindex="-1" role="dialog" aria-modal="false">
+    <div class="modal-dialog search-ground-area" role="document">
+        <div class="category-area-inner">
+            <div class="modal-header">
+                <button type="button" class="close btn-close" data-dismiss="modal" aria-label="Close">
+                    <i class="uil uil-multiply"></i>
+                </button>
+            </div>
+            <div class="category-model-content modal-content">
+                <div class="search-header">
+                    <form action="#">
+                        <input type="search" placeholder="Search for products...">
+                        <button type="submit"><i class="uil uil-search"></i></button>
+                    </form>
+                </div>
+
+                @if (Model.dtPopupCat != null && Model.dtPopupCat.Rows.Count > 0)
+                {
+                    <div class="search-by-cat">
+                        @foreach (DataRow dr in Model.dtPopupCat.Rows)
+                        {
+                            <a href="../ProductDetail/SearchCategory?CatName=@dr["ProductCategory"]&&CatId=@dr["SrNo"]" class="single-cat">
+                                <div class="icon">
+                                    <img src="@dr["CatImage"]" alt="@dr["ProductCategory"]">
+                                </div>
+                                <div class="text">
+                                    @dr["ProductCategory"]
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

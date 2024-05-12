@@ -1,0 +1,1150 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Product details";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+@using System.Data;
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+<style>
+    span.fa.fa-star {
+        color: #f5cf09;
+    }
+
+    .gray {
+        color: #939393 !important;
+    }
+
+    .colorstyle {
+        border: 4px solid #f55d2c;
+    }
+
+    .sizestyle {
+        background-color: #f55d2c;
+    }
+    /*.owl-stage{
+            width:100% !important;
+        }*/
+
+
+    .color-g {
+        float: right;
+        text-transform: uppercase;
+        font-weight: 500;
+        letter-spacing: 2px;
+    }
+
+    .left-new {
+        position: absolute;
+        left: 0px;
+        right: 64px;
+        top: 273px;
+    }
+
+    a.reviews_button {
+        color: #000000 !important;
+    }
+
+    a#new-w {
+        color: #337ab7 !important;
+    }
+
+
+    @@media screen and (max-width:768px) {
+        ul #without-dsc {
+            display: inline-grid !important;
+        }
+
+        #switcher23 {
+            /* margin: 6px 0px 5px 0px; */
+            list-style: none;
+            margin: 6px 59px 62px 0px !important;
+            padding: 0;
+            overflow: hidden;
+            float: unset !important;
+            position: relative !important;
+            left: 0px !important;
+        }
+
+        .left-new {
+            position: absolute;
+            left: 0px;
+            right: 163px !important;
+            top: 313px !important;
+        }
+
+        #switcher {
+            list-style: none;
+            margin: 9px 5px 0 0px !important;
+            padding: 0;
+            overflow: hidden;
+            float: right;
+            position: relative;
+            left: 0px !important;
+            top: -5px !important;
+        }
+
+        li.ggg {
+            /* margin: 0px auto; */
+
+            float: right;
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 2px;
+            position: relative !important;
+            left: 7px !important;
+            top: 4px !important;
+        }
+    }
+
+    .item img {
+        transition: transform 0.5s ease 0s;
+    }
+
+    .owl-carousel .owl-item img :hover {
+        transform: scale(1.1)
+    }
+
+
+
+    #days {
+        color: #db4844;
+    }
+
+    #hours {
+        /*  font-size: 100px;*/
+        color: #f07c22;
+    }
+
+    #minutes {
+        color: #f6da74;
+    }
+
+    #seconds {
+        font-size: 50px;
+        color: #abcd58;
+    }
+</style>
+
+<script>
+    timeLeftForLaunch = (new Date()).getTime() ;
+    debugger;
+    $('#countdown').countdown({
+        timestamp: timeLeftForLaunch,
+        callback: function (days, hours, minutes, seconds)
+        {
+            var message = "Launch Coming Soon in " + days + " days " + hours + " hours " + minutes + " minutes and " + seconds + " seconds ";  
+            $('#countdown-detail').html(message);
+        }  
+    });
+</script>
+<script>
+
+    function getcolorimg(Obj) {
+
+
+        var mainimage = $(Obj).attr("value");
+        // var sprice = $(Obj).attr("sprice");
+        //$("#SPrice").html(sprice);
+        $("#switcher").find('li').attr("class", "normal");
+        $(Obj).attr("class", "active");
+         }
+    function Activeli(Obj) {
+        $("#checksize").val('1');
+
+        $("#switcher23").find('li').css("background-color", "white");
+        $(Obj).css("background-color", "red");
+        $("#switcher23").find('li').attr("class", "normal");
+        $(Obj).attr("class", "active");
+    }
+    function redirect_directSale() {
+        debugger;
+        var ProductId = $('#hdProductId').val();
+        var CatName = $('#hdCatName').val();
+        var CatId = $('#hdCatId').val();
+        var QTy = $('#proQty').val() != '' && $('#proQty').val() != '0' ? $('#proQty').val() : 1;
+        var AttrId = $('input[name="option"]:checked').attr("attrId");
+        var varId = $('input[name="option"]:checked').attr("varId");
+
+        window.location.href = '../Checkout/Index?cName=' + CatName + "&&pCode=" + ProductId + "&&cId=" + CatId + "&&pQty=" + QTy + "&&cType=p" + "&&AttrId=" + QTy + "&&varId=" + varId;
+    }
+    function AddItemInCart(pId, obj, AttrId, varId, SizeId, color) {
+        debugger;
+        var Qty = $(obj).parent().find('input[type=number]').val();
+        var AttrId = AttrId;
+        var varId = varId;
+        var SizeId = SizeId
+        if (Qty > 0) {
+            AdditemToCart(pId, Qty, AttrId, varId, SizeId, color);
+        }
+        else {
+            $.notify("Please at least add one quantity", "error");
+            return false;
+        }
+    }
+
+    function AddItemInCartSingle() {
+        debugger;
+        var AttrId = null;
+        var varId = null;
+        var SizeId = null;
+        var color = null;
+        var pId = $('#hdProductId').val();
+        var Qty = $('#proQty').val();
+
+        if ($("#hdnproducttype").val() != "Simple Product" && $("#hdnfashiontype").val() == "True") {
+            AttrId = 1;
+         /*   $('ul#switcher23').find('li.active').val();*/
+            var SizeId = $('ul#switcher23').find('li.active').attr('value');
+        }
+        else if ($("#hdnproducttype").val() != "Simple Product" && $("#hdnfashiontype").val() == "False") {
+            AttrId = $('input[name="option"]:checked').attr("attrId");
+            varId = $('input[name="option"]:checked').attr("varId");
+
+        }
+        else {
+
+        }
+
+        var color = $("#switcher").find('li[class=active]').attr('value');
+        if (SizeId == null) {
+            var SizeId = $("#switcher23").find('li[class=active]').attr('value')
+        }
+        AdditemToCart(pId, Qty, AttrId, varId, SizeId, color);
+    }
+
+    function ChangeRate(RegPrice, SalePrice, DiscPer) {
+        RegPrice = RegPrice != '' ? parseFloat(RegPrice) : 0;
+        SalePrice = SalePrice != '' ? parseFloat(SalePrice) : 0;
+        DiscPer = DiscPer != '' ? parseFloat(DiscPer) : 0;
+
+        if (DiscPer > 0) {
+            $('#spnPMRP').text(RegPrice.toFixed(2));
+            $('.spnSaleRate').text(SalePrice.toFixed(2));
+            $("#sp_price").show();
+        }
+        else {
+            $('.spnSaleRate').text(SalePrice.toFixed(2)); $("#sp_price").hide();
+        }
+    }
+    function Activeli(Obj) {
+        debugger;
+
+
+        $("#switcher23").find('li').css("background-color", "white");
+        $(Obj).css("background-color", "#f55d2c");
+        $("#switcher23").find('li').attr("class", "normal");
+        $(Obj).attr("class", "colorstyle");
+        $(Obj).attr("class", "active");
+
+        var pId = $(Obj).attr("prodId");
+        var pvarname = $(Obj).attr("varname");
+
+        var dataobject = {
+            ProductId: pId,
+            variationname: pvarname
+        };
+
+
+        $.ajax({
+            url: "@Url.Action("Getcolorlistbysize", "ProductDetail")",
+            type: "POST",
+        data: dataobject,
+        datatype: "json",
+        success: function (result) {
+            if (result != null) {
+                if (result.ColorImg != null) {
+                    var licolor = eval(result.ColorImg);
+                    var limulti = eval(result.Positioncolorimg);
+
+                    for (var i = 0; i < licolor.length; i++) {
+
+                        if (licolor[i].ActiveStatus == 1) {
+                            $("#switcher").html("");
+                            $("#switcher").append('<li id="Button2" onclick="getcolorimg(this)" value=' + licolor[i].Color + ' code=' + licolor[i].ColorValue + ' style="background-color:' + licolor[i].ColorValue + '" prodId=' + licolor[i].ProductId + ' varId=' + licolor[i].VariationId + ' class="colorstyle active"></li>');
+
+                            $("#SPrice").html(licolor[i].SalePrice);
+
+                            $(Obj).addClass("colorstyle");
+
+                            for (var z = 0; z < limulti.length; z++) {
+                                var mainimage = limulti[z].ImageUrl;
+                                if (z == 0) {
+
+                                    $("#sync1").find(".owl-stage").html("");
+                                    $("#sync1").find(".owl-stage").append('<div class="owl-item cloned" id="1" style="width:340px; height:340" ><div class="item"> <img src=' + limulti[0].ImageUrl + ' alt="" class="product-image-zoom  maincolorpic" data-zoom-image=' + limulti[0].ImageUrl + '></div></div>');
+                                    $("#sync1").find(".owl-stage").append('<div class="owl-item cloned" id="2"  style="width:340px; height:340" ><div class="item"> <img src=' + limulti[1].ImageUrl + ' alt="" class="product-image-zoom  maincolorpic" data-zoom-image=' + limulti[1].ImageUrl + '></div></div>');
+                                    $("#sync1").find(".owl-stage").append('<div class="owl-item active" id="3"  style="width:340px; height:340"><div class="item"> <img src=' + mainimage + ' alt="" class="product-image-zoom  maincolorpic" data-zoom-image=' + mainimage + '></div></div>');
+
+                                    $("#sync2").find(".owl-stage").html("");
+                                    $("#sync2").find(".owl-stage").append('<div class="owl-item active current" id="4" style="width:73px; height:73"><div class="item"> <img alt="" class="product-image-zoom  maincolorpic" data-zoom-image=' + mainimage + ' src=' + mainimage + '> </div></div>');
+
+                                }
+                                else {
+
+                                    if ((limulti.length - 1) == z) {
+                                        $("#sync1").find(".owl-stage").append('<div class="owl-item"id="5" style="width:340px; height:340"><div class="item"> <img src=' + mainimage + ' alt="" class="product-image-zoom  maincolorpic" data-zoom-image=' + mainimage + '></div></div>');
+
+                                        $("#sync1").find(".owl-stage").append('<div class="owl-item cloned" id="6" style="width:340px; height:340"><div class="item"> <img src=' + limulti[limulti.length - 1].ImageUrl + ' alt="" class="product-image-zoom  maincolorpic" data-zoom-image=' + limulti[limulti.length - 1].ImageUrl + '></div></div>');
+
+                                        $("#sync1").find(".owl-stage").append('<div class="owl-item cloned"id="7"  style="width:73px; height:73"><div class="item"> <img src=' + limulti[limulti.length].ImageUrl + ' alt="" class="product-image-zoom  maincolorpic" data-zoom-image=' + limulti[limulti.length].ImageUrl + '></div></div>');
+                                    }
+                                    else {
+                                        $("#sync1").find(".owl-stage").append('<div class="owl-item"id="8" style="width:340px; height:340"><div class="item"> <img src=' + mainimage + ' alt="" class="product-image-zoom  maincolorpic" data-zoom-image=' + mainimage + '></div></div>');
+                                    }
+
+
+
+
+                                    $("#sync2").find(".owl-stage").append('<div class="owl-item active"id="9" style="width:73px; height:73"><div class="item"> <img alt="" class="product-image-zoom  maincolorpic" data-zoom-image=' + mainimage + ' src=' + mainimage + '> </div></div>');
+                                }
+
+
+
+                            }
+                        }
+                        else {
+
+                            $("#switcher").append('<li id="Button2" onclick="getcolorimg(this)" value=' + licolor[i].Color + ' code=' + licolor[i].ColorValue + ' prodId=' + licolor[i].ProductId + ' varId=' + licolor[i].VariationId + ' style="background-color:' + licolor[i].ColorValue + '" ></li>');
+                        }
+
+                    }
+                }
+            }
+
+        },
+        error: function () {
+            alert('Error!')
+
+        }
+        });
+
+
+    }
+    function CheckPinCode() {
+        if ($('#txtPinCode').val() == '') {
+            alert('Please Enter Pincode !');
+            $('#txtPinCode').focus();
+            return;
+        }
+        var dataobject = {
+            PinCode: $('#txtPinCode').val()
+        };
+        $.ajax({
+            type: "POST",
+            url: "/Master/GetPinCodeForEdit",
+            data: dataobject,
+            dataType: "json",
+            success: function (r) {
+                if (r.RespoCode != "0") {
+                    $('#Divavail').show();
+                    $('#divNotAvl').hide();
+                }
+                else {
+                    $('#Divavail').hide();
+                    $('#divNotAvl').show();
+                }
+            }
+        });
+
+    }
+
+
+
+    function myFunction() {
+     /*   alert('dgdfg');*/
+        window.scroll(1000, 1000);
+    }
+    function AddToWhishlist() {
+        debugger;
+        var data;
+        data = new FormData();
+        var Id = $("#hdProductId").val();
+        data.append("ProductId", Id);
+        debugger;
+        $.ajax({
+            url: "../ProductDetail/AddToWhishlist",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                alert(r.msg);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+</script>
+<style>
+    #switcher {
+        list-style: none;
+        margin: 9px 5px 0 0px;
+        padding: 0;
+        overflow: hidden;
+        float: right;
+        position: relative;
+        left: 146px;
+        top: 20px;
+    }
+
+    #switcher23 {
+        /* margin: 6px 0px 5px 0px; */
+        list-style: none;
+        margin: 6px 59px 62px 0px;
+        padding: 0;
+        overflow: hidden;
+        float: right;
+        position: relative;
+        left: 70px;
+    }
+
+    .sizestyle {
+        background-color: #f55d2c00;
+    }
+
+    #switcher23 li {
+        color: #000 !important;
+        text-transform: uppercase;
+        border: 1px solid #bfbfbf;
+        line-height: 1;
+        padding: 10px;
+        padding-bottom: 8px;
+        display: inline-block;
+        /*float: left;
+            width: auto;
+            min-width: 25px;
+            height: 25px;
+            text-align: center;
+            padding: 3px;
+            padding-top: 3px;
+            border-radius: 1px;
+            border: 1px solid #a59b9a;
+            cursor: pointer;*/
+    }
+
+    #switcher li {
+        float: left;
+        width: 31px;
+        height: 20px;
+        border-radius: 30px;
+        border: 2px solid #ffffff;
+        padding: 8px;
+        cursor: pointer;
+    }
+
+    li.ggg {
+        /* margin: 0px auto; */
+        float: right;
+        float: right;
+        text-transform: uppercase;
+        font-weight: 500;
+        letter-spacing: 2px;
+        position: relative;
+        left: -41px;
+    }
+</style>
+<input type="hidden" value="@Model.ItemCode" id="hdProductId" />
+<input type="hidden" value="@Model.MainCategoryName" id="hdCatName" />
+<input type="hidden" value="@Model.MainCategoryCode" id="hdCatId" />
+<input type="hidden" value="@Model.ProductType" id="hdnproducttype" />
+<input type="hidden" value="@Model.FashionType" id="hdnfashiontype" />
+<input type="hidden" value="@Model.FromTime" id="hdFromTime" />
+<input type="hidden" value="@Model.ToTime" id="hdToTime" />
+
+<div class="gambo-Breadcrumb">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="../WebHome/index">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">@Model.MainCategoryName</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@Model.ProductName</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="all-product-grid">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="product-dt-view">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4">
+                            <div id="sync1" class="owl-carousel owl-theme ">
+                                @if (Model.dt2 != null && Model.dt2.Rows.Count > 0)
+                                {
+                                    foreach (DataRow dr in Model.dt2.Rows)
+                                    {
+                                        <div class="item">
+                                            <img src="@dr["ImageUrl"]" alt="">
+                                        </div>
+                                    }
+                                }
+                            </div>
+                            <div id="sync2" class="owl-carousel owl-theme">
+                                @if (Model.dt2 != null && Model.dt2.Rows.Count > 0)
+                                {
+                                    foreach (DataRow dr in Model.dt2.Rows)
+                                    {
+                                        <div class="item">
+                                            <img src="@dr["ImageUrl"]" id="image" alt="">
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-8 col-md-8">
+                            <div class="product-dt-right">
+                                <h2>@Model.ProductName</h2>
+                                <div class="box-review form-group">
+                                    <div class="">
+                                        <div class="rating-box">
+                                            <div class="rating-box">
+                                                @if (Model.AvgReviews == "0")
+                                                {<div class="star-rating">
+                                                        <span class="fa fa-star gray" data-rating="1"></span>
+                                                        <span class="fa fa-star gray" data-rating="2"></span>
+                                                        <span class="fa fa-star gray" data-rating="3"></span>
+                                                        <span class="fa fa-star gray" data-rating="4"></span>
+                                                        <span class="fa fa-star gray" data-rating="5"></span>
+                                                        <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                                                    </div>
+                                                }
+                                                @if (Model.AvgReviews == "1")
+                                                {
+                                                    <div class="star-rating">
+                                                        <span class="fa fa-star" data-rating="1"></span>
+                                                        <span class="fa fa-star gray" data-rating="2"></span>
+                                                        <span class="fa fa-star gray" data-rating="3"></span>
+                                                        <span class="fa fa-star gray" data-rating="4"></span>
+                                                        <span class="fa fa-star gray" data-rating="5"></span>
+                                                        <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                                                    </div>
+                                                }
+                                                @if (Model.AvgReviews == "2")
+                                                {
+                                                    <div class="star-rating">
+                                                        <span class="fa fa-star" data-rating="1"></span>
+                                                        <span class="fa fa-star" data-rating="2"></span>
+                                                        <span class="fa fa-star gray" data-rating="3"></span>
+                                                        <span class="fa fa-star gray" data-rating="4"></span>
+                                                        <span class="fa fa-star gray" data-rating="5"></span>
+                                                        <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                                                    </div>
+                                                }
+                                                @if (Model.AvgReviews == "3")
+                                                {
+                                                    <div class="star-rating">
+                                                        <span class="fa fa-star" data-rating="1"></span>
+                                                        <span class="fa fa-star" data-rating="2"></span>
+                                                        <span class="fa fa-star" data-rating="3"></span>
+                                                        <span class="fa fa-star gray" data-rating="4"></span>
+                                                        <span class="fa fa-star gray" data-rating="5"></span>
+                                                        <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                                                    </div>
+                                                }
+                                                @if (Model.AvgReviews == "4")
+                                                {
+                                                    <div class="star-rating">
+                                                        <span class="fa fa-star" data-rating="1"></span>
+                                                        <span class="fa fa-star" data-rating="2"></span>
+                                                        <span class="fa fa-star" data-rating="3"></span>
+                                                        <span class="fa fa-star" data-rating="4"></span>
+                                                        <span class="fa fa-star gray" data-rating="5"></span>
+                                                        <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                                                    </div>
+                                                }
+                                                @if (Model.AvgReviews == "5")
+                                                {
+                                                    <div class="star-rating">
+                                                        <span class="fa fa-star" data-rating="1"></span>
+                                                        <span class="fa fa-star" data-rating="2"></span>
+                                                        <span class="fa fa-star" data-rating="3"></span>
+                                                        <span class="fa fa-star" data-rating="4"></span>
+                                                        <span class="fa fa-star" data-rating="5"></span>
+                                                        <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                                                    </div>
+                                                }
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a class="reviews_button"> @Model.TotalReviews  reviews </a>	|
+                                    <a class="write_review_button" onclick="myFunction()" id="new-w"> Write a review </a>
+
+                                </div>
+
+                                <div class="no-stock">
+                                    <p class="pd-no" style="display:none">Product No.<span>@Model.ItemCode</span></p>
+                                    @*@if (Model.StockStatus == "1")
+                                        {*@
+                                    <p class="stock-qty">Available<span class="stockInclr">(Instock)</span></p>
+                                    @*}
+                                        else
+                                        {
+                                            <p class="stock-qty">Available<span class="stockclr">(Out Of Stock)</span></p>
+                                        }*@
+                                    <p class="">Vendor Name<span>@Model.vendorname</span></p>
+                                </div>
+                                @if (Model.ProductType != "Simple Product")
+                                {
+                                    if (Model.dtCatProduct != null && Model.dtCatProduct.Rows.Count > 0)
+                                    {
+                                        int i = 0;
+                                        <div class="product-radio">
+                                            <ul class="product-now">
+                                                @foreach (DataRow dr in Model.dtCatProduct.Rows)
+                                                {
+                                                    <li>
+                                                        @if (i == 0)
+                                                        {
+                                                            <input type="radio" id="@dr["SrNo"]" name="option" attrId="@dr["AttributeId"]" varId="@dr["VariationId"]"
+                                                                   onchange="ChangeRate('@dr["RegularPrice"]','@dr["saleValue"]','@dr["DiscPer"]')" checked>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="radio" id="@dr["SrNo"]" name="option" attrId="@dr["AttributeId"]"
+                                                                   varId="@dr["VariationId"]" onchange="ChangeRate('@dr["RegularPrice"]','@dr["saleValue"]','@dr["DiscPer"]')">
+                                                        }
+                                                        <label for="@dr["SrNo"]" nowrap>@dr["VarriationName"]</label>
+                                                    </li>
+                                                    i++;
+                                                }
+                                            </ul>
+                                        </div>
+                                    }
+                                }
+                                <p class="pp-descp">@Html.Raw(Model.ProductSpacification)</p>
+                                <div class="product-group-dt">
+                                    @if (Model.DiscPer > 0)
+                                    {
+
+                                        <ul id="without-dsc">
+                                            <li><div class="main-price"> Price &#8377;<span class="spnSaleRate" id="SPrice" style="margin-left: 1px !important;">@Model.SalePrice</span><strike>&nbsp;  ₹@Model.RegularPrice</strike> </div></li>
+                                            @*<li class="ggg"><h5>Select Size4</h5></li>*@
+                                        </ul>
+                                    }
+                                    else
+                                    {
+
+                                        <ul id="without-dsc">
+                                            <li>
+                                                <div class="main-price">
+                                                    Price &#8377;<span class="spnSaleRate" id="SPrice" style="margin-left: 1px !important;">@Model.SalePrice</span>
+                                                    &nbsp; @if (Model.SalePrice != Model.RegularPrice)
+                                                    {<strike>
+                                                            ₹@Model.RegularPrice
+                                                        </strike>}
+                                                </div>
+                                            </li>
+                                            <li>
+
+                                                <div id="countdown">
+                                                  
+                                                    <p id="countdown-detail"></p>
+                                                
+                                                </div>
+
+                                            </li>
+                                            @if (Model.sizeList != null && Model.sizeList.Rows.Count > 0)
+                                            {
+                                                <li class="ggg"><h5>Select Size</h5></li>
+                                            }
+
+                                        </ul>
+
+                                    }
+
+                                    <div class="form-group">
+                                        @if (Model.VariationId != null)
+                                        {
+                                            if (Model.sizeList != null && Model.sizeList.Rows.Count > 0)
+                                            {<ul id="switcher23">
+                                                    @foreach (DataRow sizeItem in Model.sizeList.Rows)
+                                                    {
+                                                        if (Convert.ToString(@sizeItem["ActiveStatus"]) == "1")
+                                                        {
+                                                            <li id="Button1" prodId="@sizeItem["ProductId"]" value="@sizeItem["VarriationName"]" varname="@sizeItem["VarriationName"]" class="sizestyle active" onclick="Activeli(this)">@sizeItem["VarriationName"]</li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="Button1" prodId="@sizeItem["ProductId"]" value="@sizeItem["VarriationName"]" varname="@sizeItem["VarriationName"]" onclick="Activeli(this)">@sizeItem["VarriationName"]</li>
+                                                        }
+
+
+                                                    }
+
+                                                </ul>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (Model.sizeList != null && Model.sizeList.Rows.Count > 0)
+                                            {<ul id="switcher23">
+                                                    @foreach (DataRow sizeItem in Model.sizeList.Rows)
+                                                    {
+                                                        if (Convert.ToString(@sizeItem["ActiveStatus"]) == "1")
+                                                        {
+                                                            <li id="Button1" prodId="@sizeItem["ProductCode"]" value="@sizeItem["Size_Name"]" varname="@sizeItem["Size_Name"]" varId="@sizeItem["id"]" onclick="Activeli(this)" class="sizestyle active">@sizeItem["Size_Name"]</li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="Button1" prodId="@sizeItem["ProductCode"]" value="@sizeItem["Size_Name"]" varname="@sizeItem["Size_Name"]" varId="@sizeItem["id"]" onclick="Activeli(this)">@sizeItem["Size_Name"]</li>
+                                                        }
+
+
+                                                    }
+
+                                                </ul>
+                                            }
+                                        }
+                                    </div>
+
+                                    <div class="form-group left-new">
+                                        @if (Model.ColorList != null && Model.ColorList.Rows.Count > 0)
+                                        {
+                                            
+                                        }
+                                        @if (Model.VariationId != null)
+                                        {
+
+                                            if (Model.ColorList != null && Model.ColorList.Rows.Count > 0)
+
+                                            {<ul id="switcher">
+                                                    @foreach (DataRow ColorItem in Model.ColorList.Rows)
+                                                    {
+                                                        if (Convert.ToString(@ColorItem["ActiveStatus"]) == "1")
+                                                        {
+                                                            <li id="Button2" onclick="getcolorimg(this)" value="@ColorItem["Color"]" code="@ColorItem["ColorValue"]" prodId="@ColorItem["ProductId"]" varId="@ColorItem["VariationId"]" class="colorstyle active" style="background-color:@ColorItem["ColorValue"]"></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="Button2" onclick="getcolorimg(this)" value="@ColorItem["Color"]" prodId="@ColorItem["ProductId"]" varId="@ColorItem["VariationId"]" code="@ColorItem["ColorValue"]" style="background-color:@ColorItem["ColorValue"]"></li>
+                                                        }
+                                                    }
+                                                </ul>
+                                            }
+                                        }
+                                        else
+                                        {
+                                           
+                                        }
+
+                                    </div>
+
+                                    <ul class="gty-wish-share">
+                                        <li>
+                                            <div class="qty-product">
+                                                <div class="quantity buttons_added">
+                                                    <input type="button" value="-" class="minus minus-btn">
+                                                    <input type="number" step="1" name="quantity" id="proQty" value="1" class="input-text qty text">
+                                                    <input type="button" value="+" class="plus plus-btn">
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li><span class="like-icon save-icon" onclick="AddToWhishlist()" title="wishlist"></span></li>
+                                    </ul>
+                                    
+                                    <ul class="ordr-crt-share">
+                                        <li><button class="add-cart-btn hover-btn" onclick="AddItemInCartSingle()"><i class="uil uil-shopping-cart-alt"></i>Add to Cart</button></li>
+
+
+                                        <a href="../Checkout/Index?cType=c" class="cart-checkout-btn hover-btn">ShowCart </a>
+                                    </ul><hr />
+                                    <span style="font-size: 14px;font-weight: bold;color: #242323;">Check Availability</span>
+                                    <div class="row" style="margin-top: 6px;">
+                                        <div class="col col-md-8">
+                                            <div class="checkout-login">
+                                                <div style="display: inline-block;">
+                                                    <input type="text" id="txtPinCode" class="form-control" placeholder="Enter Pincode">
+                                                </div>
+                                                <a class="chck-btn hover-btn" role="button" data-toggle="collapse" onclick="CheckPinCode()">Check</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:5px">
+                                        <div class="col-md-8">
+                                            <span style="color:green;font-weight:bold;display:none" id="Divavail"><i class="fa fa-check"></i> Delivery Available</span>
+                                            <span style="color:red;font-weight:bold;display:none" id="divNotAvl"><i class="fa fa-times"></i> Sorry, currently we are not serving at this Pincode.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pdp-details">
+                                    <ul>
+                                        @*<li>
+                                                <div class="pdp-group-dt">
+                                                    <div class="pdp-icon"><i class="uil uil-usd-circle"></i></div>
+                                                    <div class="pdp-text-dt">
+                                                        <span>Lowest Price Guaranteed</span>
+                                                        <p>Get difference refunded if you find it cheaper anywhere else.</p>
+                                                    </div>
+                                                </div>
+                                            </li>*@
+                                        <li>
+                                            <div class="pdp-group-dt" style="display:none">
+                                                <div class="pdp-icon"><i class="uil uil-cloud-redo"></i></div>
+                                                <div class="pdp-text-dt">
+                                                    <span>Easy Returns & Refunds</span>
+                                                    <p>@Html.Raw(Model.ReturnAndRefundPolicy)</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 col-md-12">
+                <div class="pdpt-bg">
+                    <div class="pdpt-title">
+                        <h4>More Like This</h4>
+                    </div>
+                    <div class="pdpt-body scrollstyle_4">
+                        @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+                        {
+                            foreach (DataRow dr in Model.dt1.Rows)
+                            {
+                                <div class="cart-item border_radius">
+                                    <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" class="cart-product-img">
+                                        <img src="@dr["ProductMainImageUrl"]" alt="f">
+                                        @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                        {
+                                            <div class="offer-badge">@dr["Discper"]% OFF</div>
+                                        }
+                                    </a>
+                                    <div class="cart-text">
+                                        <h4>@dr["pName"]</h4>
+
+                                        <div class="qty-group">
+                                            <div class="quantity buttons_added">
+                                                <input type="button" value="-" class="minus minus-btn">
+                                                <input type="number" step="1" name="quantity" value="1" class="input-text qty text">
+                                                <input type="button" value="+" class="plus plus-btn">
+                                            </div>
+                                            <div class="cart-item-price">
+                                                &#8377;@dr["saleValue"]
+                                                @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                                {
+                                                    <span>&#8377;@dr["RegularPrice"]</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8 col-md-12">
+                <div class="pdpt-bg ">
+                    <div class="pdpt-title">
+                        <h4>Product Details</h4>
+                    </div>
+                    <div class="pdpt-body scrollstyle_4">
+                        <div class="pdct-dts-1">
+                            @Html.Raw(Model.Description)
+                        </div>
+                    </div>
+                    <!--<div class="producttab ">
+                        <div class="tabsslider horizontal-tabs  col-xs-12">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a data-toggle="tab" href="#tab-1">Description</a></li>
+
+                            </ul>
+                            <div class="tab-content col-xs-12">
+                                <div id="tab-1" class="tab-pane fade active in">
+                                    <p>
+                                        @Html.Raw(Model.Description)
+                                    </p>
+                                </div>-->
+                    @*<div id="tab-review" class="tab-pane fade">
+
+                        </div>*@
+
+
+                    <!--</div>
+                        </div>
+                    </div>-->
+
+                    <div class="row">
+                        <div class="col-lg-12">
+
+                            <div class="card kll">
+
+                                <h2 id="#new-w">Write a review</h2>
+                                <div class="contacts-form">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <input id="txtcuname" type="text" class="form-control" placeholder="Please Enter your Name">
+                                            </div>
+                                        </div>
+                                    </div><br />
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <textarea id="txtreviewdec" class="form-control" name="text" placeholder="Please Enter Review"></textarea>
+                                            </div>
+                                        </div>
+                                    </div><br />
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <b>Rating</b>
+                                            <div class="star-rating1">
+                                                <span class="fa fa-star" data-rating="1"></span>
+                                                <span class="fa fa-star" data-rating="2"></span>
+                                                <span class="fa fa-star" data-rating="3"></span>
+                                                <span class="fa fa-star" data-rating="4"></span>
+                                                <span class="fa fa-star" data-rating="5"></span>
+                                                <input type="hidden" id="cskRating" name="whatever1" class="rating-value" value="5">
+                                            </div>
+
+                                        </div>
+                                    </div><hr />
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <input type="submit" class="btn primary" style="background: #c1134f; color: #fff;" value="Save Review" onclick="SaveReview()" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-sm-10">
+                            <table class="table table-striped table-bordered" id="tblReview">
+                                <tbody>
+                                    @if (Model.TableReview != null && Model.TableReview.Rows.Count > 0)
+                                    {
+                                        foreach (DataRow dr in Model.TableReview.Rows)
+                                        {
+                                            <tr style="background: #f35f02; color: white;">
+                                                <td style="width: 50%;"><strong>@dr["CustomertName"]</strong></td>
+                                                <td class="text-right">@dr["AddedOn"]</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2">
+                                                    <p>@dr["ReviewDiscription"]</p>
+                                                    <div class="">
+                                                        @if (@dr["ReviewStatus"].ToString() == "1")
+                                                        {
+                                                            <div class="star-rating">
+                                                                <span class="fa fa-star" data-rating="1"></span>
+                                                                <span class="fa fa-star gray" data-rating="2"></span>
+                                                                <span class="fa fa-star gray" data-rating="3"></span>
+                                                                <span class="fa fa-star gray" data-rating="4"></span>
+                                                                <span class="fa fa-star gray" data-rating="5"></span>
+                                                                <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                                                            </div>
+                                                        }
+                                                        @if (@dr["ReviewStatus"].ToString() == "2")
+                                                        {
+                                                            <div class="star-rating">
+                                                                <span class="fa fa-star" data-rating="1"></span>
+                                                                <span class="fa fa-star" data-rating="2"></span>
+                                                                <span class="fa fa-star gray" data-rating="3"></span>
+                                                                <span class="fa fa-star gray" data-rating="4"></span>
+                                                                <span class="fa fa-star gray" data-rating="5"></span>
+                                                                <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                                                            </div>
+                                                        }
+                                                        @if (@dr["ReviewStatus"].ToString() == "3")
+                                                        {
+                                                            <div class="star-rating">
+                                                                <span class="fa fa-star" data-rating="1"></span>
+                                                                <span class="fa fa-star" data-rating="2"></span>
+                                                                <span class="fa fa-star" data-rating="3"></span>
+                                                                <span class="fa fa-star gray" data-rating="4"></span>
+                                                                <span class="fa fa-star gray" data-rating="5"></span>
+                                                                <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                                                            </div>
+                                                        }
+                                                        @if (@dr["ReviewStatus"].ToString() == "4")
+                                                        {
+                                                            <div class="star-rating">
+                                                                <span class="fa fa-star" data-rating="1"></span>
+                                                                <span class="fa fa-star" data-rating="2"></span>
+                                                                <span class="fa fa-star" data-rating="3"></span>
+                                                                <span class="fa fa-star" data-rating="4"></span>
+                                                                <span class="fa fa-star gray" data-rating="5"></span>
+                                                                <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                                                            </div>
+                                                        }
+                                                        @if (@dr["ReviewStatus"].ToString() == "5")
+                                                        {
+                                                            <div class="star-rating">
+                                                                <span class="fa fa-star" data-rating="1"></span>
+                                                                <span class="fa fa-star" data-rating="2"></span>
+                                                                <span class="fa fa-star" data-rating="3"></span>
+                                                                <span class="fa fa-star" data-rating="4"></span>
+                                                                <span class="fa fa-star" data-rating="5"></span>
+                                                                <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                                                            </div>
+                                                        }
+
+
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Featured Products Start -->
+@if (Model.dt != null && Model.dt.Rows.Count > 0)
+{
+    <div class="section145">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-title-tt">
+                        <div class="main-title-left">
+                            <span>For You</span>
+                            <h2>Top Featured Products</h2>
+                        </div>
+                        <a href="#" class="see-more-btn" style="display:block">See All</a>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="owl-carousel featured-slider owl-theme">
+                        @foreach (DataRow dr in Model.dt.Rows)
+                        {
+                            <div class="item">
+                                <div class="product-item">
+                                    <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" class="product-img">
+                                        <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]">
+                                        <div class="product-absolute-options">
+                                            @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                            {
+                                                <span class="offer-badge-1">@dr["Discper"]% off</span>
+                                            }
+                                            <span class="like-icon" title="wishlist" onclick="AddToWhishlist()"></span>
+                                        </div>
+                                    </a>
+                                    <div class="product-text-dt">
+                                        <p>Available<span>(In Stock)</span></p>
+                                        <h4>@dr["pName"]</h4>
+                                        <div class="product-price">
+                                            &#8377;@dr["saleValue"]
+                                            @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                            {
+                                                <span>&#8377;@dr["RegularPrice"]</span>
+                                            }
+                                        </div>
+                                        <div class="qty-cart">
+                                            <div class="quantity buttons_added">
+                                                <input type="button" value="-" class="minus minus-btn">
+                                                <input type="number" step="1" name="quantity" value="0" class="input-text qty text">
+                                                <input type="button" value="+" class="plus plus-btn">
+                                            </div>
+                                            <span class="cart-icon" onclick="AddItemInCart('@dr["ProductCode"]',this,'@dr["AttrId"]','@dr["VarId"]')"><i class="uil uil-shopping-cart-alt"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<!-- Featured Products End -->
+<script>
+
+    var $star_rating = $('.star-rating1 .fa');
+
+    var SetRatingStar = function () {
+        return $star_rating.each(function () {
+            if (parseInt($star_rating.siblings('input.rating-value').val()) >= parseInt($(this).data('rating'))) {
+                return $(this).removeClass('fa-star gray').addClass('fa-star');
+            } else {
+                return $(this).removeClass('fa-star').addClass('fa-star  gray');
+            }
+        });
+    };
+
+    $star_rating.on('click', function () {
+        $star_rating.siblings('input.rating-value').val($(this).data('rating'));
+        return SetRatingStar();
+    });
+
+    SetRatingStar();
+    $(document).ready(function () {
+
+    });
+</script>
+
+<script>
+
+    function SaveReview() {
+        debugger;
+        var ReviewNum = $('#cskRating').val()
+        var ReverName = $('#txtcuname').val();
+        var RevDis = $('#txtreviewdec').val();
+        var ProductId = $("#hdProductId").val();
+        if (ReverName == "") {
+            alert("Please Enter your Name");
+            $('#txtcuname').focus();
+            return;
+        }
+        if (ReviewNum < 0) {
+            alert("Please Select Review");
+            $('#cskRating').focus();
+            return;
+        }
+        $.ajax({
+            url: "/Ecommarce/SaveReview",
+            type: "POST",
+            data: { 'ReiewStatus': ReviewNum, 'CustmerName': ReverName, 'ReiewDis': RevDis, 'ProductId': ProductId },
+            datatype: "json",
+            success: function (data1) {
+                if (data1 != "0") {
+                    alert(data1);
+                    BindReviewDetails();
+                    $('#txtcuname').val('');
+                    $('#txtreviewdec').val('');
+                }
+                else {
+                    alert("Server Error. Please try after some time.");
+                }
+            }
+        });
+    }
+
+    function BindReviewDetails() {
+        $.ajax({
+            url: "/SEOURL/SaleProduct",
+            type: "POST",
+            data: { 'Category': $.trim($('#hdCategory').val()), 'ProductName': $.trim($('#hdproductTitle').val()), 'ProductId': $.trim($('#hdproductId').val()) },
+            datatype: "json",
+            success: function (data1) {
+                var htmlNew = data1;
+                $('#review').html($(htmlNew).find('#tblReview'));
+                // $('#divtable').html($(htmlNew).find('#divcnt'));
+            }
+        });
+    }
+
+</script>

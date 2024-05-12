@@ -1,0 +1,273 @@
+﻿@model OjasMart.Models.SalesPerson
+@{
+    ViewBag.Title = "AddNewSalesPerson";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using System.Data;
+<link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/dataTables.jqueryui.min.css">
+<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.19/js/dataTables.jqueryui.min.js"></script>
+
+<script>
+    function InsertSalesPerson(obj) {
+    
+        if ($("#txtName").val() == "") {
+            alert("Please Enter Name !!!");
+            $("#txtName").focus();
+            return;
+        }
+        if ($("#txtMobileNo").val() == "") {
+            alert("Please Enter Mobile No. !!!");
+            $("#txtMobileNo").focus();
+            return;
+        }
+        if ($("#txtuserName").val() == "") {
+            alert("Please Enter User Name !!!");
+            $("#txtuserName").focus();
+            return;
+        }
+        if ($("#txtPassword").val() == "") {
+            alert("Please Enter Password !!!");
+            $("#txtPassword").focus();
+            return;
+        }
+        if ($("#txtConfPwd").val() == "") {
+            alert("Please Confirm Password !!!");
+            $("#txtConfPwd").focus();
+            return;
+        }
+        if ($("#txtPin").val() == "") {
+            alert("Please Enter Pincode !!!");
+            $("#txtPin").focus();
+            return;
+        }
+        if ($("#txtConfPwd").val() != $("#txtPassword").val()) {
+            alert("Both Password should be Same !!!");
+            $("#txtConfPwd").focus();
+            return;
+        }
+
+        var data = new FormData;
+        data.append("Action", "1");
+        data.append("Name", $("#txtName").val());
+        data.append("ContactNo", $("#txtMobileNo").val());
+        data.append("Address", $("#txtAddress").val());
+        data.append("AadharNo", $("#txtAadharNo").val());
+        data.append("Pincode", $("#txtPin").val());
+        data.append("Emailid", $("#txtEmailId").val());
+        data.append("userName", $("#txtuserName").val());
+        data.append("Password", $("#txtPassword").val());
+
+        $("#showSpinner").show();
+        $.ajax({
+            url: "../Master/InserSalesPerson",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                if (r.Id == '1') {
+                    alert(r.msg);
+                    $("#showSpinner").hide();
+                    location.reload();
+                }
+                else {
+                    alert(r.msg);
+                    $("#showSpinner").hide();
+                }
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function UpdateSalesPerson(obj) {
+        debugger;
+        if ($("#hdSpId").val() == "") {
+            alert("Sponsor Code not found !!!");
+            return;
+        }
+
+        if ($("#ddlVolunteer").val() == "") {
+            alert("Please Select Franchise !!!");
+            $("#ddlVolunteer").focus();
+            return;
+        }
+        if ($("#txtName").val() == "") {
+            alert("Please Enter Name !!!");
+            $("#txtName").focus();
+            return;
+        }
+        if ($("#txtPin").val() == "") {
+            alert("Please Enter Pincode !!!");
+            $("#txtPin").focus();
+            return;
+        }
+        if ($("#txtMobileNo").val() == "") {
+            alert("Please Enter Mobile No. !!!");
+            $("#txtMobileNo").focus();
+            return;
+        }
+
+
+        var data = new FormData;
+        data.append("Action", "4");
+        data.append("Name", $("#txtName").val());
+        data.append("ContactNo", $("#txtMobileNo").val());
+        data.append("Address", $("#txtAddress").val());
+        data.append("AadharNo", $("#txtAadharNo").val());
+        data.append("Pincode", $("#txtPin").val());
+        data.append("Emailid", $("#txtEmailId").val());
+        data.append("userName", $("#txtuserName").val());
+        data.append("Password", $("#txtPassword").val());
+        data.append("SalesPersonId", $("#hdSpId").val());
+
+        $("#showSpinner").show();
+        $.ajax({
+            url: "../Master/InserSalesPerson",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                if (r.Id == '1') {
+                    alert(r.msg);
+                    $("#showSpinner").hide();
+                    window.location.href = "../Master/AllSalesPerson";
+                }
+                else {
+                    alert(r.msg);
+                    $("#showSpinner").hide();
+                }
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function CancelUpdate() {
+        location.reload();
+    }
+</script>
+
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 20%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Add Delivery Agents </h4>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="hdSpId" value="@Model.SalesPersonId" />
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label"> Name <span style="color:red">*</span> </label>
+                        <input type="text" class="form-control" id="txtName" placeholder="Enter  Name" value="@Model.Name">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Mobile No <span style="color:red">*</span></label>
+                        <input type="text" class="form-control" id="txtMobileNo" placeholder="Enter Mobile No" maxlength="10" value="@Model.ContactNo">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Email Id </label>
+                        <input type="text" class="form-control" id="txtEmailId" placeholder="Please Enter Email Id" value="@Model.Emailid">
+                    </div>
+
+
+                </div>
+                <div class="form-row">
+
+
+                    <div class="form-group col-md-12">
+                        <label for="inputEmail4" class="col-form-label">Address </label>
+                        <textarea id="txtAddress" class="form-control" placeholder="Please Enter Address">@Model.Address</textarea>
+                    </div>
+
+                </div>
+
+                <div class="form-row">
+
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Pincode. <span style="color:red">*</span> </label>
+                        <input type="text" class="form-control" autocomplete="off" id="txtPin" maxlength="6" placeholder="Please Enter Pincode" value="@Model.Pincode">
+
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Aadhar No. <span style="color:red">*</span> </label>
+                        <input type="text" class="form-control" autocomplete="off" id="txtAadharNo" placeholder="Please Enter Aadhar No." value="@Model.AadharNo">
+
+                    </div>
+
+
+
+
+
+                </div>
+
+                @if (string.IsNullOrEmpty(Model.SalesPersonId))
+                {
+
+                    <h3>Login Details</h3>
+
+                    <div class="form-row">
+
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4" class="col-form-label">User Name <span style="color:red">*</span> </label>
+                            <input type="text" id="txtuserName" class="form-control" placeholder="Please Enter User Name" />
+
+                        </div>
+
+
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4" class="col-form-label">Password <span style="color:red">*</span> </label>
+                            <input type="password" id="txtPassword" class="form-control" placeholder="Please Enter Password" />
+
+                        </div>
+
+
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4" class="col-form-label">Confirm Password <span style="color:red">*</span> </label>
+                            <input type="password" id="txtConfPwd" class="form-control" placeholder="Please Confirm Password" />
+
+                        </div>
+                    </div>
+
+                }
+                @if (string.IsNullOrEmpty(Model.SalesPersonId))
+                {
+                    <button type="submit" id="btnSave" class="btn btn-primary waves-effect waves-light" onclick="InsertSalesPerson()">Save Record</button>
+
+                }
+
+                else
+                {
+                    <button type="submit" id="btnUpdate"  class="btn btn-warning waves-effect waves-light" onclick="UpdateSalesPerson()">Update Record</button>
+                    <button type="submit" id="btnCancel"  class="btn btn-danger waves-effect waves-light" onclick="CancelUpdate()">Cancel</button>
+                }
+
+            </div>
+        </div>
+    </div> <!-- end card-body -->
+</div> <!-- end card-->

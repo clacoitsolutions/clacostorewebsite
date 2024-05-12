@@ -1,0 +1,1295 @@
+﻿﻿@model OjasMart.Models.PropertyClass
+@using System.Data;
+@using OjasMart.Models;
+@{
+    ViewBag.Title = "Claco Store";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    function AddItemInCart(pId, obj, AttrId, varId) {
+        var clas = ".sp_" + pId;
+        var Qty = $(obj).parent().find('input[type=number]').val();
+        if (Qty > 0) {
+            if (varId > 0) {
+                var _varId = $(clas).val();
+                AdditemToCart(pId, Qty, AttrId, _varId);
+            }
+            else {
+                AdditemToCart(pId, Qty, AttrId, varId);
+            }
+        }
+        else {
+            $.notify("Please at least add one quantity", "error");
+            return false;
+        }
+    }
+</script>
+
+<style>
+
+    .footer {
+        background: #fff !important;
+        padding-top: 0px;
+    }
+
+    .wrapper {
+        padding-top: 88px;
+        padding-bottom: 0px;
+        /* margin-bottom: 20px; */
+        background: #fff !important;
+    }
+
+    #switcher {
+        list-style: none;
+        margin: 9px 5px 0 0px;
+        padding: 0;
+        overflow: hidden;
+        float: right;
+    }
+
+    #switcher23 {
+        list-style: none;
+        margin: 0 60px 0 0px;
+        padding: 0;
+        overflow: hidden;
+        float: right;
+    }
+
+        #switcher23 li {
+            float: left;
+            width: auto;
+            min-width: 25px;
+            height: 25px;
+            text-align: center;
+            padding: 3px;
+            padding-top: 3px;
+            border-radius: 1px;
+            border: 1px solid #a59b9a;
+            cursor: pointer;
+        }
+
+    #switcher li {
+        float: left;
+        width: 31px;
+        height: 20px;
+        border-radius: 30px;
+        border: 2px solid #ffffff;
+        padding: 8px;
+        cursor: pointer;
+    }
+
+    .phdg {
+        display: none !important;
+    }
+    /*code by anup kumar*/
+    @@media only screen and (max-width:560px) {
+        .Popular-img {
+            height: 50%;
+            border-radius: 50%;
+        }
+
+        .Popular-title {
+            font-size: 10px !important;
+        }
+
+        .item {
+            margin-left: 20px !important;
+        }
+    }
+    /*   start code by muskan*/
+
+    @@media only screen and (max-width:767px) {
+        .pheading {
+            display: none
+        }
+
+        .phdg {
+            display: block !important;
+        }
+    }
+
+    @@media only screen and (min-width:960px) {
+        .Popular-img {
+            border-radius: 50%;
+        }
+
+        .item {
+            margin-left: 20px !important;
+        }
+    }
+    /*code by anup kumar*/
+
+    @*Best Category*@
+    .offerrow {
+        height: 600px;
+
+        padding: 20PX;
+    }
+
+    .offerbox {
+        background: linear-gradient(#ec4f93,pink);
+        min-height: 400PX;
+        margin: 0px;
+        z-index: 100
+    }
+
+    .imagecard {
+        height: 140px
+    }
+
+    .procategory {
+        font-size: 20px;
+        color: #141313;
+        font-weight: bold;
+        margin-top: 3%;
+    }
+
+    @@media only screen and (max-width:768px) {
+        .cardMobile {
+
+            margin-top: 8px;
+            padding: 0px;
+            overflow: hidden;
+        }
+
+        .offerbox {
+        }
+
+        .phonehide {
+            display: none
+        }
+    }
+
+    .r1 {
+        display: block;
+    }
+
+    .r2 {
+        display: none !important;
+    }
+
+    @@media only screen and (max-width:767px) {
+        .h {
+            font-size: 15px;
+            padding-left: -10px !important;
+            margin: 0px !important;
+        }
+
+        .r {
+            margin-left: 0px !important;
+        }
+
+        .r1 {
+            display: none !important;
+        }
+
+        .r2 {
+            display: block !important;
+        }
+
+        .t {
+            margin: 0px !important;
+            padding: 0px !important;
+        }
+    }
+
+    .oc {
+        min-height: 250px;
+    }
+
+    .st {
+        color: black;
+    }
+
+        .st:hover {
+            color: #fa2365 !important;
+        }
+    @@media only screen and (max-width:1199px) {
+        .sttp {
+            display: none;
+        }
+
+        .sttp1 {
+            display: none !important;
+        }
+    }
+
+    .sttp2 {
+        display: none !important;
+    }
+/*Best Category css end*/
+
+</style>
+<!-- Offers Start -->
+
+<style>
+    .offerph {
+        display: none !important;
+    }
+
+    @@media only screen and (max-width:767px) {
+        .offerph {
+            display: block !important;
+        }
+
+        .offr2 {
+            display: none;
+        }
+    }
+</style>
+
+
+
+
+
+
+@*@if (Model.dtTopBanner != null && Model.dtTopBanner.Rows.Count > 0)
+    {
+        <div class="main-banner-slider">
+            <div class="owl-carousel offers-banner owl-theme">
+                @foreach (DataRow dr in Model.dtTopBanner.Rows)
+                {
+                    <div class="item">
+                        <div class="offer-item">
+                            <div class="offer-item-img">
+                                <div class="gambo-overlay"></div>
+                                <img src=@dr["BannerImages"] alt="@dr["Bannertitle"]" style="height: 600px; width: 100%;">
+                            </div>
+                            <div class="offer-text-dt">
+                                <div class="offer-top-text-banner">
+                                    <div class="top-text-1">@dr["Bannertitle"]</div>
+                                    <span>@dr["ProductCategory"]</span>
+                                </div>
+                                <a href="#" class="Offer-shop-btn hover-btn">Shop Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+
+                }
+            </div>
+        </div>
+    }*@
+
+@if (Model.dtTopBanner != null && Model.dtTopBanner.Rows.Count > 0)
+{
+    <div class="slider-container">
+        <div class="slider">
+            @foreach (DataRow dr in Model.dtTopBanner.Rows)
+            {
+                <div class="slide">
+                    <img src="@dr["BannerImages"]" alt="@dr["Bannertitle"]" class="slide-image" style="width: 100%; height: 500px; margin: 0px !important; border-radius: 20px; pointer-events: none;">
+                    <div class="offer-text-dt">
+                        <div class="offer-top-text-banner">
+                            <div class="top-text-1">@dr["Bannertitle"]</div>
+                            <span>@dr["ProductCategory"]</span>
+                        </div>
+                        <a href="#" class="Offer-shop-btn hover-btn">Shop Now</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<style>
+    @@media only screen and (max-width: 768px) {
+        .slider-container {
+            height: 200px !important;
+            border-radius: 20px;
+        }
+
+        .slide-image {
+            height: 200px !important;
+        }
+    }
+
+    .slider-container {
+        position: relative;
+        max-width: 99%;
+        margin: 0 auto;
+        overflow: hidden;
+        height: 500px;
+        border-radius: 20px;
+    }
+
+    .slider {
+        display: flex;
+    }
+
+    .slide {
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+        .slide.active {
+            opacity: 1;
+        }
+</style>
+
+<script>
+    window.addEventListener('DOMContentLoaded', (event) => {
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const intervalTime = 5000;
+        let slideIndex = 0;
+
+        // Initially show the first slide
+        slides[slideIndex].classList.add('active');
+
+        function showSlides() {
+            // Remove 'active' class from all slides
+            slides.forEach(slide => slide.classList.remove('active'));
+            // Move to the next slide
+            slideIndex = (slideIndex + 1) % totalSlides;
+            // Add 'active' class to the next slide
+            slides[slideIndex].classList.add('active');
+        }
+
+        // Start automatic sliding after a delay (adjust as needed)
+        setTimeout(function () {
+            // Start automatic sliding
+            setInterval(showSlides, intervalTime);
+        }, 2000); // Delay time before starting the slide animation (adjust as needed)
+    });
+</script>
+
+
+<!-- Offers End -->
+
+
+
+<div class="container-fluid" style="background: #f6f9ff; padding: 0% 1%;">
+
+
+
+    <div class="section145">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-title-tt main-title-tt-2">
+                        <div class="main-title-left">
+                            <h2><span> Our Most Popular</span> packages</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="owl-carousel top-cate-slider owl-theme">
+
+                        <div class="item" style="margin-left:70px;">
+                            <a href="" class="Popular-item">
+                                <div class="Popular-img">
+                                    <img src="~/popular_icons/2.png" alt="">
+                                </div>
+                                <h4 class="Popular-title">E-commerce</h4>
+                            </a>
+                        </div>
+                        <div class="item" style="margin-left:70px;">
+                            <a href="https://services.claco.in/" class="Popular-item">
+                                <div class="Popular-img">
+                                    <img src="~/popular_icons/3.png" alt="">
+                                </div>
+                                <h4 class="Popular-title" href="https://services.claco.in/">Services</h4>
+                            </a>
+                        </div>
+
+                        <div class="item" style="margin-left:70px;">
+                            <a href="https://clacoitsolution.claco.in/" class="Popular-item">
+                                <div class="Popular-img">
+                                    <img src="~/popular_icons/5.png" alt="">
+                                </div>
+                                <h4 class="Popular-title">IT Services</h4>
+                            </a>
+                        </div>
+                        <div class="item" style="margin-left:70px;">
+                            <a href="https://traveler.claco.in/" class="Popular-item">
+                                <div class="Popular-img">
+                                    <img src="~/popular_icons/4.png" alt="">
+                                </div>
+                                <h4 class="Popular-title">Travel</h4>
+                            </a>
+                        </div>
+                        <div class="item" style="margin-left:70px;">
+                            <a href="https://indrarekha.claco.in/" class="Popular-item">
+                                <div class="Popular-img">
+                                    <img src="~/popular_icons/1.png" alt="">
+                                </div>
+                                <h4 class="Popular-title">Properties</h4>
+                            </a>
+                        </div>
+
+
+                        @* code by israrul khan*@
+
+                        <div class="item" style="margin-left:70px;">
+
+                            <a href=" https://services.claco.in/Home/GetList?id=4" class="Popular-item">
+                                <div class="Popular-img">
+                                    <img src="https://static.vecteezy.com/system/resources/previews/028/754/009/original/hotel-3d-icon-illustrations-png.png" alt="">
+                                </div>
+                                <h4 class="Popular-title">Hotels</h4>
+                            </a>
+                        </div>
+
+                        <div class="item" style="margin-left:70px;">
+                            <a href="https://services.claco.in/Home/GetResturantAllList" class="Popular-item">
+                                <div class="Popular-img">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQk3DuTFwyA0ktAQCnviZdEGW6kwgpUhXyKOg&amp;usqp=CAU" />
+                                </div>
+                                <h4 class="Popular-title">Restaurants</h4>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Categories Start -->
+
+    @if (Model.dtMainCategory != null && Model.dtMainCategory.Rows.Count > 0)
+    {
+        <div class="section145 " style="padding-top:10px;">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="main-title-tt-2 main-title-tt-3">
+                            <div class="main-title-left">
+
+                                <h2><span>Shop By</span> Categories</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="owl-carousel cate-slider owl-theme">
+                            @foreach (DataRow dr in Model.dtMainCategory.Rows)
+                            {
+                                <div class="item">
+                                    <a href="../ProductDetail/SearchCategory?CatName=@dr["ProductCategory"]&&CatId=@dr["SrNo"]&&SubCatId=0" class="category-item">
+                                        <div class="">
+                                            <img src="@dr["CatImage"]" alt="@dr["ProductCategory"]" style="height:100px;" />
+                                        </div>
+                                        <h4>@dr["ProductCategory"]</h4>
+                                    </a>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+    <!-- Categories End -->
+    @*Best Category*@
+
+    <div class="row offerrow" style="overflow:hidden">
+        @if (Model.dtMainCategory != null && Model.dtMainCategory.Rows.Count > 0)
+        {
+            int counter = 0; // Initialize counter
+            foreach (DataRow dr in Model.dtMainCategory.Rows)
+            {
+                if (counter == 4)
+                {
+                    break; // Exit the loop if the counter reaches 4
+                }
+                <div class="col-12 col-lg-3 cardMobile">
+                    <!-- yahan par changes kiye gaye -->
+                    <div class="row m-1">
+                        <div class="col-12 offerbox">
+                            <!-- yahan par changes kiye gaye -->
+                            <div class="row">
+                                <span class="procategory mx-3" id="CatName">@dr["ProductCategory"]</span>
+                            </div>
+                            <div class="row">
+                                @Html.Action("bestcategoryshow", "WebHome", new { CategoryId = dr["SrNo"] })
+                            </div>
+                            <div class="row m-3">
+                                <a href="../ProductDetail/SearchCategory?CatName=@dr["ProductCategory"]&&CatId=@dr["SrNo"]&&SubCatId=0" class=""><span style="color:#e00061;opacity:0.9">See More</span></a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                counter++; // Increment counter after each iteration
+            }
+        }
+
+
+    </div>
+    <div>
+        <h2>Grocery</h2>
+        @Html.Action("GetproductGroceryCategory", "WebHome")
+    </div>
+    @* Best Category end *@
+    <!---card design for category-->
+    <div class="row" style="border:1px solid #e1dede; margin: 0px !important;">
+        <div class="col-md-12 offer_card">
+            @if (Model.dtMainCategory != null && Model.dtMainCategory.Rows.Count > 0)
+            {
+                int numberOfCategoriesToShow = Math.Min(4, Model.dtMainCategory.Rows.Count);
+
+                // Check if there are at least 2 categories
+                if (numberOfCategoriesToShow >= 2)
+                {
+                    <div class="row offr1" style=" flex-wrap:wrap;">
+                        <div class="col-sm-4 ">
+                            <div class="row offr2" style="margin:10px;">
+                                <div class="col-md-11">
+                                    <h4 style="padding:10px;">Summer Essential</h4>
+                                </div>
+
+                                <div class="col-md-1">
+
+                                    <a href="/ProductDetail/SearchCategory?CatName=Jewellery&&CatId=10038&&SubCatId=0" style="color:black!important">
+                                        <i class="fa fa-angle-right" style="font-size:20px;font-weight:bold; padding-top:10px;"></i>
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                            <!---for ph view -->
+                            <div class="row offerph" style="margin-top:10px;margin-bottom:10px; display:flex;justify-content:space-between;width:100%">
+                                <div class="col-11" style="float:left">
+                                    <span style="padding-top:10px; font-size:15px;font-weight:bold; ">Summer Essential</span>
+                                </div>
+
+                                <div class="col-1" style="float:right">
+
+                                    <a href="/ProductDetail/SearchCategory?CatName=Jewellery&&CatId=10038&&SubCatId=0" style="color:black!important">
+                                        <i class="fa fa-angle-right" style="font-size:15px;font-weight:bold;padding-left:10px;"></i>
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+                            <!--end-->
+                            <div class="row">
+                                @for (int i = 0; i < numberOfCategoriesToShow; i++)
+                                {
+                                    DataRow dr = Model.dtMainCategory.Rows[i];
+
+                                    @Html.Action("viewoffercard", "WebHome", new { CategoryId = dr["SrNo"] })
+
+
+                                }
+                            </div>
+                        </div>
+                        <div class="col-sm-8 offimg" style="margin-top:2%">
+                            <a href="/vendor/VendorSignup/">
+
+
+                                <img src="~/CompanyLogo/sale your prouct with claco.png" width="100%" height="97%" />
+                            </a>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p>At least 2 categories are required to display.</p>
+                }
+            }
+        </div>
+    </div>
+    <!---end-->
+    <!-- Featured Products Start -->
+    @if (Model.dt != null && Model.dt.Rows.Count > 0)
+    {
+        <div class="section145">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="main-title-tt">
+                            <div class="main-title-left">
+
+                                <h2><span>For You</span> Top Featured Products</h2>
+                            </div>
+                            <a href="#" class="see-more-btn" style="display:block">See All</a>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="owl-carousel featured-slider owl-theme">
+                            @foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                <div class="item">
+                                    <div class="product-item">
+                                        <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" target="_blank" class="product-img">
+                                            <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]">
+                                            <div class="product-absolute-options">
+                                                @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                                {
+                                                    <span class="offer-badge-1">@dr["Discper"]% off</span>
+                                                }
+                                                <span class="like-icon" title="wishlist" style="display:none"></span>
+                                            </div>
+                                        </a>
+                                        <div class="product-text-dt">
+                                            <p>Available<span>(In Stock)</span></p>
+                                            <h4>@dr["pName"]</h4>
+                                            <div class="clearfix"></div>
+                                            <div class="product-price">
+                                                &#8377;@dr["saleValue"]
+                                                @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                                {
+                                                    <span>&#8377;@dr["RegularPrice"]</span>
+                                                }
+                                                @*<div class="product-Size">
+
+                                                        @if (Model.sizeList != null && Model.sizeList.Rows.Count > 0)
+                                                        {
+                                                            <ul id="switcher23">
+
+
+                                                            @foreach (DataRow sizeItem in Model.sizeList.Rows)
+                                                            {
+
+                                                                    <li id="Button1" value="@sizeItem["Size_Name"]" onclick="Activeli(this)">@sizeItem["Size_Name"]</li>
+                                                                    <input type="hidden" id="checksize" value="0" />
+                                                                }
+
+                                                        </ul>
+                                                        }
+                                                    </div>*@
+                                            </div>
+
+
+
+                                            <div class="clearfix"></div>
+
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+
+    <!---tranding product start-->
+    <div class="section145">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row r1" style="min-height:40px;margin:30px;display:flex;flex-wrap:wrap">
+                        <div class="col-sm-11" style="flex:1">
+                            <h2 style="padding-left:15px;font-weight:bold" class="h">Our Trending Products</h2>
+                        </div>
+                        <div class="col-sm-1 r" style="flex:1">
+                            <button class="form-control">View All</button>
+                        </div>
+                    </div>
+
+
+
+
+                    <!--for phone view-->
+                    <div class="row r2" style="min-height: 40px; display:flex;justify-content:space-between; flex-wrap:wrap;">
+                        <div class="col-10" style="flex: 1;float:left;">
+                            <h2 style="padding-left:-10px!important; font-weight: bold;" class="h">Our Trending Products</h2>
+                        </div>
+                        <div class="col-2" style="flex: 1; float: right;">
+                            <button class="" style="height: 25px; width: 25px; border-radius: 50%; background: #ef0058; border: 0px"> <i style="color:white!important;font-weight:bold">></i></button>
+                        </div>
+                    </div>
+                    <!--End Phone View-->
+                </div>
+
+
+
+                @if (Model.dtMainCategory != null && Model.dtMainCategory.Rows.Count > 0)
+                {
+                    foreach (DataRow dr in Model.dtMainCategory.Rows)
+                    {
+
+                        @Html.Action("trandingProduct", "WebHome", new { CategoryId = dr["SrNo"] })
+
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <!--end Trending Products-->
+    <!--code by shailja Tiwari-->
+    <div class="container-fluid sttp">
+        <div class="row oc mx-5" id="dvCategory">
+            @if (Model.dtMainCategory != null && Model.dtMainCategory.Rows.Count > 0)
+            {
+                int i = 0;
+
+                <ul class="category-by-cat">
+                    @foreach (DataRow dr in Model.dtMainCategory.Rows)
+                    {
+                        if (i <= 5)
+                        {
+
+                            <div class="col-sm-4 oc mt-4 mx-3" style="max-width: 440px; background-image: url('../img/sky.jpg'); background-size: cover;">
+                                <div onclick="window.location='../ProductDetail/SearchCategory?CatName=@dr["ProductCategory"]&&CatId=@dr["SrNo"]&&SubCatId=0';" style="cursor: pointer;">
+
+                                    <div class="row">
+                                        <div class="col-sm-12" style="background:linear-gradient(180deg,#ef92da,#fa2365);opacity:0.8">
+                                            <div class="card mb-3 oc" style="background:none;border:none;">
+                                                <div class="row g-0">
+                                                    <div class="col-md-8">
+                                                        <div class="card-body" style="margin-top:100px;">
+                                                            <p class="card-text" style="color:white;font-size:25px;font-weight:bold;">@dr["ProductCategory"]</p>
+                                                            <h5 class="card-text" style="color:white;">This product is designed for the modern woman, addressing her needs and preferences.</h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <img src="@dr["CatImage"]" class="img-fluid rounded-start" alt="..." style="margin-top:60px;height:160px;width:auto;border-radius:10px;">
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        }
+                        i++;
+
+                    }
+                </ul>
+
+                <div id="dvMoreCategory" style="display:none;">
+
+                    @if (Model.dtPopupCat != null && Model.dtPopupCat.Rows.Count > 0)
+                    {
+
+                        <ul class="category-by-cat">
+                            @foreach (DataRow dr in Model.dtPopupCat.Rows)
+                            {
+
+                                <li>
+                                    <a href="../ProductDetail/SearchCategory?CatName=@dr["ProductCategory"]&&CatId=@dr["SrNo"]" class="single-cat-item">
+                                        <div class="icon">
+                                            <img src="@dr["CatImage"]" alt="@dr["ProductCategory"]">
+                                        </div>
+                                        <div class="text"> @dr["ProductCategory"] </div>
+                                    </a>
+                                </li>
+
+                            }
+                        </ul>
+
+                    }
+
+                </div>
+
+
+            }
+        </div>
+    </div>
+
+    <!--shailja Tiwari for macbook code-->
+
+    <div class="container-fluid sttp2">
+        <div class="row oc mx-5" id="dvCategory">
+            @if (Model.dtMainCategory != null && Model.dtMainCategory.Rows.Count > 0)
+            {
+                int i = 0;
+
+                <ul class="category-by-cat">
+                    @foreach (DataRow dr in Model.dtMainCategory.Rows)
+                    {
+                        if (i <= 5)
+                        {
+
+                            <div class="col-sm-4 oc mt-4 mx-3" style="max-width:300px; background-image:url('../img/sky.jpg');background-size:cover;">
+                                <div onclick="window.location='../ProductDetail/SearchCategory?CatName=@dr["ProductCategory"]&&CatId=@dr["SrNo"]&&SubCatId=0';" style="cursor: pointer;">
+
+                                    <div class="row">
+                                        <div class="col-sm-12" style="background:linear-gradient(180deg,#ef92da,#fa2365);opacity:0.8">
+                                            <div class="card mb-3 oc" style="background:none;border:none;">
+                                                <div class="row g-0">
+                                                    <div class="col-md-8">
+                                                        <div class="card-body" style="margin-top:100px;">
+                                                            <p class="card-text" style="color:white;font-size:25px;font-weight:bold;">@dr["ProductCategory"]</p>
+                                                            <h5 class="card-text" style="color:white;">This product is designed for the modern woman, addressing her needs and preferences.</h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <img src="@dr["CatImage"]" class="img-fluid rounded-start" alt="..." style="margin-top:60px;height:160px;width:auto;border-radius:10px;">
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        }
+                        i++;
+
+                    }
+                </ul>
+
+                <div id="dvMoreCategory" style="display:none;">
+
+                    @if (Model.dtPopupCat != null && Model.dtPopupCat.Rows.Count > 0)
+                    {
+
+                        <ul class="category-by-cat">
+                            @foreach (DataRow dr in Model.dtPopupCat.Rows)
+                            {
+
+                                <li>
+                                    <a href="../ProductDetail/SearchCategory?CatName=@dr["ProductCategory"]&&CatId=@dr["SrNo"]" class="single-cat-item">
+                                        <div class="icon">
+                                            <img src="@dr["CatImage"]" alt="@dr["ProductCategory"]">
+                                        </div>
+                                        <div class="text"> @dr["ProductCategory"] </div>
+                                    </a>
+                                </li>
+
+                            }
+                        </ul>
+
+                    }
+
+                </div>
+
+
+            }
+        </div>
+    </div>
+
+
+
+    <!----end macbook code-->
+    <!--------Offer Master-->
+
+    <div class="section145">
+        <div class="container-fluid">
+            <div class="row">
+                @{
+                    if (Model.dtValueOffer.Rows.Count > 0 && Model.dtValueOffer.Rows != null)
+
+                    {
+                        foreach (DataRow dr2 in Model.dtValueOffer.Rows)
+                        {
+
+                            <div class="col-lg-6 col-md-6">
+                                <h2 class="text-warning">@dr2["OfferTitle"]</h2>
+                                <a href="#" class="best-offer-item">
+                                    <img src="~/BannerImages/@dr2["imageFile"]" height="350" alt="">
+                                </a>
+                            </div>
+                        }
+                    }
+                }
+
+            </div>
+        </div>
+    </div>
+
+
+    <!--- for phone view-->
+    <div class="container-fluid sttp1">
+        <div class="row oc" id="dvCategory" style="margin-right:3%;">
+            @if (Model.dtMainCategory != null && Model.dtMainCategory.Rows.Count > 0)
+            {
+                int i = 0;
+
+                <ul class="category-by-cat">
+                    @foreach (DataRow dr in Model.dtMainCategory.Rows)
+                    {
+                        if (i <= 5)
+                        {
+
+                            <div class="col-sm-4 oc mt-4 mx-3 sptt" style="max-width:570px; background-image:url('../img/sky.jpg');background-size:cover;border-radius:10px;">
+                                <div onclick="window.location='../ProductDetail/SearchCategory?CatName=@dr["ProductCategory"]&&CatId=@dr["SrNo"]&&SubCatId=0';" style="cursor: pointer;">
+
+                                    <div class="row">
+                                        <div class="col-sm-12" style="background: linear-gradient(180deg,#ef92da,#fa2365); opacity: 0.8; border-radius: 10px;">
+                                            <div class="card mb-3 oc" style="background:none;border:none;">
+                                                <div class="row g-0">
+                                                    <div class="col-md-8">
+                                                        <div class="card-body">
+                                                            <p class="card-text" style="color:white;font-size:25px;font-weight:bold;">@dr["ProductCategory"]</p>
+                                                            <h5 class="card-text" style="color:white;">This product is designed for the modern woman, addressing her needs and preferences.</h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <img src="@dr["CatImage"]" alt="..." style="margin-top:60px;height:180px;width:100%;border-radius:10px;">
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        }
+                        i++;
+
+                    }
+                </ul>
+
+                <div id="dvMoreCategory" style="display:none;">
+
+                    @if (Model.dtPopupCat != null && Model.dtPopupCat.Rows.Count > 0)
+                    {
+
+                        <ul class="category-by-cat">
+                            @foreach (DataRow dr in Model.dtPopupCat.Rows)
+                            {
+
+                                <li>
+                                    <a href="../ProductDetail/SearchCategory?CatName=@dr["ProductCategory"]&&CatId=@dr["SrNo"]" class="single-cat-item">
+                                        <div class="icon">
+                                            <img src="@dr["CatImage"]" alt="@dr["ProductCategory"]">
+                                        </div>
+                                        <div class="text"> @dr["ProductCategory"] </div>
+                                    </a>
+                                </li>
+
+                            }
+                        </ul>
+
+                    }
+
+                </div>
+
+
+            }
+        </div>
+    </div>
+
+
+    <!---end phone view-->
+    <!--end shailja Tiwari-->
+    <!-- Vegetables and Fruits Start -->
+    @if (Model.dtMainCategory != null && Model.dtMainCategory.Rows.Count > 0)
+    {
+        foreach (DataRow dr in Model.dtMainCategory.Rows)
+        {
+            <div class="section145">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row" style="width:100%;">
+                                <div class="col-mb-12 ast" style="display: flex; width: 100%; justify-content:space-between;">
+                                    <div style="float: left!important;font-weight: bold;font-size:25px;">@dr["ProductCategory"]</div>
+                                    <div style="float:right!important;">
+                                        <button style="float:right!important;background:none;border:none;border:1px solid gray;width:110px;height:40px;border-radius:10px;margin-bottom:10px;"><a href="../ProductDetail/SearchCategory?CatName=@dr["ProductCategory"]&&CatId=@dr["SrNo"]&&SubCatId=0" style="color: black !important; display: inline-block;">View all</a></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="main-title-tt">
+
+                                @*<span>For You</span>*@
+
+                                <!--mobile view show all product start -->
+                                <div class="row" style="width:100%;">
+                                    <div class="mb-12  phdg" style="display:flex; width:100%; justify-content:space-between;margin-left:2%;">
+                                        <div style="float: left; font-weight: bold;font-size:25px;">@dr["ProductCategory"]</div>
+                                        <div style="float:right;margin-left:-20%;"><a href="/WebHome/viewGetproductctg?CategoryId=@dr["SrNo"]" style="color: black !important; display: inline-block; float:right;padding-top:10px;margin-left:-50%!important;">View all</a></div>
+                                    </div>
+                                </div>
+                                <!-- mobile view show all product end-->
+                            </div>
+                        </div>
+                        @Html.Action("GetproductCategoryWise", "WebHome", new { CategoryId = dr["SrNo"] })
+                        @*@html.RenderPartial("WebHome", "GetproductCategoryWise", new ViewDataDictionary { CategoryId = Convert.ToString(dr["SrNo"]) })*@
+                        @*<div class="col-md-12">
+                                <div class="owl-carousel featured-slider owl-theme">
+                                    @foreach (DataRow dr in Model.dtCatProduct.Rows)
+                                    {
+                                        <div class="item">
+                                            <div class="product-item">
+                                                <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" class="product-img">
+                                                    <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]">
+                                                    <div class="product-absolute-options">
+                                                        @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                                        {
+                                                            <span class="offer-badge-1">@dr["Discper"]% off</span>
+                                                        }
+                                                        <span class="like-icon" title="wishlist" style="display:none"></span>
+                                                    </div>
+                                                </a>
+                                                <div class="product-text-dt">
+                                                    <p>Available<span>(In Stock)</span></p>
+                                                    <h4>@dr["pName"]</h4>
+                                                    <div class="product-price">
+                                                        &#8377;@dr["saleValue"]
+
+                                                        @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                                        {
+                                                            <span>&#8377;@dr["RegularPrice"]</span>
+                                                        }
+                                                    </div>
+                                                    <div style="display:none">
+                                                        <select style="width:67%">
+                                                            <option>Select</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="qty-cart">
+                                                        <div class="quantity buttons_added">
+                                                            <input type="button" value="-" class="minus minus-btn">
+                                                            <input type="number" step="1" name="quantity" value="1" class="input-text qty text">
+                                                            <input type="button" value="+" class="plus plus-btn">
+                                                        </div>
+                                                        <span class="cart-icon" onclick="AddItemInCart('@dr["ProductCode"]',this,'@dr["AttrId"]','@dr["VarId"]')"><i class="uil uil-shopping-cart-alt"></i></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>*@
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    <style>
+        p span a {
+            color: black !important;
+        }
+    </style>
+
+    <!--Footer Content (TOP STORIES : BRAND DIRECTORY)-->
+
+    <div class="row" style="min-height:260px; margin-left: 20px;">
+        <div class="col-sm-12">
+            <p style="color:gray;font-size:16px;font-weight:bold;">TOP STORIES : BRAND DIRECTORY</p>
+            <p>
+                <span style="color:gray;font-weight:bold;">MOST POPULAR SEARCH FOR ON CLACO:</span>
+                <span>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Lower&&CatId=10&&SubCatId=30080">Lower |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Laptop%20Bag&&CatId=10&&SubCatId=20046">Laptop Bag |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Belt&&CatId=10&&SubCatId=20042">Belt |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Wallet&&CatId=10&&SubCatId=20044">Wallet |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Hoodies&&CatId=10&&SubCatId=10027">Hoodies |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Jeans&&CatId=10&&SubCatId=11"> Mens Jeans |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=T-Shirts&&CatId=10&&SubCatId=24">Mens T-Shirt |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=T-Shirts&&CatId=10&&SubCatId=24">Mens T-Shirt |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=T-Shirts&&CatId=10&&SubCatId=24">Mens T-Shirt |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Men%27s%20Glasses%20&&CatId=10&&SubCatId=10036">Glasses</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Men%20kurta&&CatId=10&&SubCatId=10040">Kurta |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Shoes&&CatId=10&&SubCatId=20049">Shoes |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Slipper&&CatId=10&&SubCatId=30106">Sliper |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Kurti&&CatId=12&&SubCatId=19">Kurti |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Suit%20&&CatId=12&&SubCatId=25">Suit |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Kids%20&&proId=Claco0002916&&title=Girls%20%20kids%20frock%20Wedding%20Dress&&CatId=13">Baby Frok |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Dupatta&&CatId=12&&SubCatId=30141">Dupatta |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Purse&&CatId=12&&SubCatId=30146">Purse</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Anarkali%20Suit&&CatId=12&&SubCatId=26">Anarkali Suit |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Kids%20&&proId=KIFA0000022&&title=Babyhug%20Half%20Sleeves%20Printed%20Shirt%20with%20Inner%20Tee%20-%20Blue&&CatId=13">Baby Boy Shirt |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Foundation&&CatId=10032&&SubCatId=20066">Foundation |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Facewash&&CatId=10032&&SubCatId=20059">Face Wash |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Eyeliner&&CatId=10032&&SubCatId=20064"> Eyeliner |</a><br />
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Kajal&&CatId=10032&&SubCatId=30136">Kajal |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Jewellery&&proId=Claco0003049&&title=Gold%20Jewel%20Set%20%20&&CatId=10038">Gold Jwellery set |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Home%20Decoration&&proId=Claco0003086&&title=BOROSIL%20Stainless%20Steel%20Kettle%20Jug&&CatId=20071">BOROSIL Stainless Steel Kettle Jug |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Taddybear&&CatId=20071&&SubCatId=30088">Teddy Bear |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Stand&&CatId=20071&&SubCatId=30091">Steel Stand |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Wall%20Clock&&CatId=20071&&SubCatId=30152">Wall Clock |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Home%20Decoration&&proId=Claco0003063&&title=Oreva%2031%20cm%20X%2024%20cm%20Wall%20Clock&&CatId=20071">Oreva Wall Clock |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Home%20Decoration&&proId=Claco0003068&&title=ORAM%20Wall%20Clock&&CatId=20071">Oram Wall Clock |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=%20Gas%20Stove&&CatId=20071&&SubCatId=30154">Gas Stove |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Home%20Decoration&&proId=Claco0003075&&title=SURYA%203B%20Photon%20Bk%20Toughened%203%20Cast%20Iron&&CatId=20071">Surya Gas Stove |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Water%20Jug%20&%20Casserole&&CatId=20071&&SubCatId=30160">Water Jug |</a>
+                    <a href="/ProductDetail/ShowProduct_detail?ProductCategory=Home%20Decoration&&proId=Claco0003083&&title=Namrta%205000%20L%20Copper%20Water%20Jug&&CatId=20071">Namrta 5000 L Copper Water Jug |</a><br />
+                    <br /><span style="color:gray;font-weight:bold;">Mens</span>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Jeans&&CatId=10&&SubCatId=11"> Mens Jeans |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=T-Shirts&&CatId=10&&SubCatId=24">Mens T-Shirt |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Lower&&CatId=10&&SubCatId=30080">Lower |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Laptop%20Bag&&CatId=10&&SubCatId=20046">Laptop Bag |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Belt&&CatId=10&&SubCatId=20042">Belt |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Wallet&&CatId=10&&SubCatId=20044">Wallet |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Hoodies&&CatId=10&&SubCatId=10027">Hoodies |</a>
+                    <a class="st" href="">Bracelet |</a>
+                    <a class="st" href="">Watch |</a>
+                    <a class="st" href="">Jacket |</a>
+                    <a class="st" href="">Shaving Cream |</a>
+                    <a class="st" href="">Hand Bag |</a>
+                    <a class="st" href="">Mens Kurta |</a>
+                    <a class="st" href="">Formal Pant |</a>
+                    <a class="st" href="">Perfume |</a>
+                    <a class="st" href="">Pocket Perfume |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Men%27s%20Glasses%20&&CatId=10&&SubCatId=10036">Glasses |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Men%20kurta&&CatId=10&&SubCatId=10040">Kurta |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Shoes&&CatId=10&&SubCatId=20049">Shoes |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Slipper&&CatId=10&&SubCatId=30106">Sliper |</a>
+
+                    <br /><span style="color:gray;font-weight:bold;">Womens</span>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Kurti&&CatId=12&&SubCatId=19">Kurti |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Suit%20&&CatId=12&&SubCatId=25">Suit |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Kids%20&&proId=Claco0002916&&title=Girls%20%20kids%20frock%20Wedding%20Dress&&CatId=13">Baby Frok |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Dupatta&&CatId=12&&SubCatId=30141">Dupatta |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Purse&&CatId=12&&SubCatId=30146">Purse</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Anarkali%20Suit&&CatId=12&&SubCatId=26">Anarkali Suit |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Kids%20&&proId=KIFA0000022&&title=Babyhug%20Half%20Sleeves%20Printed%20Shirt%20with%20Inner%20Tee%20-%20Blue&&CatId=13">Baby Boy Shirt |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Foundation&&CatId=10032&&SubCatId=20066">Foundation |</a>
+
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Facewash&&CatId=10032&&SubCatId=20059">Face Wash |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Eyeliner&&CatId=10032&&SubCatId=20064"> Eyeliner |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Kajal&&CatId=10032&&SubCatId=30136">Kajal |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Lehenga&&CatId=12&&SubCatId=10026">Lahnga |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Bangles&&CatId=12&&SubCatId=10041">Breclets |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Night%20Suit&&CatId=12&&SubCatId=30079">Night Suit |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Midi%20For%20Women&&CatId=12&&SubCatId=30078">Midi | </a>
+
+                    <br /><span style="color:gray;font-weight:bold;">Grocery</span>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Staples&&CatId=30223&&SubCatId=30224">Staples |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Grocery&&proId=Claco0003114&&title=AASHIRVAAD%20SHUDH%20CHAKKI%20ATTA%20%20(10%20kg)&&CatId=30223">AASHIRVAAD SHUDH CHAKKI ATTA |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Grocery&&proId=Claco0003118&&title=Tata%20Sampann%20Premium%20Quality%20,%20100%%20Pure%20Cashews%20%20(200%20g)&&CatId=30223">Tata Sampann Premium Quality |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Snacks%20&%20Beverages&&CatId=30223&&SubCatId=30225"> |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Snacks%20&%20Beverages&&CatId=30223&&SubCatId=30225">Snacks |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Grocery&&proId=Claco0003161&&title=FROOTI%20Mango%20%20(1.8%20L)&&CatId=30223">Frooti Mango |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Grocery&&proId=Claco0003160&&title=Tropicana%20Mixed%20Fruit%20Delight%20%20(1%20L)&&CatId=30223">Tropicana Mixed Fruit Delight |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Grocery&&proId=Claco0003120&&title=Red%20Label%20Tea%20-%20Natural%20Care,%20500g%20Box&&CatId=30223">Red Label Tea - Natural Care |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Grocery&&proId=Claco0003121&&title=Nescafe%20Classic%20Coffee%20Powder,%20100%%20Pure%20Instant%20Coffee%20%20(45%20g)&&CatId=30223">Nescafe Classic Coffee Powder |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Grocery&&proId=Claco0003163&&title=Haldiram%27s%20Navrattan%20%20(10%%20Extra%20in%20Pack)%20%20(200%20g)&&CatId=30223">Haldiram's Navrattan  |</a><br />
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Grocery&&proId=Claco0003162&&title=Lay%27s%20American%20Style%20Cream%20and%20Onion%20Chips%20%20(10%20g%20Extra%20in%20Pack)%20%20(40%20g)&&CatId=30223">Lay's American Style Cream and Onion Chips |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Shaving%20Cream&&CatId=30223&&SubCatId=30253">Shaving Cream |</a>
+                    <a class="st" href="/ProductDetail/SearchCategory?CatName=Packaged%20Food&&CatId=30223&&SubCatId=30226">Packaged Food |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Grocery&&proId=Claco0003189&&title=Meniral%20water&&CatId=30223">Meniral water |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Grocery&&proId=Claco0003122&&title=Del%20Monte%20Tomato%20Classic%20Blend%20Ketchup%20%20(750%20g)&&CatId=30223">Del Monte Tomato Classic Blend Ketchup |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Grocery&&proId=Claco0003154&&title=Fortune%20Premium%20kachi%20ghani%20pure%20Mustard%20Oil%20Pouch%20(Sarson%20Tel)%20%20(1%20L)&&CatId=30223">Mustard Oil |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Grocery&&proId=Claco0003124&&title=Farmley%20Premium%20(Kishmish)%20Raisins%20%20(200%20g)&&CatId=30223">Farmley Premium (Kishmish) |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Grocery&&proId=Claco0003116&&title=Fortune%20Indori%20Thick%20Poha%20%20(500%20g)&&CatId=30223">Fortune Indori Thick Poha |</a>
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Grocery&&proId=Claco0003119&&title=Tata%20Vacuum%20Evaporated%20Iodized%20Salt%20%20(1%20kg)&&CatId=30223">Tata Saly |</a><br />
+                    <a class="st" href="/ProductDetail/ShowProduct_detail?ProductCategory=Grocery&&proId=Claco0003123&&title=Farmley%20Prasadam%20Lotus%20Seeds(Makhana)%20%20(100%20g)&&CatId=30223">Farmley Prasadam Lotus Seeds(Makhana) |</a><br /><br />
+
+
+                </span>
+            </p>
+        </div>
+    </div>
+    <!--Footer Content (TOP STORIES : BRAND DIRECTORY) End-->
+    @*<div class="section145">
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-md-12">
+                        <a href="#" class="code-offer-item">
+                            <img src="~/img/offer-2.jpg" alt="">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+
+    <!-- Vegetables and Fruits Products End -->
+    <!-- New Products Start -->
+</div>
+<script>
+    $(document).on('change', '.ddl_PVariation', function () {
+        var pvarid = $('option:selected', this).attr('value');
+        var RegularPrice = $('option:selected', this).attr('RegularPrice');
+        var SalePrice = $('option:selected', this).attr('SalePrice');
+        if (pvarid > 0) {
+            $(this).closest(".product-price").children(".regularprice").text(RegularPrice);
+            $(this).closest(".product-price").children(".salepice").text(SalePrice);
+        }
+    });
+    function AddToWhishlist(obj) {
+        var data = new FormData();
+        data.append("ProductId", obj);
+
+        $.ajax({
+            url: "../ProductDetail/AddToWhishlist",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                if (r.redirectToLogin) {
+                    window.location.href = '/CustomerAccount/Index';
+                } else {
+                    
+                    var messageElement = $('<div>').addClass('alertMessage');
+
+                   
+                    var successIcon = $('<i>').addClass('fa fa-check-circle').css('color', 'green');
+
+                    
+                    messageElement.append(successIcon);
+
+                    
+                    messageElement.append($('<span>').text(r.msg));
+
+                    
+                    $('body').append(messageElement);
+
+                    
+                    setTimeout(function () {
+                        messageElement.remove();
+                    }, 3000);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                // Handle error
+                var messageElement = $('<div>').addClass('alertMessage');
+
+                // Create icon element for error
+                var errorIcon = $('<i>').addClass('fa fa-exclamation-circle').css('color', 'red');
+
+                // Append error icon to the message container
+                messageElement.append(errorIcon);
+
+                // Append error message text to the message container
+                messageElement.append($('<span>').text('An error occurred.'));
+
+                // Append the message container to the body
+                $('body').append(messageElement);
+
+                // Set timeout to remove the message after 3 seconds
+                setTimeout(function () {
+                    messageElement.remove();
+                }, 3000);
+
+                // Handle error
+                $("#showSpinner").hide();
+            }
+        });
+
+    }
+
+
+</script>
+<style>
+    .alertMessage {
+        position: fixed;
+        bottom: 20px; /* Adjust this value to set the distance from the bottom */
+        left: 50%;
+        background: black; /* Black color with 70% opacity */
+        color: white !important;
+        padding: 10px;
+        border-radius: 5px;
+        z-index: 9999;
+    }
+</style>

@@ -1,0 +1,244 @@
+﻿@model ShoppingAdda.Models.AllClasses
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using System.Data;
+<script>
+    function showfile(obj) {
+        $("#fileupload").show();
+        $("#btn1").show();
+        $(obj).hide();
+    }
+
+    function Updateprofile() {
+        var Images = $("#fileupload").get(0).files;
+        var data = new FormData;
+        data.append("Customer_Id", $('#custid').val());
+
+        data.append("MainImage", Images[0]);
+
+        $.ajax({
+            type: 'Post',
+            url: '../Index/UpdateProfileImg',
+            contentType: false,
+            processData: false,
+            data: data,
+
+            success: function (data) {
+                alert(data);
+                window.location.reload();
+                //if (data.strId != "0") {
+                //    alert('Record has been Successfully Saved');
+
+                //}
+            },
+            error: function (ex) {
+                alert('server error!');
+            }
+        });
+    }
+
+    function Showedit() {
+        $("#persondata").hide();
+        $("#editdata").show();
+    }
+
+    function Showdata() {
+        $("#persondata").show();
+        $("#editdata").hide();
+    }
+
+    function UpdateCustomerprofile() {
+
+
+        var data = new FormData;
+        data.append("Customer_Id", $('#custid').val());
+
+        data.append("Customer_ContactNum", $('#Customer_ContactNum').val());
+        data.append("Customer_Email", $('#Customer_Email').val());
+        data.append("Customer_Address", $('#Customer_Address').val());
+        data.append("Customer_Name", $('#Customer_Name').val());
+
+        $.ajax({
+            type: 'Post',
+            url: '/CustomerAccount/UpdateCustomerprofile',
+            contentType: false,
+            processData: false,
+            data: data,
+
+            success: function (data) {
+                alert(data);
+                window.location.reload();
+              
+            },
+            error: function (ex) {
+                alert('server error!');
+            }
+        });
+
+    }
+
+
+</script>
+
+
+
+<div class="main-container container">
+    <ul class="breadcrumb">
+        <li><a href="/Home/Index"><i class="fa fa-home"></i></a></li>
+        <li><a href="#"></a></li>
+    </ul>
+    <div class="row">
+        <aside class="col-sm-4 col-md-3 content-aside" id="column-left">
+            @Html.Action("CustomerNavigations", "CustomerAccount")
+        </aside>
+        <div id="content" class="col-md-9 col-sm-8">
+            <div class="products-category">
+               
+                <div class="card-header"><h3 class="title-category ">My Profile</h3> <button class="fa fa-edit btn btn-info pull-right" onclick="Showedit()"></button></div>
+                <div class="products-list row nopadding-xs so-filter-gird">
+                    <section id="persondata" style="display:block">
+                        <div class="card">
+                          
+                            <div class="row">
+                                @*<div class="col-lg-4 col-xl-4">
+
+                                    <div class="card-box text-center">
+                                        @if (string.IsNullOrEmpty(Model.ProfileImg))
+                                        {
+                                            <img src="~/images/no_thumb.png" height="90" width="120" class="rounded-circle avatar-lg img-thumbnail"
+                                                 alt="profile-image">
+                                        }
+                                        else
+                                        {
+                                            <img src="@Model.ProfileImg" height="90" width="120" class="rounded-circle avatar-lg img-thumbnail"
+                                                 alt="profile-image">
+
+                                        }
+
+                                        <h5 class="text-muted">
+                                            <button id="btn" class="btn btn-sm btn-danger" onclick="showfile(this)"> Upload Profile</button>
+                                            <input type="file" style="display:none" class="form-control" id="fileupload" />
+
+                                         
+                                        </h5>
+                                        <button id="btn1" class="btn btn-sm btn-success" style="display:none" onclick="Updateprofile()"> Update </button>
+                                        <h4 class="mb-0">@Model.Customer_Name</h4>
+                                   
+                                    </div> 
+
+                                </div>*@ <!-- end col-->
+                                <div class="col-lg-8 col-xl-8">
+                                    <input type="hidden" id="custid" value="@Model.Customer_Id" />
+                                    <div class="card-box">
+                                        <div class="text-left mt-3">
+                                            <h1 class="mb-0" style="color:#1ea921;font-family: cursive;">@Model.Customer_Name</h1>
+                                            <br />
+                                            <p class="text-muted mb-2 font-13">
+                                                <strong>Customer ID :</strong> <span class="ml-2" id="Customer_Id">
+                                                    @Model.Customer_Id
+                                                </span>
+                                            </p>
+                                          
+                                            <p class="text-muted mb-2 font-13">
+                                                <strong>Contact No:</strong><span class="ml-2">
+                                                    @Model.Customer_ContactNum
+                                                </span>
+                                            </p>
+                                            <p class="text-muted mb-2 font-13">
+                                                <strong>Email :</strong> <span class="ml-2 " id="CEmailId">@Model.Customer_Email</span>
+
+                                             
+
+                                            </p>
+
+                                            <hr />
+                                            <h5>Address Info(Default)</h5>
+                                            <p class="text-muted mb-2 font-13">
+                                                <strong>Address :</strong><span class="ml-2">
+                                                    @Model.Customer_Address
+                                                 
+                                                </span>
+                                            </p>
+                                            <hr />
+                                            <h5>Previously Saved Address</h5>
+                                          @if (Model.dtAddress != null && Model.dtAddress.Rows.Count > 0)
+                                          {
+                                              foreach (DataRow dr in Model.dtAddress.Rows)
+                                              {
+                                                  <div class="col-sm-12" style="border:1px solid black;margin-bottom:5px">
+                                                      <p class="text-muted mb-2 font-13">
+
+                                                          @dr["Name"],@dr["MobileNo1"],   @dr["Address"] ,@dr["CityId"],@dr["StateId"] ,Pincode : @dr["PinCode"]
+
+                                                      </p>
+                                                  </div>
+                                              
+                                              }
+                                          }
+
+
+
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+
+
+                    <section id="editdata" style="display:none">
+                        <div class="card">
+                            <div class="card-header"> <button class="fa fa-list btn btn-info" onclick="Showdata()"></button></div>
+                            <div class="row" style="margin:10px">
+                                <div class="form-group col-sm-6">
+                                    <label class="control-label">Mobile Number*</label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-phone"></i>&nbsp;+91</span>
+                                   
+                                        @Html.TextBoxFor(m => m.Customer_ContactNum, new { @class = "form-control", @required = "required", @Autocomplete = "off" })
+                                    </div>
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    <label class="control-label">Name*</label>
+                              
+                                    @Html.TextBoxFor(m => m.Customer_Name, new { @class = "form-control", @required = "required", @Autocomplete = "off" })
+                                </div>
+
+                        
+
+                                <input type="hidden" id="Customerid" value="@Model.Customer_Id" />
+                                <div class="form-group col-sm-6">
+                                    <label class="control-label">Email Address*</label>
+                                    @Html.TextBoxFor(m => m.Customer_Email, new { @class = "form-control", @type = "email", @required = "required", @Autocomplete = "off" })
+                                </div>
+                                
+
+                                <div class="col-sm-12">
+                                    <label class="control-label">Address detail*</label>
+                                    @Html.TextAreaFor(m => m.Customer_Address, new { @class = "form-control", @placeholder = "Address:Eg:- House/Flat No, Apartment Name", @type = "text", @Autocomplete = "off" })
+                               
+                                    
+                                </div>
+                                
+                                
+                                
+                                <div class="form-group col-sm-12">
+                                    <input type="button" name="submit" value="Update Profile" onclick="UpdateCustomerprofile()" class="btn_1" id="btnSubmit">
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

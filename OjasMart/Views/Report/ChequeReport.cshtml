@@ -1,0 +1,218 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "SalesReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('select').select2();
+        $("#tblItemHead").DataTable({
+            dom: 'Bfrtip',
+            //pageLength: 5,
+            lengthMenu: [[5, 10, 20, 50, 100, 500, -1], [5, 10, 20, 50, 100, 500, "All"]],
+            buttons: [
+               'pageLength',
+           {
+               extend: 'excelHtml5', footer: true
+           },
+           { extend: 'csvHtml5', footer: true },
+           {
+               extend: 'pdfHtml5', footer: true, orientation: 'landscape',
+
+               pageSize: 'LEGAL',
+               text: '<i class="fa fa-file-pdf-o"> PDF</i>',
+               titleAttr: 'PDF'
+           }
+            ]
+        });
+
+        $('#txtStartDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+        $('#txtEndDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+
+        var RoleId = '@Request.RequestContext.HttpContext.Session["Role"]';
+        if (RoleId == '') {
+            window.location.href = "../Account/Index"
+        }
+        if (RoleId == "2") {
+            $("#ddlBillBy").val($("#UCode").val()).trigger('change');
+        }
+        else if (RoleId != "1") {
+            $("#ddlBillBy").val($("#UCode").val()).trigger('change');
+            $("#ddlBillBy").attr("disabled", "disabled");
+        }
+    });
+
+    function getDetails() {
+        $("#showSpinner").show();
+        $.ajax({
+            url: "../Report/ChequeReport",
+            type: "POST",
+            data: { 'StartDate': $.trim($('#txtStartDate').val()), 'EndDate': $.trim($('#txtEndDate').val()), 'AccCode': $.trim($('#ddlSupplier').val()), 'BillBy': $.trim($('#ddlBillBy').val()) },
+            datatype: "json",
+            success: function (data1) {
+                $("#tblItemHead").DataTable().destroy();
+                var htmlNew = data1;
+                $('#divDetails').html($(htmlNew).find('#tblItemHead'));
+                //$("#tblItemHead").DataTable();
+
+                // $('#divtable').html($(htmlNew).find('#divcnt'));
+
+                $("#tblItemHead").DataTable({
+                    dom: 'Bfrtip',
+                    //pageLength: 5,
+                    lengthMenu: [[5, 10, 20, 50, 100, 500, -1], [5, 10, 20, 50, 100, 500, "All"]],
+                    buttons: [
+                       'pageLength',
+                   {
+                       extend: 'excelHtml5', footer: true
+                   },
+                   { extend: 'csvHtml5', footer: true },
+                   {
+                       extend: 'pdfHtml5', footer: true, orientation: 'landscape',
+
+                       pageSize: 'LEGAL',
+                       text: '<i class="fa fa-file-pdf-o"> PDF</i>',
+                       titleAttr: 'PDF'
+                   }
+                    ]
+                });
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+</script>
+
+<input type="hidden" id="UCode" value="@Model.UserName" />
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+            </div>
+            <h4 class="page-title">Sale Report</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="inputEmail4" class="col-form-label">Clear/Reject Start Date </label>
+                        <input type="text" class="form-control" id="txtStartDate" placeholder="Start Date" data-date-autoclose="true">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="inputPassword4" class="col-form-label">Clear/Reject End Date</label>
+                        <input type="text" class="form-control" id="txtEndDate" placeholder="End Date" data-date-autoclose="true">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="inputPassword4" class="col-form-label">Account Code</label>
+                        @Html.DropDownList("ddlSupplier", (List<SelectListItem>)ViewBag.CustomerList, new { @id = "ddlSupplier", @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-3" style="display:block">
+                        <label for="inputPassword4" class="col-form-label">Status</label>
+                        <select id="ddlBillBy" class="form-control">
+                            <option value="">All</option>
+                            <option value="Clear">Clear</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <button type="submit" class="btn btn-primary waves-effect waves-light" onclick="getDetails()">Filter Record</button>
+                    </div>
+                </div>
+
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <div class="table-responsive" id="divDetails">
+                <table id="tblItemHead" class="table table-centered mb-0" style="font-size:11px">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sr.No</th>
+                            <th>Txn Date</th>
+                            <th>Party Name</th>
+                            <th>Voucher Id</th>
+                            <th>Cheque No.</th>
+                            <th>Cheque Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Clear/Reject Date</th>
+                            <th>Bank Account</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                i++;
+                                <tr>
+                                    <td>@i</td>
+                                    <td>
+                                        @dr["TxnDate"]
+                                    </td>
+                                    <td>@dr["PartyName"]</td>
+                                    <td>@dr["VoucherId"]</td>
+                                    <td>@dr["ChequeDDNo"]</td>
+                                    <td>@dr["ChqDate"]</td>
+                                    <td>@dr["Amount"]</td>
+                                    <td>
+                                        @if (Convert.ToString(dr["ClearStatus"]) == "Clear")
+                                        {
+                                            <span class="badge badge-success">@dr["ClearStatus"]</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-danger">@dr["ClearStatus"]</span>
+                                        }
+                                    </td>
+                                    <td>@dr["ClrDate"]</td>
+                                    <td>@dr["AccountHeadName"]</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr style="color:#8e0707">
+                            <td></td>
+
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>Total: </td>
+                            <td>@Model.GrossPayable</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>

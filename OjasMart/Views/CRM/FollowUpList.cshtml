@@ -1,0 +1,722 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "FollowUpList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+@using System.Data;
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#tblFollowups").DataTable();
+        //BindEmployees();
+    });
+    function BindEmployees() {
+        $.ajax({
+            type: 'Post',
+            url: '@Url.Action("BindFollupDetails")',
+            dataType: 'json',
+            data: {},
+            success: function (list) {
+                if (list != null) {
+                    $.each(list, function (i, item) {
+                        var table = $('#example').DataTable();
+                        table.rows.add([item.LeadId, item.LeadTitle, item.CompanyName, item.LastName, item.LastName, item.LastName, item.LastName, item.LastName, item.LastName, item.LastName, item.LastName])
+                        table.draw();
+                    });
+                }
+            }
+        });
+    }
+
+    function Item() {
+        this.ItemName = null;
+        this.Qty = null;
+        this.unit = null;
+        this.rate = null;
+    }
+
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var date = new Date();
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+        if (month < 10) month = "0" + month;
+        if (day < 10) day = "0" + day;
+        var today = year + "-" + month + "-" + day;
+        $('#txtStartDate').val(today);
+        $('#txtEndDate').val(today);
+        $('#txtFromDate').val(today);
+        $('#txtToDate').val(today);
+
+        //For Binding data
+        $("body").on("click", "#tblFollowups .details1", function () {
+            debugger
+            var id = $(this).attr('id');
+            var dataobject = {
+                LeadId: $(this).attr('id')
+            };
+            $.ajax({
+                url: "@Url.Action("GetFolloups", "CRM")",
+                type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (data) {
+                debugger;
+                if (data != null) {
+                    $("#ddlStatus").val('Select');
+                    $("#lblLeadId").text(data.LeadId);
+                    $("#txtCustomerName").val(data.EmployeeName);
+                    $("#txtMobileNo").val(data.MobileNo);
+                    $("#txtEmailid").val(data.EmailId);
+                    $("#txtProjectCost").val(data.NetTotal);
+                    $("#txtTitle").val(data.LeadTitle);
+                    $("#txtStatus").val(data.Status);
+                    $("#txtDescription").val(data.Description);
+                    $("#hdEmpCode").val(data.EmployeeCode);
+                    GetItemlist(data.LeadId);
+                    DivClose();
+                }
+            },
+            error: function () {
+
+            }
+            });
+    });
+
+        //end binding
+        //binding Employee
+        $.ajax({
+            type: 'Post',
+            url: '@Url.Action("BindEmployees")',
+            dataType: 'json',
+            data: {},
+            success: function (list) {
+                $("#ddlCloseBy").empty();
+                $("#ddlCloseBy").append('<option value="' + '' + '">' + 'Select' + '</option>');
+                $.each(list, function (i, list) {
+                    $("#ddlCloseBy").append('<option value="' + list.EmployeeCode + '">' + list.EmployeeName + '</option>');
+                });
+
+            },
+            error: function (ex) {
+                alert('No data found for Employees');
+            }
+        });
+
+        $("#btnSave").click(function () {
+            var UserId = '@Request.RequestContext.HttpContext.Session["UserName"]';
+            if (UserId == "") {
+                window.location.href = "../Authentication/SignIn";
+                return false;
+            }
+            var status = $("#ddlStatus").val();
+            if ($("#lblLeadId").text() == "") {
+                swal("Error", "Lead Id Not Found!,", "error");
+                return;
+            }
+            if ($("#ddlStatus").val() == "") {
+                alert("Please Select Current Status");
+                $("#ddlStatus").focus();
+                return;
+            }
+            if (status != 'Not Interested') {
+                if ($("#txtNext").val() == "") {
+                    if (status == 'Close') {
+                        alert("Please Enter Close Date");
+                    }
+                    else {
+                        alert("Please Enter Next FollowUp Date");
+                    }
+                    $("#txtNext").focus();
+                    return;
+                }
+            }
+            if (status == 'Close') {
+                //if ($("#txtProjectTitle").val() == "") {
+                //    alert("Please Enter Project Title");
+                //    $("#txtProjectTitle").focus();
+                //    return;
+                //}
+                if ($("#ddlCloseBy").val() == "") {
+                    alert("Please Select Close By");
+                    $("#ddlCloseBy").focus();
+                    return;
+                }
+                if ($("#txtStartDate").val() == "") {
+                    alert("Please Enter Project Start Date");
+                    $("#txtLeadDate").focus();
+                    return;
+                }
+                if ($("#txtEndDate").val() == "") {
+                    alert("Please Enter Expacted Delivery Date");
+                    $("#txtNextFDate").focus();
+                    return;
+                }
+                //if ($("#ddlProjectMode").val() == "Select") {
+                //    alert("Please Select Project Mode");
+                //    $("#ddlProjectMode").focus();
+                //    return;
+                //}
+
+            }
+
+            //var OrderData = [];
+            //$('#tblItemDetail tbody tr').each(function () {
+            //    debugger;
+            //    var cuObj = new Item();
+            //    cuObj.ItemName = $($(this).children()[0]).attr('value');
+            //    cuObj.Qty = $($(this).children()[1]).attr('value');
+            //    cuObj.unit = $($(this).children()[2]).attr('value');
+            //    cuObj.rate = $($(this).children()[3]).attr('value');
+
+            //    OrderData.push(cuObj);
+            //});
+            //var strrawdata = JSON.stringify(OrderData);
+            var strrawdata = null;
+
+
+            var dataobject = {
+                LeadId: $("#lblLeadId").text(),
+                EmployeeCode: $("#hdEmpCode").val(),
+                NextFollowUpDate: $("#txtNext").val() != "" ? $("#txtNext").val() : "01/01/1900",
+                Description: CKEDITOR.instances.txtComments.getData(),
+                Status: $("#ddlStatus").val(),
+                closedby: $("#ddlCloseBy").val(),
+                projectcost: $("#txtProjectCost").val() != "" ? parseFloat($("#txtProjectCost").val()) : 0,
+                advanceamount: $("#txtAdvanceAmount").val() != "" ? parseFloat($("#txtAdvanceAmount").val()) : 0,
+                projectmode: $("#ddlProjectMode").val(),
+                isgst: $('input[name="chkgst"]:checked') ? 1 : 0,
+                paymode: $("#ddlPayMode").val(),
+                ProjectDescription: CKEDITOR.instances.txtProjectDescription.getData(),
+                ProjectTitle: $("#txtProjectTitle").val(),
+                StartDate: $("#txtStartDate").val() != "" ? $("#txtStartDate").val() : "01/01/1900",
+                DelDate: $("#txtEndDate").val() != "" ? $("#txtEndDate").val() : "01/01/1900",
+                CatId: strrawdata,
+                ChqDDNo: $("#txtChqDDNo").val(),
+                chqDDDate: $("#txtChqDate").val() != "" ? $("#txtChqDate").val() : "01/01/1900",
+                IFSCCode: $("#txtIfscCode").val(),
+                BankAccName: $("#txtBankAccName").val(),
+                TransId: $("#txtTransId").val(),
+                TransDate: $("#txttansDate").val() != "" ? $("#txttansDate").val() : "01/01/1900",
+                bankAccId: $("#ddlBankAccount").val(),
+                MobileNO: $("#txtMobileNo").val()
+            };
+            $.ajax({
+
+                url: "/CRM/InsertFollowUp",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                //data: dataobject,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    if (r == '1') {
+                        if ($("#ddlStatus").val() == "Close") {
+                            alert("Good job!Your Lead Successfully Closed!");
+                            location.reload();
+                            //swal("Good job!", "Your Lead Successfully Closed!", "success").then(function () {
+                            //    location.reload();
+                            //});
+                        }
+                        else {
+                            alert("Good job!Followup Detail Successfully Saved!");
+                            location.reload();
+                            //swal("Good job!", "Followup Detail Successfully Saved!", "success").then(function () {
+                            //    location.reload();
+                            //});
+                        }
+
+                    }
+                    if (r == "0") {
+                        alert("Error!Please Check values Entered by you!");
+                        //swal("Error", "Please Check values Entered by you!,", "error");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("Error!Please Check values Entered by you!");
+                    //swal("Error", "Please Check values Entered by you!", "error");
+                }
+            });
+        });
+
+
+
+
+        $('#ddlPayMode').change(function () {
+            var PayMode = $('#ddlPayMode').val();
+            if (PayMode == "Cheque/DD") {
+                $('#divChq').show();
+                $('#divUPI').hide();
+
+            }
+            else if (PayMode == "NEFT/IMPS/RTGS/Paytm/UPI") {
+                $('#divChq').hide();
+                $('#divUPI').show();
+                BindBankAccount();
+            }
+            else {
+                $('#divChq').hide();
+                $('#divUPI').hide();
+            }
+        });
+    });
+    function DivClose() {
+        var status = $("#ddlStatus").val();
+        if (status == "Close") {
+            $("#divClose").show();
+            $("#divComments").hide();
+            $("#divFollowup").show();
+            $("#lblCloseDate").text("Close Date");
+        }
+        else if (status == "Not Interested") {
+            $("#divFollowup").hide();
+        }
+        else {
+            $("#divClose").hide();
+            $("#divComments").show();
+            $("#divFollowup").show();
+            $("#lblCloseDate").text("Next Followup Date");
+        }
+    }
+
+    function BindBankAccount() {
+        $.ajax({
+            type: 'Post',
+            url: '@Url.Action("BindAccountDetails","CRM")',
+            dataType: 'json',
+            data: {},
+            success: function (list) {
+                $("#ddlBankAccount").empty();
+                $("#ddlBankAccount").append('<option value="' + '' + '">' + 'Select' + '</option>');
+                $.each(list, function (i, list) {
+                    $("#ddlBankAccount").append('<option value="' + list.BankAccId + '">' + list.BanKAccName + '</option>');
+                });
+
+            },
+            error: function (ex) {
+                alert('No data found for Employees');
+            }
+        });
+    }
+
+    function GetItemRate(obj) {
+        $.post("/CRM/GetItemrate", { ItemId: $(obj).val() }, function (data) {
+
+            $("#txtRate").val(data);
+            $("#txtQuantity").val('1');
+        })
+    }
+
+    function AddTableRow() {
+
+        var ItemName = $("#ddlItemHead option:selected").text();
+        var Qty = $("#txtQuantity").val();
+        var unit = $("#ddlUnit option:selected").text();
+        var price = $("#txtRate").val();
+
+        if (ItemName != "" && Qty != "" && unit != "" && price != "") {
+            var html = "";
+            html += "<tr>"
+            html += "<td value='" + $("#ddlItemHead").val() + "' ><input type=text class='form-control' value='" + ItemName + "' disabled='true' /></td>";
+            html += "<td value='" + Qty + "' ><input type=text class='form-control' value='" + Qty + "' disabled/></td>";
+            html += "<td value='" + $("#ddlUnit").val() + "' ><input class='form-control' type=text value='" + unit + "' disabled/></td>";
+            html += "<td value='" + price + "' ><input type=text class='form-control' value='" + price + "'  disabled/></td>";
+            html += "<td><button type='button'  class='del' onclick='delcolorrow(this)'><i class='fa fa-trash'></i></button></td>";
+            $("#tblItemDetail tbody").append(html);
+            $("#ddlItemHead").val('');
+            $('#txtQuantity').val('');
+            $('#ddlUnit').val('');
+            $("#txtRate").val('');
+        }
+        else {
+            alert('some fields are blank');
+        }
+
+    }
+
+
+
+    function delcolorrow(Obj) {
+        debugger
+        $(Obj).parents('tr').remove();
+    }
+
+    function GetItemlist(obj) {
+        debugger
+        $.post("/CRM/FollowUpList", { LeadId: obj }, function (data) {
+            $("#flItem").html($(data).find("#flItem").html());
+        })
+    }
+</script>
+<script src="~/ckeditor/ckeditor.js"></script>
+
+<div class="row pt-2 pb-2">
+    <div class="col-sm-9">
+        <h4 class="page-title">Followup Details</h4>
+        @*<ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javaScript:void();">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="javaScript:void();">CRM</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Followup Details</li>
+            </ol>*@
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header"><i class="fa fa-table"></i> Followup Details        @*<a href="@Url.Action("AddEmployee","EmployeeMaster")">Add New Employee</a>*@  </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="tblFollowups" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>Lead Id</th>
+                                <th>Lead Title</th>
+                                @*<th>Company Name</th>*@
+                                <th>Customer Name</th>
+                                <th>Mobile No</th>
+                                <th>Email Id</th>
+                                <th>Employee Name</th>
+                                <th>Followup Date</th>
+                                <th>Next Followup Date</th>
+                                <th>Status</th>
+                                <th>Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+                            {
+                                foreach (DataRow item in Model.dt1.Rows)
+                                {
+
+                                    <tr>
+                                        <td>
+                                            <a href="javascript:;" id="@item["LeadId"]" class="btn btn-primary btn-sm details1" data-toggle="modal" data-target="#largesizemodal">Take Followup</a>
+                                        </td>
+                                        <td><a href="/CRM/LeadSummary?LeadId=@item["LeadId"]">@item["LeadId"]</a></td>
+                                        <td>@item["LeadTitle"]</td>
+                                        @*<td>@item[""]</td>*@
+                                        <td>@item["Name"]</td>
+                                        <td>@item["MobileNo"]</td>
+                                        <td>@item["EmailId"]</td>
+                                        <td>@item["EmpName"]</td>
+                                        <td>@item["FollowupDate"]</td>
+                                        <td><span style="color:#17a2b8">@item["NextFDate"]</span></td>
+                                        <td>@item["Status"]</td>
+                                        <td>@Html.Raw(item["Comments"])</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="largesizemodal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa fa-star"></i> Take FollowUp | <span style="color:darkblue"> Lead Id:</span>  <span id="lblLeadId" style="color:red"></span> </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="input-1">Customer Name</label>
+                            <input type="text" class="form-control" id="txtCustomerName" placeholder="Customer Name" disabled>
+                            <input type="hidden" id="hdEmpCode" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="input-1">Mobile No.</label>
+                            <input type="text" class="form-control" id="txtMobileNo" placeholder="Mobile No" disabled>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="input-1">Email Id</label>
+                            <input type="text" class="form-control" id="txtEmailid" placeholder="Email Id" disabled>
+                        </div>
+                    </div>
+                    @*<div class="col-md-6">
+                            <div class="form-group">
+                                <label for="input-1">Project Category</label>
+                                <input type="text" class="form-control" id="txtCategory" disabled placeholder="Project Category">
+                            </div>
+                        </div>*@
+                </div>
+                @*<div class="demo-heading">Lead For</div><hr />*@
+                <div class="row" style="display:none">
+                    <div class="table-responsive" id="flItem">
+                        <table class="table table-borderless table-hover table-centered m-0" id="tblItemDetail">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Particulars</th>
+                                    <th>Quantity</th>
+                                    <th>Unit</th>
+                                    <th>Per Unit Rate</th>
+
+                                    <th>Add</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.dt2 != null && Model.dt2.Rows.Count > 0)
+                                {
+                                    foreach (DataRow item in Model.dt2.Rows)
+                                    {
+                                        <tr>
+                                            <td value="@item["ItemCode"]"><input type=text class='form-control' value=@item["ItemName"] disabled='true' /></td>
+                                            <td value="@item["Qty"]"><input type=text class='form-control' value=@item["Qty"] disabled='true' /></td>
+                                            <td value="@item["Unit"]"><input type=text class='form-control' value=@item["UnitName"] disabled='true' /></td>
+                                            <td value="@item["UnitRate"]"><input type=text class='form-control' value=@item["UnitRate"] disabled='true' /></td>
+                                            <td><button type='button' class='del' onclick='delcolorrow(this)'><i class='fa fa-trash'></i></button></td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td width="300px">
+
+                                        @Html.DropDownList("ddlItemHead", (List<SelectListItem>)ViewBag.ItemHeadList, new { @id = "ddlItemHead", @class = "form-control", @onchange = "GetItemRate(this)" })
+                                    </td>
+                                    <td width="120px">
+                                        <input type="text" class="form-control" id="txtQuantity" onchange="calculateAmount()" onkeypress="allowonlyDegitandDot()" />
+                                    </td>
+                                    <td width="200px">
+                                        @Html.DropDownList("ddlUnit", (List<SelectListItem>)ViewBag.Unit, "-Select Unit-", new { @id = "ddlUnit", @class = "form-control" })
+                                     
+                                    </td>
+                                    <td width="120px">
+                                        <input type="text" class="form-control" id="txtRate" onchange="calculateAmount()" onkeypress="allowonlyDegitandDot()" />
+                                     
+                                    </td>
+                                    <td>
+                                        <button type="button" onclick="AddTableRow()" class="btn btn-sm btn-success fa fa-plus-square"> Add</button>
+                                    </td>
+
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="input-1">Lead Title</label>
+                            <input type="text" class="form-control" id="txtTitle" disabled placeholder="Project Title">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="input-1">Status</label>
+                            <input type="text" class="form-control" id="txtStatus" disabled placeholder="Status">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="input-1">Lead Description</label>
+                            <textarea class="form-control" id="txtDescription" disabled rows="5" placeholder="Lead Description"></textarea>
+                            <div contenteditable="true">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="input-1">Current Status</label>
+                            <select class="form-control" id="ddlStatus" onchange="DivClose()">
+                                <option>Select</option>
+                                <option>Interested</option>
+                                <option>Not Interested</option>
+                                <option>May be Later</option>
+                                <option>Close</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divFollowup">
+                        <div class="form-group">
+                            <label for="input-1"><span id="lblCloseDate"> Next Followup Date </span></label>
+                            <input type="date" class="form-control" id="txtNext">
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="divComments">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="input-1">Comments</label>
+                            <textarea class="form-control" id="txtComments" rows="5" placeholder="Comments"></textarea>
+                            <script type="text/javascript">
+                                CKEDITOR.replace('txtComments', {
+                                    filebrowserImageUploadUrl: '/Ticket/UploadImage'
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+                <div id="divClose" style="display:none">
+                    <div class="row">
+                        <div class="col-md-6" style="display:none">
+                            <div class="form-group">
+                                <label for="input-1">Project Title</label>
+                                <input type="text" class="form-control" id="txtProjectTitle" placeholder="Enter Project Title">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="input-1">Lead Cost</label>
+                                <input type="text" class="form-control" id="txtProjectCost" placeholder="Enter Lead Cost">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="input-1">Close By</label>
+                                <select class="form-control single-select" id="ddlCloseBy"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="input-1">Lead Start Date</label>
+                                <input type="date" class="form-control" id="txtStartDate" placeholder="Enter Project Start Date">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="input-1">Exp. Delivery Date</label>
+                                <input type="date" class="form-control" id="txtEndDate" placeholder="Enter Exp. Delivery Date">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6" style="display:none">
+                            <div class="form-group">
+                                <label for="input-1">Project Mode</label>
+                                <select id="ddlProjectMode" class="form-control">
+                                    <option>Select</option>
+                                    <option>Offline</option>
+                                    <option>Online</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="input-1">Advance Amount</label>
+                                <input type="text" class="form-control" id="txtAdvanceAmount" placeholder="Enter Advance Amount">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="input-1"></label>
+                                <div class="icheck-material-primary">
+                                    <input type="checkbox" id="user-checkbox" checked="" name="chkgst">
+                                    <label for="user-checkbox">IsGST</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="input-1">Pay Mode</label>
+                                <select id="ddlPayMode" class="form-control">
+                                    <option>Select</option>
+                                    <option>Cash</option>
+                                    <option>Cheque/DD</option>
+                                    <option>NEFT/IMPS/RTGS/Paytm/UPI</option>
+                                    <option>Credit</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="divChq" style="display:none">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="input-1">Chq/DD No</label>
+                                <input type="text" class="form-control" id="txtChqDDNo" placeholder="Enter Chq/DD No">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="input-1">Chq/DD Date</label>
+                                <input type="date" class="form-control" id="txtChqDate" placeholder="Enter Chq/DD Date">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="input-1">IFSC Code</label>
+                                <input type="text" class="form-control" id="txtIfscCode" placeholder="Enter IFSC Code">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="input-1">Bank Account Name</label>
+                                <input type="text" class="form-control" id="txtBankAccName" placeholder="Enter Bank Account Name">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="divUPI" style="display:none">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="input-1">Transaction Id</label>
+                                <input type="text" class="form-control" id="txtTransId" placeholder="Enter Transaction Id">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="input-1">Transaction Date</label>
+                                <input type="date" class="form-control" id="txttansDate" placeholder="Enter Transaction Date">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="input-1">Bank Account Name</label>
+                                <select id="ddlBankAccount" class="form-control"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="input-1"> Description</label>
+                            <textarea class="form-control" id="txtProjectDescription" rows="5"></textarea>
+                            <script type="text/javascript">
+                                CKEDITOR.replace('txtProjectDescription', {
+                                    filebrowserImageUploadUrl: '/Ticket/UploadImage'
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
+                <button type="button" class="btn btn-primary" id="btnSave"><i class="fa fa-check-square-o"></i> Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,232 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "ViewOrder";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+@using System.Data;
+
+
+<div class="gambo-Breadcrumb">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="~/">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">View Order</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="request-grid">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="request-products" style="background: ghostwhite;">
+                   
+                       
+                        
+                                <div>
+                                    @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                                    {
+                                        <div class="col-lg-12 col-md-12">
+
+                                            @foreach (DataRow dr in Model.dt.Rows)
+                                            {
+                                                <div class="pdpt-bg">
+                                                    <div class="pdpt-title" style="background: #532813;">
+                                                        <h6 style="color:white;">Order Date & Time @dr["OrdDate"] <span style="float:right">OrderId: #@dr["OrderId"]</span> </h6>
+                                                    </div>
+                                                    <div class="order-body10">
+                                                        @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+                                                        {
+                                                            foreach (DataRow dr1 in Model.dt1.Rows)
+                                                            {
+                                                                if (Convert.ToString(dr["OrderId"]) == Convert.ToString(dr1["OrderId"]))
+                                                                {
+                                                                    <ul class="order-dtsll">
+                                                                        <li>
+                                                                            <div class="order-dt-img">
+                                                                                <img src="@dr1["MainImage"]" alt="">
+                                                                            </div>
+                                                                        </li>
+                                                                        <li>
+                                                                            <div class="order-dt47">
+                                                                                <h4>@dr1["ProductName"]</h4>
+                                                                                @if (Convert.ToString(dr1["VarriationName"]) != "")
+                                                                                {
+                                                                                    <p>
+                                                                                        <ul class="kggrm-now">
+                                                                                            <li>
+                                                                                                <input type="radio" id="1" name="cart1" disabled="">
+                                                                                                <label for="1" style="background-color:#f55d2c">@dr1["VarriationName"]</label>
+                                                                                            </li>
+                                                                                        </ul>
+                                                                                    </p>
+                                                                                }
+                                                                                <p>Total Quantity: @dr1["Quantity"]</p>
+                                                                                @*<div class="order-title">2 Items <span data-inverted="" data-tooltip="2kg broccoli, 1kg Apple" data-position="top center">?</span></div>*@
+                                                                            </div>
+                                                                        </li>
+                                                                    </ul>
+                                                                }
+                                                            }
+                                                        }
+
+                                                        <div class="total-dt">
+                                                            <div class="total-checkout-group">
+                                                                <div class="cart-total-dil">
+                                                                    <h4>Sub Total</h4>
+                                                                    <span>&#8377;@dr["GrossAmount"]</span>
+                                                                </div>
+                                                                <div class="cart-total-dil pt-3">
+                                                                    <h4>Gst Charge</h4>
+                                                                    <span>&#8377;@dr["GstAmount"]</span>
+                                                                </div>
+
+
+
+                                                                <div class="cart-total-dil pt-3">
+                                                                    <h4>Discount Amount</h4>
+                                                                  
+                                                                        <span>&#8377;@dr["DiscountAmount"]</span>
+                                                                </div>
+                                                                <div class="cart-total-dil pt-3">
+                                                                    <h4>Delivery Charges</h4>
+                                                                    @if (Convert.ToDecimal(dr["DeliveryCharges"]) <= 0)
+                                                                    {
+                                                                        <span>Free</span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span>&#8377;@dr["DeliveryCharges"]</span>
+                                                                    }
+                                                                </div>
+
+
+
+                                                                <div class="cart-total-dil pt-3">
+                                                                    <h4>Payment Mode</h4>
+                                                                    <span>@dr["PaymentMode"]</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="main-total-cart">
+                                                                <h2>Total</h2>
+                                                                <span>&#8377;@dr["NetPayable"]</span>
+                                                            </div>
+                                                        </div>
+
+                                                        @if (Convert.ToString(dr["DeliveryStatus"]) == "cancelled")
+                                                        {
+
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="track-order">
+                                                                <h4>Track Order</h4>
+                                                                <div class="bs-wizard" style="border-bottom:0;">
+                                                                    @if (Convert.ToString(dr["DeliveryStatus"]) == "Placed")
+                                                                    {
+                                                                        <div class="bs-wizard-step complete">
+                                                                            <div class="text-center bs-wizard-stepnum">Placed</div>
+                                                                            <div class="progress"><div class="progress-bar"></div></div>
+                                                                            <a href="#" class="bs-wizard-dot"></a>
+                                                                        </div>
+                                                                        @*<div class="bs-wizard-step complete">
+                <div class="text-center bs-wizard-stepnum">Packed</div>
+                <div class="progress"><div class="progress-bar"></div></div>
+                <a href="#" class="bs-wizard-dot"></a>
+            </div>*@
+                                <div class="bs-wizard-step disabled">
+                                                                    <!-- complete -->
+                                    <div class="text-center bs-wizard-stepnum">On the way</div>
+                                        <div class="progress"><div class="progress-bar"></div></div>
+                                             <a href="#" class="bs-wizard-dot"></a>
+                                           </div>
+      <div class="bs-wizard-step disabled">
+                                                                            <!-- active -->
+                 <div class="text-center bs-wizard-stepnum">Delivered</div>
+                                  <div class="progress"><div class="progress-bar"></div></div>
+        <a href="#" class="bs-wizard-dot"></a>
+             </div>
+                                                                    }
+                                                                    else if (Convert.ToString(dr["DeliveryStatus"]) == "ontheway")
+                                                              {
+                                                                <div class="bs-wizard-step complete">
+                                                                    <div class="text-center bs-wizard-stepnum">Placed</div>
+                                                                    <div class="progress"><div class="progress-bar"></div></div>
+                                                                    <a href="#" class="bs-wizard-dot"></a>
+                                                                </div>
+                                                                @*<div class="bs-wizard-step complete">
+        <div class="text-center bs-wizard-stepnum">Packed</div>
+        <div class="progress"><div class="progress-bar"></div></div>
+        <a href="#" class="bs-wizard-dot"></a>
+    </div>*@
+                                                                <div class="bs-wizard-step active">
+                                                                    <!-- complete -->
+                                                                    <div class="text-center bs-wizard-stepnum">On the way</div>
+                                                                    <div class="progress"><div class="progress-bar"></div></div>
+                                                                    <a href="#" class="bs-wizard-dot"></a>
+                                                                </div>
+                                                                <div class="bs-wizard-step disabled">
+                                                                    <!-- active -->
+                                                                    <div class="text-center bs-wizard-stepnum">Delivered</div>
+                                                                    <div class="progress"><div class="progress-bar"></div></div>
+                                                                    <a href="#" class="bs-wizard-dot"></a>
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="bs-wizard-step complete">
+                                                                    <div class="text-center bs-wizard-stepnum">Placed</div>
+                                                                    <div class="progress"><div class="progress-bar"></div></div>
+                                                                    <a href="#" class="bs-wizard-dot"></a>
+                                                                </div>
+                                                                @*<div class="bs-wizard-step complete">
+        <div class="text-center bs-wizard-stepnum">Packed</div>
+        <div class="progress"><div class="progress-bar"></div></div>
+        <a href="#" class="bs-wizard-dot"></a>
+    </div>*@
+                                                                <div class="bs-wizard-step complete">
+                                                                    <!-- complete -->
+                                                                    <div class="text-center bs-wizard-stepnum">On the way</div>
+                                                                    <div class="progress"><div class="progress-bar"></div></div>
+                                                                    <a href="#" class="bs-wizard-dot"></a>
+                                                                </div>
+                                                                <div class="bs-wizard-step complete">
+                                                                    <!-- active -->
+                                                                    <div class="text-center bs-wizard-stepnum">Delivered</div>
+                                                                    <div class="progress"><div class="progress-bar"></div></div>
+                                                                    <a href="#" class="bs-wizard-dot"></a>
+                                                                </div>
+                                                            }
+
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-lg-12 col-md-12">
+                                            <div class="pdpt-bg">
+                                                <div class="order-body10" style="text-align:center">
+
+                                                    <img src="~/img/tracker-no-order.png" />
+
+                                                    <p style="font-size: 19px;padding-bottom: 18px;color: #d60f0f;font-family: cursive;">You have not Placed any order yet. <a href="../WebHome/Index">Shop Now</a> </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

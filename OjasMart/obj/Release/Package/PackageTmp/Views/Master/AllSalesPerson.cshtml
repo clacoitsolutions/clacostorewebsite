@@ -1,0 +1,180 @@
+﻿@model OjasMart.Models.SalesPerson
+
+@{
+    ViewBag.Title = "AllSalesPerson";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using System.Data;
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/dataTables.jqueryui.min.css">
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        $("#tblPinDetails").DataTable({
+            dom: 'Bfrtip',
+            //pageLength: 5,
+            lengthMenu: [[5, 10, 20, 50, 100, 500, -1], [5, 10, 20, 50, 100, 500, "All"]],
+            buttons: [
+                'pageLength',
+                {
+                    extend: 'excelHtml5', footer: true,
+                },
+                { extend: 'csvHtml5', footer: true },
+                {
+                    extend: 'pdfHtml5', footer: true, orientation: 'landscape',
+
+                    pageSize: 'LEGAL',
+                    text: '<i class="fa fa-file-pdf-o"> PDF</i>',
+                    titleAttr: 'PDF'
+                }
+            ]
+        });
+    });
+    function getDetails() {
+        $("#showSpinner").show();
+        $.ajax({
+            url: "../Customer/GetMemberDetails",
+            type: "POST",
+            data: { 'memberCode': $.trim($('#txtMemberCode').val()), 'fDate': $.trim($('#txtFromDate').val()), 'tDate': $.trim($('#txtToDate').val()), 'MType': $.trim($('#ddlStatus').val()) },
+            datatype: "json",
+            success: function (data1) {
+                var htmlNew = data1;
+                $('#divtable').html($(htmlNew).find('#divRef'));
+                // $('#divtable').html($(htmlNew).find('#divcnt'));
+                $("#showSpinner").hide();
+                $('#tblPinDetails').DataTable().destroy();
+                $("#tblPinDetails").DataTable({
+                    dom: 'Bfrtip',
+                    //pageLength: 5,
+                    lengthMenu: [5, 10, 20, 50, 100, 500, "All"],
+                    buttons: [
+                        'pageLength',
+                        {
+                            extend: 'excelHtml5', footer: true,
+                        },
+                        { extend: 'csvHtml5', footer: true },
+                        {
+                            extend: 'pdfHtml5', footer: true, orientation: 'landscape',
+
+                            pageSize: 'LEGAL',
+                            text: '<i class="fa fa-file-pdf-o"> PDF</i>',
+                            titleAttr: 'PDF'
+                        }
+                    ]
+                });
+            }
+        });
+    }
+
+
+    function CloseVolunteer(obj) {
+        debugger;
+
+        var mm = confirm('Are you sure to Update Sponsor Status?');
+
+        if (mm) {
+            if (obj == "") {
+                alert("Sponsor Code not found !!!");
+                return;
+            }
+
+            var data = new FormData;
+            data.append("Action", "5");
+            data.append("SalesPersonId", obj);
+            $("#showSpinner").show();
+            $.ajax({
+                url: "../Master/InserSalesPerson",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: data,
+                success: function (r) {
+                    if (r.Id == '1') {
+                        alert(r.msg);
+                        $("#showSpinner").hide();
+                        location.reload();
+                    }
+                    else {
+                        alert(r.msg);
+                        $("#showSpinner").hide();
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#showSpinner").hide();
+                }
+            });
+        }
+        return;
+
+    }
+</script>
+
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <i class="fa fa-refresh fa-spin nexo-refresh-icon" style="color: rgb(0, 0, 0); font-size: 50px; position: absolute; top: 50%; left: 50%; margin-top: -25px; margin-left: -25px; width: 44px; height: 50px;">
+        </i>
+    </div>
+</my-spinner>
+
+
+
+<div class="row" style=" margin-top: 5%; ">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <h4 class="header-title" style="margin-bottom:3%;">DELIVERY AGENTS DETAILS</h4>
+
+            <div class="table-responsive">
+                <table id="tblItemHead" class="table table-borderless table-hover table-centered m-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>SNo.</th>
+                            <th>Name</th>
+                            <th>Contact No.</th>
+                            <th>Address</th>
+                            <th>Email Id</th>
+                            <th>User Name</th>
+                            <th>Password</th>
+                            <th>Added Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            var count = 1;
+                            foreach (System.Data.DataRow item in Model.dt.Rows)
+                            {
+                                <tr>
+                                    <td>@(count++)</td>
+                                    <td>
+                                        @item["Name"]<br />
+                                        <span style="color: #6c8e1a;">Sponcer Id:@item["SpCode"]</span><br />
+                                        <a href="../Master/AddNewSalesPerson?fCode=@item["SpCode"]"><i class="fa fa-pencil"></i> Edit</a>|
+                                        @if (Convert.ToBoolean(item["IsActive"]) == true)
+                                        {
+                                            <a href="javascript:void(0);" onclick="CloseVolunteer('@item["SpCode"]')" style="color:#790808;"><i class="fa fa-trash"></i> DeActivate</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="javascript:void(0);" onclick="CloseVolunteer('@item["SpCode"]')" style="color:#790808;"><i class="fa fa-trash"></i> Activate</a>
+                                        }
+                                    </td>
+
+                                    <td>@item["ContactNo"]</td>
+                                    <td>@item["Address"]</td>
+                                    <td>@item["EmailId"]</td>
+                                    <td style="color: red;font-weight: bold;">@item["UserName"]</td>
+                                    <td style="color: red;font-weight: bold;">@item["Password"]</td>
+                                    <td>@item["AddedDate"]</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>
+

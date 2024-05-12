@@ -1,0 +1,352 @@
+﻿
+@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Add UOM";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#tblItemHead").DataTable();
+    });
+
+    function InsertUpdateCharge() {
+        if ($("#txtDeliveryAmount").val() == "") {
+            alert("Enter Delivery charge  !!!");
+            $("#txtDeliveryAmount").focus();
+            return;
+        }
+        if ($("#txtMrpFrom").val() == "") {
+            alert("Enter MRP From !!!");
+            $("#txtMrpFrom").focus();
+            return;
+        }
+        if ($("#txtMrpTo").val() == "") {
+            alert("Enter MRP To !!!");
+            $("#txtMrpTo").focus();
+            return;
+        }
+        var dataobject = {
+            DelCharges: $("#txtDeliveryAmount").val(),
+            MinDelCharges: $("#txtMrpFrom").val(),
+            DeliveryTo: $("#txtMrpTo").val(),
+            Action: "1"
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Master/InsertUpdateCharge",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r.strId == '1') {
+                    alert(r.msg);
+                    location.reload();
+                }
+                else if (r.strId == '2') {
+                    alert(r.msg);
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function EditPinCode(PinCode) {
+       
+        var dataobject = {
+            Id: PinCode
+        };
+        $.ajax({
+            type: "POST",
+            url: "/Master/GetDeliveryChargesForEdit",
+            data: dataobject,
+            dataType: "json",
+            success: function (r) {
+                if (r != null) {
+                    $("#txtDeliveryAmount").val(r.deliverycharges);
+                    $("#hdPId").val(r.Id);
+                    $("#txtMrpFrom").val(r.MinDelCharges);
+                    $("#txtMrpTo").val(r.DeliveryTo);
+                   
+
+                    $("#txtDeliveryAmount").focus();
+                    $("#btnSave").hide();
+                    $("#btnUpdate").show();
+                    $("#btnCancel").show();
+                }
+                else {
+                    alert("Details Not Found !!!");
+                }
+            }
+        });
+
+    }
+
+    function UpdateCharge() {
+        if ($("#txtDeliveryAmount").val() == "") {
+            alert("Enter Delivery charge  !!!");
+            $("#txtDeliveryAmount").focus();
+            return;
+        }
+        if ($("#txtMrpFrom").val() == "") {
+            alert("Enter MRP From !!!");
+            $("#txtMrpFrom").focus();
+            return;
+        }
+        if ($("#txtMrpTo").val() == "") {
+            alert("Enter MRP To !!!");
+            $("#txtMrpTo").focus();
+            return;
+        }
+
+        var dataobject = {
+           
+                DelCharges: $("#txtDeliveryAmount").val(),
+                MinDelCharges: $("#txtMrpFrom").val(),
+            DeliveryTo: $("#txtMrpTo").val(),
+            Id: $("#hdPId").val(),
+            Action: "4",
+              
+            };
+           
+      
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Master/InsertUpdateCharge",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r.strId == '1') {
+                    alert(r.msg);
+                    location.reload();
+                }
+                else if (r.strId == '2') {
+                    alert(r.msg);
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function UpdatePinCodeBlockUnBlock(SNo, st) {
+        var mm = confirm('Are you sure to perform this action?');
+
+        if (mm) {
+            if (SNo == "") {
+                alert("Pin Code Can not be update !!!");
+                return;
+            }
+            var status;
+            if (st == "1") {
+                status = '0';
+            }
+            else {
+                status = '1';
+            }
+
+            var dataobject = {
+                SrNo: SNo,
+                Status: status,
+                Action: "5"
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Master/InsertUpdatePincode",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                //data: dataobject,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    if (r != '') {
+                        alert(r);
+                        location.reload();
+                    }
+                    else {
+                        alert('Server not Responding !!!');
+                        $("#showSpinner").hide();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });
+        }
+        else {
+            return;
+        }
+
+    }
+
+    function CancelEdit() {
+        location.reload();
+    }
+
+    function DeletePinCode(ItemCode) {
+        var x = confirm("Are you sure you want to delete?");
+        if (x) {
+            var dataobject = {
+                RespoCode: ItemCode,
+                Action: "6"
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Master/InsertUpdatePincode",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                //data: dataobject,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    if (r.strId == '1') {
+                        alert(r.msg);
+                        location.reload();
+                    }
+                    else if (r.strId == '2') {
+                        alert(r.msg);
+                    }
+                    else {
+                        alert('Server not Responding !!!');
+                        $("#showSpinner").hide();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });
+        }
+        else {
+            return false;
+        }
+    }
+
+</script>
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Manage Delivery Charges</h4>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="hdPId"/>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="inputEmail4" class="col-form-label">Delivery Charge<span style="color:red">*</span> </label>
+                        <input type="text" id="txtDeliveryAmount" placeholder="e.g. 500.00" maxlength="10" class="form-control allownumericwithdecimal" />
+                        
+
+
+                       
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="inputEmail4" class="col-form-label">MRP From</label>
+                        <input type="text" id="txtMrpFrom" placeholder="Enter MRP From (e.g. 500.00)" class="form-control allownumericwithdecimal" />
+                        
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="inputEmail4" class="col-form-label">MRP To</label>
+                        <input type="text" id="txtMrpTo" placeholder="Enter MRP To (e.g. 500.00)" maxlength="6" class="form-control allownumericwithdecimal" />
+                      </div>
+                   
+                </div>
+               
+                <button type="submit" id="btnSave" class="btn btn-primary waves-effect waves-light" onclick="InsertUpdateCharge()">Save Record</button>
+                <button type="submit" id="btnUpdate" style="display:none" class="btn btn-warning waves-effect waves-light" onclick="UpdateCharge()">Update Record</button>
+                <button type="submit" id="btnCancel" style="display:none" class="btn btn-danger waves-effect waves-light" onclick="CancelEdit()">Cancel</button>
+
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <h4 class="header-title">All  Delivery Charges List</h4>
+            <div class="table-responsive">
+                <table id="tblItemHead" class="table table-borderless table-hover table-centered m-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sr.No</th>
+                            <th>Delivery Charge</th>
+                            <th>MRP From</th>
+                            <th>MRP To</th>
+                            <th>Added Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                i++;
+                                <tr>
+                                    <td>@i</td>
+                                    <td>@dr["DeliveryCharge"]</td>
+                                    <td>@dr["MRPFrom"]</td>
+                                    <td>@dr["MRPTo"]</td>
+                                    <td>@dr["EntryDate"]</td>
+                                    <td>
+                                        @*<a href="javascript: void(0);" class="btn btn-xs btn-secondary" onclick="GetDetailsForEdit('@dr["UnitCode"]')"><i class="mdi mdi-pencil"></i></a>*@
+                                        <a href="javascript:void(0);" title="Edit" class="action-icon" onclick="EditPinCode('@dr["id"]')"> <i class="mdi mdi-square-edit-outline" style="color:#51bfd0"></i></a>
+                                        @*<a href="javascript:void(0);" title="Delete" class="action-icon" onclick="DeletePinCode('@dr["id"]')"> <i class="mdi mdi-delete" style="color:red"></i></a>*@
+
+                                       
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>

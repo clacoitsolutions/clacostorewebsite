@@ -1,0 +1,110 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+
+    Layout = null;
+}
+@using System.Data;
+
+<!-- Category Model Start-->
+<div id="category_model" class="header-cate-model main-gambo-model modal fade" tabindex="-1" role="dialog" aria-modal="false">
+    <div class="modal-dialog category-area" role="document">
+        <div class="category-area-inner">
+            <div class="modal-header">
+                <button type="button" class="close btn-close" data-dismiss="modal" aria-label="Close">
+                    <i class="uil uil-multiply"></i>
+                </button>
+            </div>
+            <div class="category-model-content modal-content">
+                <div class="cate-header">
+                    <h4>Select Category</h4>
+                </div>
+                <div id="dvCategory">
+                   
+                    @if (Model.dtPopupCat != null && Model.dtPopupCat.Rows.Count > 0)
+                    {
+                        int i = 0;
+                        <ul class="category-by-cat">
+                            @foreach (DataRow dr in Model.dtPopupCat.Rows)
+                            {
+                                if (i <= 8)
+                                {
+                                    <li>
+                                        <a href="../ProductDetail/SearchCategory?CatName=@dr["ProductCategory"]&&CatId=@dr["SrNo"]&&SubCatId=0" class="single-cat-item">
+                                            <div class="icon">
+                                                <img src="@dr["CatImage"]" alt="@dr["ProductCategory"]">
+                                            </div>
+                                            <div class="text"> @dr["ProductCategory"] </div>
+                                        </a>
+                                    </li>
+                                }
+                                i++;
+                            }
+                        </ul>
+                        if (Model.dtPopupCat.Rows.Count > 9)
+                        {
+                            <a href="#" class="morecate-btn" id="btnMoreCategory"><i class="uil uil-apps"></i>More Categories</a>
+                        }
+
+
+
+
+
+
+
+                    }
+                </div>
+
+                <div id="dvMoreCategory" style="display:none;">
+
+                    @if (Model.dtPopupCat != null && Model.dtPopupCat.Rows.Count > 0)
+                    {
+                       
+                        <ul class="category-by-cat">
+                            @foreach (DataRow dr in Model.dtPopupCat.Rows)
+                            {
+                               
+                                    <li>
+                                        <a href="../ProductDetail/SearchCategory?CatName=@dr["ProductCategory"]&&CatId=@dr["SrNo"]" class="single-cat-item">
+                                            <div class="icon">
+                                                <img src="@dr["CatImage"]" alt="@dr["ProductCategory"]">
+                                            </div>
+                                            <div class="text"> @dr["ProductCategory"] </div>
+                                        </a>
+                                    </li>
+                              
+                            }
+                        </ul>
+                       
+                    }
+
+                </div>
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+        $(document).ready(function () {
+           
+            $("#btnMoreCategory").click(function () {
+                $("#dvMoreCategory").css("display", "block");
+                $("#dvCategory").css("display", "none");
+            });
+        });
+
+</script>
+
+
+
+<!-- Category Model End-->

@@ -1,0 +1,209 @@
+﻿@model OjasMart.Models.MenuListModel
+@{
+    ViewBag.Title = "UserPermission";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $("#lisubadmin").addClass("active");
+        $(".treeview li>ul").css('display', 'block');
+        $(".collapsible").click(function (e) {
+            e.preventDefault();
+            $(this).toggleClass("collapse expand");
+            $(this).closest('li').children('ul').slideToggle();
+        });
+
+        $('li :checkbox').on('click', function () {
+            $(this)
+              .closest('ul,li')
+              .find(':checkbox')
+              .not(this)
+              .prop('checked', this.checked)
+        });
+        $('input.liChild').change(function () {
+            if ($(this).is(':checked')) {
+                $(this).closest('ul').siblings('input:checkbox').attr('checked', true);
+            }
+        });
+
+        $("#ddlRole").change(function () {
+            var RId = $("#ddlRole").val();
+            if (RId != '') {
+                var url = "/MenuConfiguration/UserPermission?RoleId=" + RId;
+            }
+            else {
+                var url = "/MenuConfiguration/UserPermission";
+            }
+            window.location.href = url;
+            //window.location.href = "~/Menu/UserPermission/" + $("#UserId").val();
+        });
+    });
+</script>
+
+<style>
+    .collapse {
+        width: 12px;
+        background: url(~/assets/img/Expand.png) top left no-repeat #fff;
+        background-size: 100% 97%;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .expand {
+        width: 12px;
+        background: url(~/assets/img/Expand.png) top left no-repeat #fff;
+        background-size: 100% 97%;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .treeview ul {
+        font: 12px Arial, Sans-Serif;
+        margin: 0px;
+        padding-left: 30px;
+        list-style: none;
+    }
+
+    .treeview li {
+        font-weight: bold;
+    }
+
+        .treeview li a {
+            padding: 7px;
+            font-size: 12px;
+            display: inline-block;
+            text-decoration: none;
+            width: auto;
+        }
+
+    .col-sm-6 {
+        -webkit-box-flex: 0;
+        -webkit-flex: 0 0 50%;
+        -ms-flex: 0 0 50%;
+        flex: 0 0 50%;
+        max-width: 50%;
+        float: left;
+    }
+</style>
+
+<div class="row pt-2 pb-2">
+    <div class="col-sm-9">
+        <h4 class="page-title">Menu Configuration</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javaScript:void();">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="javaScript:void();">Master</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Menu Permission</li>
+        </ol>
+    </div>
+</div>
+<!-- End Breadcrumb-->
+@if (TempData["flag"] != null)
+{
+    string f = TempData["flag"].ToString();
+    if (f == "1")
+    {
+        <div class="alert alert-success alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <div class="alert-icon">
+                <i class="icon-check"></i>
+            </div>
+            <div class="alert-message">
+                <span><strong>Success!</strong> Menu Permission Changed Successfully !!!</span>
+            </div>
+        </div>
+    }
+    else
+    {
+
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <div class="alert-icon">
+                <i class="icon-close"></i>
+            </div>
+            <div class="alert-message">
+                <span><strong>Error!</strong> Menu Permission Can't be Changed Please Contact to Admin !!!</span>
+            </div>
+        </div>
+    }
+}
+
+@using (Html.BeginForm("UserPermission", "MenuConfiguration", FormMethod.Post, new { @class = "col-sm-12" }))
+{
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header text-uppercase">Roles</div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <label>Select Role</label>
+                        @*<select class="form-control single-select" id="ddlRole"></select>*@
+                        @Html.DropDownListFor(m => m.RoleId, Model.RoleList, "Please select", new { @Id = "ddlRole", @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.RoleId, "", new { @class = "error" })
+                    </div>
+                    <hr />
+                    <div class="form-row">
+                        <button type="submit" id="btnAdd" class="btn btn-primary shadow-primary px-5"><i class="icon-check icons"></i>Assign Permission</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header text-uppercase">Menu Details</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 treeview">
+                            @if (Model.MainMenuList != null && Model.MainMenuList.Count() > 0)
+                            {
+                                <ul>
+                                    @for (int i = 0; i < Model.MainMenuList.Count; i++)
+                                    {
+
+                                        <li style="margin-top: 10px;">
+                                            @{ var menu = Model.MainMenuList[i].MenuList.Count();}
+                                            @if (menu > 0)
+                                            {
+                                                <span style="margin-right: 10px;" class="collapse collapsible">&nbsp;</span>
+                                            }
+                                            else
+                                            {
+                                                <span style="width: 22px; display: inline-block;">&nbsp;</span>
+                                            }
+                                            @Html.CheckBoxFor(m => m.MainMenuList[i].IsMainMenuSelect, new { })
+                                            -<span style="margin-left: 10px;">@Model.MainMenuList[i].MainMenu</span>
+                                            @Html.HiddenFor(m => m.MainMenuList[i].MainMenuId)
+                                            @if (menu > 0)
+                                            {
+                                                <ul style="margin-left: 20px;">
+                                                    @for (int k = 0; k < Model.MainMenuList[i].MenuList.Count; k++)
+                                                    {
+                                                        <li style="margin-top: 5px;">
+                                                            |- @Html.CheckBoxFor(m => m.MainMenuList[i].MenuList[k].IsMenuSelect, new { @class = "liChild" })
+                                                            <span style="margin-left: 10px;"> @Model.MainMenuList[i].MenuList[k].SubMenuName</span>
+                                                            @Html.HiddenFor(m => m.MainMenuList[i].MenuList[k].Id)
+                                                        </li>
+
+                                                    }
+                                                </ul>
+                                            }
+                                        </li>
+                                                }
+                                </ul>
+                                                }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div><!--End Row-->
+                                                }
+
+
+
+

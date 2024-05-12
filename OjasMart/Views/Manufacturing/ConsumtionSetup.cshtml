@@ -1,0 +1,223 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Consumption Setup";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using System.Data;
+<style>
+    .custom-control-input {
+    position: absolute;
+    z-index: 1;
+    opacity: 2;
+    height: 18px;
+    width: 18px;
+}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('select').select2();
+        $("#customCheck1").on("click", function () {
+            //$(".chksms").is(":checked", true);
+            $('input:checkbox').prop('checked', this.checked);
+            //$('#example5 tbody').find('input[type=checkbox]:checked').each(function () {
+            //    var mob = $(this).parents('tr').find('.mob').text();
+
+            //});
+        });
+    });
+
+    function checkme(Obj) {
+        $(Obj).prop('checked', this.checked);
+    }
+    function valItem() {
+        debugger
+        var OrderData = [];
+        $('#tblcon tbody tr').find('input[type=checkbox]:checked').each(function () {
+            debugger;
+            var cuObj = new Item();
+            //cuObj.Rawmaterialid = $($(this).parents('tr').children()[1].find('#hdCode')).attr('value');
+            cuObj.Rawmaterialid = $(this).parents('tr').find('.item11').attr('val');
+           
+            cuObj.Rawquantity = $(this).parents('tr').find('.quan').find("#txtQuantity").val();
+            cuObj.Rawuom = $(this).parents('tr').find('.uom').find("#ddlUOMitm").val();
+            OrderData.push(cuObj);
+        });
+        var Rawdata = JSON.stringify(OrderData);
+        var ddlItem = $("#ddlItem").val();
+        var ddlUOM = $("#ddlUOM").val();
+        var data = new FormData;
+        data.append("ItemID", ddlItem);
+        data.append("UOM", ddlUOM);
+        data.append("strRawdata", Rawdata);
+        //$.post('/Manufacturing/SaveProductConsumption', { 'data':data }, function (data) {
+        //    if (data == "Success") {
+        //        alert("Sms Send Successfully");
+        //    }
+        //});
+        $.ajax({
+            url: "../Manufacturing/SaveProductConsumption",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                alert(r);
+                window.location.href="/Manufacturing/ConsumtionSetup";
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                //$("#showSpinner").hide();
+            }
+        });
+    }
+    function Item() {
+        this.Rawmaterialid = null;
+        this.Rawquantity = null;
+        this.Rawuom = null;
+
+    }
+    function delItemlist(obj) {
+        debugger;
+        if (confirm('Are you sure want to Delete this product')) {
+            window.location.href = "/Manufacturing/ConsumtionSetup?Id="+obj+"&Mode=D";
+        }
+    }
+</script>
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Product Manufacturing Consumption Setup</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Select Product <span style="color:red">*</span> </label>
+                        @Html.DropDownList("ddlItem", (List<SelectListItem>)ViewBag.ItemHeadList, new { @id = "ddlItem", @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="inputEmail4" class="col-form-label">Select UOM <span style="color:red">*</span> </label>
+                        @Html.DropDownList("ddlUOM", (List<SelectListItem>)ViewBag.UOMList, new { @id = "ddlUOM", @class = "form-control" })
+                    </div>
+                </div>
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-centered table-borderless table-hover mb-0" id="tblcon">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th style="width: 20px;">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="customCheck1">
+                                                @*<label class="custom-control-label" for="customCheck1">&nbsp;</label>*@
+                                            </div>
+                                        </th>
+                                        <th style="width:420px;">Particulars</th>
+                                        <th>Quantity/Unit</th>
+                                        <th>Unit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                                    {
+                                        foreach (DataRow dr in Model.dt.Rows)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" onclick="checkme(this)" class="custom-control-input" id="customCheck2">
+                                                        @*<label class="custom-control-label" for="customCheck2">&nbsp;</label>*@
+                                                    </div>
+                                                </td>
+                                                <td class="item11" val="@dr["ItemCode"]">
+                                                    @dr["ItemName"]
+                                                    <input type="hidden" id="hdCode" value="@dr["ItemCode"]" />
+                                                </td>
+                                                <td class="quan">
+                                                    <input type="number" id="txtQuantity" class="form-control" value="0" />
+                                                </td>
+                                                <td class="uom">
+                                                    @Html.DropDownList("ddlUOMitm", (List<SelectListItem>)ViewBag.UOMList, new { @id = "ddlUOMitm" })
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+
+                                </tbody>
+                                <tfoot>
+                                    <tr><td><button type="button" onclick="valItem()" class="btn btn-sm btn-success">Save</button></td></tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <h4 class="header-title">Product Consumption Details</h4>
+            <div class="table-responsive">
+                <table id="tblItemHead" class="table table-borderless table-hover table-centered m-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sr.No</th>
+                            <th>ProductID</th>
+                            <th>Product</th>
+                            <th>Product UOM</th>
+                            <th>Raw Material</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Added Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow dr in Model.dt1.Rows)
+                            {
+                                i++;
+                                <tr>
+                                    <td>@i</td>
+                                   <td>@dr["ProductId"]</td>
+                                    <td>@dr["ItemName"]</td>
+                                    <td>@dr["UOM"]</td>
+                                    <td>@dr["RawItemname"]</td>
+                                    <td>@dr["quantity"]</td>
+                                    <td>@dr["rawunit"]</td>
+                                    <td>@dr["EntryDate"]</td>
+                                    <td><button class="btn btn-sm btn-danger" onclick="delItemlist('@dr["ProductId"]')" >Delete</button></td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>

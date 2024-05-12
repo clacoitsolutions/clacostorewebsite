@@ -1,0 +1,583 @@
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Claco Store - Sign In</title>
+    <style>
+        .cross-icon {
+            font-size: 24px;
+            color: red;
+            cursor: pointer;
+        }
+    </style>
+
+    <!-- Libs CSS
+    =============== -->
+
+    <link rel="stylesheet" href="@Url.Content("~/css/font-awesome/css/font-awesome.min.css")" />
+
+    <link rel="stylesheet" id="color_scheme" href="@Url.Content("~/css/theme.css")" />
+    <!-- Favicon Icon -->
+    <link rel="icon" type="image/png" href="images/fav.png">
+
+    <!-- Stylesheets -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link href='~/webassets/vendor/unicons-2.0.1/css/unicons.css' rel='stylesheet'>
+    <link href="~/webassets/css/style.css" rel="stylesheet">
+    <link href="~/webassets/css/responsive.css" rel="stylesheet">
+    <link href="~/webassets/css/night-mode.css" rel="stylesheet">
+    <link href="~/webassets/css/step-wizard.css" rel="stylesheet">
+
+    <!-- Vendor Stylesheets -->
+    <link href="~/webassets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="~/webassets/vendor/OwlCarousel/assets/owl.carousel.css" rel="stylesheet">
+    <link href="~/webassets/vendor/OwlCarousel/assets/owl.theme.default.min.css" rel="stylesheet">
+    <link href="~/webassets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/webassets/vendor/semantic/semantic.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  
+    <!--start code by muskan-->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(document).bind('keydown', function (e) {
+                if (e.which === 13) { // return
+                    $('#btnSignIn').trigger('click');
+                }
+            });
+
+            $("#btnSignIn").click(function () {
+
+                var UserName = $("#emailaddress").val();
+                var password = $("#password").val();
+                if (UserName == "") {
+                    $("#temp_data").text("Please Enter Mobile Number !");
+                    $("#emailaddress").focus();
+                    return;
+                }
+                if (password == "") {
+                    $("#temp_data").text("Please Enter password !");
+                    $("#password").focus();
+                    return;
+                }
+                var dataobject = {
+                    UserName: UserName,
+                    Password: password
+                };
+                $("#showSpinner").show();
+                $.ajax({
+                    url: "/Account/AuthenticateUser1",
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    //data: dataobject,
+                    data: JSON.stringify(dataobject),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (r) {
+                        if (r[0] == '1') {
+                            // Show error message
+                            $("#message").text("Login Sucessfully !!!");
+                            $("#iconSuccess").show();
+                            $("#iconError").hide();
+                            $("#alertMessage").show();
+                            var url = "../WebHome/Index";
+                            window.location.href = url;
+                        } else if (r[0] == "0") {
+                            // Show error message
+                            $("#message").text("Invalid User Name or Password!");
+                            $("#iconSuccess").hide();
+                            $("#iconError").show();
+                            $("#alertMessage").show();
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        // Show error message
+                        $("#message").text("Please Check Credentials Entered by you!");
+                        $("#iconSuccess").hide();
+                        $("#iconError").show();
+                        $("#alertMessage").show();
+                    }
+                });
+
+                setTimeout(function () {
+                    $("#alertMessage").hide();
+                }, 3000);
+            });
+        });
+
+    </script>
+    <!--end code by muskan-->
+    <script>
+        function toggleContent() {
+            window.location.href = "SignUp";
+        }
+    </script>
+    <style>
+        /* code by muskan*/
+        /* CSS for centering the alert message div */
+        #alertMessage {
+            position: fixed;
+            bottom: 1%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            height: 50px;
+            background: black;
+            display: none;
+            text-align: center; /* Center the text horizontally */
+            color: white;
+        }
+
+        .icon {
+            width: 20px; /* Adjust size as needed */
+            height: 20px; /* Adjust size as needed */
+            display: none;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    </style>
+    <style>
+        @@media only screen and (max-width: 767px) {
+            #pnw {
+                display: none
+            }
+
+            #hdd {
+                border: 3px solid#ff006e;
+                margin: 10px
+            }
+        }
+
+        .error-message {
+            color: red;
+            /* Add any other styles you want */
+        }
+    </style>
+
+    @*password hide show start*@
+
+    <script>
+        function togglePasswordVisibility() {
+            var passwordField = document.getElementById("password");
+            var toggleIcon = document.querySelector(".toggle-password i");
+
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                toggleIcon.classList.remove("fa-eye-slash");
+                toggleIcon.classList.add("fa-eye");
+            } else {
+                passwordField.type = "password";
+                toggleIcon.classList.remove("fa-eye");
+                toggleIcon.classList.add("fa-eye-slash");
+            }
+        }
+    </script>
+    <style>
+        .toggle-password {
+            position: absolute;
+            top: 28%;
+            right: 10px; /* Adjusted right position */
+            transform: translateY(-50%);
+            z-index: 1;
+            background: none;
+            border: none !important;
+            opacity: 0.5 !important;
+            font-size: 18px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    @* end password hide show start*@
+</head>
+
+<body>
+
+    <div class="main-container ">
+        <ul class="breadcrumb fixed-top" style="background:#ff006e;margin:0px !important;padding:20px;">
+            <li><a href="@Url.Action("Index","WebHome")"><i class="fa fa-home"></i></a></li>
+            <li><a href="#"><b>User</b></a></li>
+            <li><a href="#"><b>User Login</b></a></li>
+        </ul>
+
+        <div class="row">
+            <div id="content" class="col-sm-12">
+                <div class="page-login">
+                    <div class="account-border">
+                        <h1 id="topspace"></h1>
+                        <div class="row">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-6 mainboxsign">
+                                <div class="row" style="padding:20px">
+                                    <div class="col-sm-5" style="padding:20px">
+                                        <img src="~/img/User Login Design  (1).png" class="signimg" />
+                                    </div>
+
+                                    <div class="col-sm-7 customer-login " style="">
+                                        <div class="form">
+                                            <div class="form-inpts checout-address-step">
+
+                                                <div class="form-group pos_rel">
+                                                    <input type="text" id="emailaddress" name="phone" value="" required="" maxlength="10" onkeypress="return isNumberKey(event);" class="form-control lgn_input" placeholder="" />
+
+                                                    <label class="placeholder " for="Mobile">&#128241;Phone Number:</label>
+                                                </div>
+                                                <div class="form-group pos_rel">
+                                                    <input type="password" id="password" name="password1" value="" required="" class="form-control" placeholder="" />
+                                                    <label class="placeholder" for="Password">&#128274; Password</label>
+                                                    <button class="toggle-password" onclick="togglePasswordVisibility()">
+                                                        <i class="fas fa-eye-slash"></i>
+                                                    </button>
+                                                </div>
+
+                                                @* <p style="font-size:12px">By continuing, you agree to Claco Terms of Use and Privacy Policy.</p><br />*@
+                                                &nbsp;&nbsp; <a href="/CustomerAccount/ForgetPassword">
+                                                    <span class="txt-hvr" style="color:#333232;opacity:0.8 !important">
+                                                        Forgot Password?
+                                                    </span>
+                                                </a>
+                                                @*<a id="" style="color:#808080 !important" class="forgot bottom-right" href="/WebHome/ForgotPassword" onclick="ForgotPass()">Forgot Password?</a>*@
+                                                <a style="color: #808080 !important; " class="bottom-right txt-hvr" href="/CustomerAccount/Login"><span style="" class="txt-hvr">Login OTP</span></a>
+
+                                                <h6></h6>
+                                                <button id="btnSignIn" style="background: #ff006e;  opacity: 0.8 !important " class="form-control "><span style="font-weight: bold; color: white">Sign in </span></button>
+                                            </div>
+                                        </div>
+                                        <center>
+                                            <span style="color:#454545 !important;opacity:0.8 !important">   Don't have account?</span>
+                                            <a id="" class="" href="/CustomerAccount/SignUp" style="color:#ff006e !important;opacity:0.8 !important"><b>SignUp</b></a>
+                                        </center>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-md-3"></div>
+                        </div>
+                        @*change*@
+
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div id="alertMessage" style="height:50px;background:black; display:none;">
+        <div style="margin:10px;">
+            <span id="iconSuccess" style="display: none;"><img src="~/img/sucessicon-removebg-preview.png" alt="Success" height="30" width="30"></span>
+            <span id="iconError" style="display: none;"><img src="/img/erroricon.png" alt="Error" height="30" width="30"></span>
+            <span id="message" style="color:white;font-weight:bold"></span>
+        </div>
+    </div>
+    @*Start Sinup Box*@
+    <style>
+        .bottom-right {
+            position: absolute;
+            top:51%;
+            left: 70%;
+            color: #333232 !important;
+        }
+        .customer-login {
+            margin: 0px !important;
+            padding: 60px 40px 10px 50px !important;
+
+        }
+        .well {
+            padding: 40px !important;
+            border: none !important
+        }
+
+.mainboxsign {
+background-color: white;
+min-height: 400px;
+margin: 0px;
+padding: 10px;
+box-shadow: 0px 2px 15px #c3c3c3;
+border-radius: 20px
+}
+
+.signimg {
+
+background-size:cover !important;
+opacity: 0.8 !important
+}
+        #topspace {
+            height:80px
+        }
+        .txt-hvr:hover
+        {
+            color:red !important;
+        }
+        @@media only screen and (max-width:768px) {
+            .bottom-right {
+            position: absolute;
+            left: 55%;
+            top: 64%;
+        }
+            .well {
+    padding: 10px !important;
+}
+
+.signimg {
+    height: 500px !important
+}
+    #topspace
+    {
+        display:none
+    }
+        .customer-login {
+            margin: 0px !important;
+            padding: 10px 10px 10px 10px !important;
+        }
+}
+@*start inputbox*@
+.form-group {
+position: relative;
+/* Adjust as needed */
+}
+
+.form-control {
+/* Set initial width */
+min-height: 45px; /* Set initial height */
+transition: height 0.3s ease; /* Smooth transition for height change */
+
+margin-bottom: 25px;
+}
+
+.form-control:focus {
+    height: 45px; /* Set expanded height when focused */
+}
+
+.placeholder {
+position: absolute;
+left: 10px; /* Adjust as needed */
+top: 30%;
+transform: translateY(-50%);
+color: #aaa;
+pointer-events: none; /* Prevent interaction with placeholder */
+transition: top 0.3s ease, font-size 0.3s ease;
+}
+
+.form-control:focus + .placeholder,
+.form-control:not(:placeholder-shown) + .placeholder {
+top: -13px;
+left: 8PX;
+padding-bottom:5PX;
+font-size: 16px;
+color: #454545;
+opacity: 0.8;
+
+}
+
+    </style>
+
+
+
+
+
+
+
+    <div id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true" class="modal" style="background: #00000096; opacity: 0.99; ">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        OTP Verification<a href="../CustomerAccount/Index">
+                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                            <span class="close_modal" style="background: red;
+    color: white;
+    /* width: 20px; */
+    font-size: 20px;
+    padding-left: 10px;
+    padding-right: 10px;">&times;</span>
+                        </a>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>We have sent an OTP(One Time Password) via SMS on +91 <span class="otp_mobile" id="ModalMobilNo"></span></p>
+                    <div class="input-group">
+                        <input id="txtOtp" maxlength="4" class="form-control verification_code" placeholder="Enter OTP Here">
+                    </div>
+
+                    <span class="error otp-error"></span>
+                    <button type="button" class="grn_btn btn-sm btn-success verify_otp_btn mt-1" onclick="verifyOTP('V')" @*onClick="ga('send', 'event', 'OTP', 'verify', 'to verify otp');"*@>
+                        <span>Verify</span>
+
+                    </button>
+                    <button style="display:none" type="button" class="grn_btn btn-sm btn-primary resend_otp_btn mt-1" onclick="verifyOTP('R')" onClick="ga('send', 'event', 'OTP', 'resend otp', 'to resend the otp');">
+                        <span>Resend OTP</span>
+
+                    </button>
+                    <p class="otp_div" style="display:none"><i class="fa fa-check-circle"></i><span class="msg_otp">OTP Sent</span></p>
+                    <input type="hidden" id="hdx" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Button trigger modal -->
+    <!-- Modal -->
+    <div class="modal" id="basicExampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true" style="background: #00000096; opacity: 0.99; ">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Reset Password</h5>
+                    <button type="button" class="close_modal" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label>Enter New Password</label>
+                    <input type="password" id="newPass" onchange="passwordval(this)" class="form-control" maxlength="15" />
+                    <label>Confirm Password</label>
+                    <input type="password" id="conPass" class="form-control" maxlength="15" />
+                </div>
+                <div class="modal-footer">
+                    @*<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>*@
+                    <button type="button" onclick="SaveNewPass()" class="btn btn-primary">Reset Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- Javascripts -->
+    <script src="~/webassets/js/jquery-3.3.1.min.js"></script>
+    <script src="~/webassets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/webassets/vendor/OwlCarousel/owl.carousel.js"></script>
+    <script src="~/webassets/vendor/semantic/semantic.min.js"></script>
+    <script src="~/webassets/js/jquery.countdown.min.js"></script>
+    <script src="~/webassets/js/custom.js"></script>
+    <script src="~/webassets/js/product.thumbnail.slider.js"></script>
+    <script src="~/webassets/js/offset_overlay.js"></script>
+    <script src="~/webassets/js/night-mode.js"></script>
+</body>
+</html>
+
+<script type="text/javascript">
+
+    function ForgotPass() {
+
+        var mobile = $("#emailaddress").val();
+
+        $("#ModalMobilNo").text(mobile);
+        $.post("/CustomerAccount/ForgotPassword", { mobile: mobile }, function (data) {
+            if (data.strmsg == "True") {
+                $("#myModal").show();
+                $("#hdx").val(data.strOtp);
+
+            }
+            else {
+                alert(data.strmsg);
+            }
+        });
+    }
+
+    //$("#navbar ul li").each(function () {
+    //    var id = $(this).attr("data-id");
+    //    if (id == "signin") {
+    //        $(this).hide();
+    //    }
+    //})
+
+    function verifyOTP(Action, otp) {
+
+        //var UserName = $('#txtUserName').val();
+        //var UserEmail = $('#txtUserEmail').val();
+        //var UserMobile = $('#txtUserMobile').val();
+        var Otp = $('#txtOtp').val();
+
+        if (Action == "R") {
+            return
+        }
+
+        $(".otp_div").css("display", "none");
+        $(".otp_div i").css("display", "block");
+        $(".otp_div span").css("display", "block");
+
+        if ($("#txtOtp").val() != "") {
+
+            if ($("#hdx").val() == $("#txtOtp").val()) {
+                $(".otp_div span").text("Mobile no. Verified");
+                $(".otp_div").fadeIn(100);
+                setTimeout(function () {
+                    $("#myModal").fadeOut(300);
+
+                    //setLoginData()
+                }, 1000);
+                $("#dropdown_name").text($(".full_name").val());
+                $(".otp_div span").text("Mobile no. Verified");
+                $(".otp_div").fadeIn(100);
+                setTimeout(function () {
+                    $("#myModal").fadeOut(300);
+
+                    //setLoginData()
+                }, 1000);
+
+                $("#basicExampleModal").show();
+                $("#basicExampleModal").draggable();
+            }
+            else {
+                alert('Mobile No. Not verified');
+            }
+        }
+        else {
+            alert('Enter OTP to verify');
+        }
+
+    }
+</script>
+
+<script>
+    function SaveNewPass() {
+        var mob = $("#emailaddress").val();
+        var newPass = $("#newPass").val();
+        var conPass = $("#conPass").val();
+        if (newPass == conPass) {
+            $.post("/CustomerAccount/UpdatePass", { mob: mob, newPass: newPass }, function (data) {
+                alert(data);
+                setTimeout(function () {
+                    $("#basicExampleModal").fadeOut(300);
+
+                }, 1000);
+            });
+        }
+        else {
+
+            alert("Password not Matched!");
+            $("#conPass").val('');
+        }
+    }
+    function passwordval(obj) {
+        debugger
+        if ($(obj).val().length < 7 || $(obj).val().length > 21) {
+            alert('Password Length should be minimum 8 and max 20 character');
+            $(obj).val('');
+            $(obj).focus();
+        }
+    }
+
+
+    function isNumberKey(evt) {
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+        return true;
+    }
+
+</script>

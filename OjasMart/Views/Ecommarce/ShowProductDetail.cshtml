@@ -1,0 +1,215 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Product Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using System.Data;
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#quantityinput').change(function () {
+            var AvlQty = $.trim($('#hdStockBal').val()) != "" ? parseFloat($.trim($('#hdStockBal').val())) : 0;
+            var Qty = $.trim($('#quantityinput').val()) != "" ? parseFloat($.trim($('#quantityinput').val())) : 0;
+            if (Qty > AvlQty) {
+                alert('Insufficient Stock Balance. !!!');
+                return false;
+            }
+        });
+    });
+
+    function InsertToCart() {
+        if ($("#hdItemCode").val() == "") {
+            alert("Item Code is Empty !!!");
+            return;
+        }
+        var AvlQty = $.trim($('#hdStockBal').val()) != "" ? parseFloat($.trim($('#hdStockBal').val())) : 0;
+        var Qty = $.trim($('#quantityinput').val()) != "" ? parseFloat($.trim($('#quantityinput').val())) : 0;
+        if (Qty > AvlQty) {
+            alert('Insufficient Stock Balance. !!!');
+            return false;
+        }
+        var dataobject = {
+            ItemCode: $("#hdItemCode").val(),
+            Quantity: $("#quantityinput").val(),
+            Action: "1",
+            Status: "A"
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Ecommarce/InsertToCartList",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r.strId == '1') {
+                    //alert('Item successfully added with cart. !!!');
+                    toastr.success('Item successfully added with cart.');
+                    location.reload();
+                }
+                else {
+                    //alert('Item is not added with Cart !!!');
+                    toastr.error('Item is not added with Cart.');
+
+                }
+                $("#showSpinner").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                //alert('Server not Responding !!!');
+                toastr.error('Server not Responding.');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+</script>
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">eCommerce</a></li>
+                    <li class="breadcrumb-item"><a href="../Ecommarce/EcommarceCustomerDashboard">Home</a></li>
+                    <li class="breadcrumb-item active">Product Detail</li>
+                </ol>
+            </div>
+            <h4 class="page-title">Product Detail</h4>
+        </div>
+    </div>
+</div>
+<!-- end page title -->
+<div class="row">
+    <div class="col-12">
+        <div class="card-box">
+            @if (Model.dt != null && Model.dt.Rows.Count > 0)
+            {
+                <input type="hidden" id="hdItemCode" value="@Model.dt.Rows[0]["ProductCode"]" />
+                <div class="row">
+                    <div class="col-xl-5">
+                        <div class="tab-content pt-0">
+                            @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+                            {
+                                int i = 0;
+                                foreach (DataRow dr1 in Model.dt1.Rows)
+                                {
+                                    i++;
+                                    if (i == 1)
+                                    {
+                                        <div class="tab-pane active show" id="p_@i">
+                                            <img src="@dr1["ImageUrl"]" alt="" class="img-fluid mx-auto d-block rounded">
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="tab-pane" id="p_@i">
+                                            <img src="@dr1["ImageUrl"]" alt="" class="img-fluid mx-auto d-block rounded">
+                                        </div>
+                                    }
+                                }
+                            }
+                        </div>
+                        <ul class="nav nav-pills nav-justified">
+                            @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+                                {
+                                    int i = 0;
+                                    foreach (DataRow dr1 in Model.dt1.Rows)
+                                    {
+                                        i++;
+                                        if (i == 1)
+                                        {
+                            <li class="nav-item">
+                                <a href="#p_@i" data-toggle="tab" aria-expanded="false" class="nav-link product-thumb active show">
+                                    <img src="@dr1["ImageUrl"]" alt="" class="img-fluid mx-auto d-block rounded">
+                                </a>
+                            </li>
+                                        }
+                                        else
+                                        {
+                            <li class="nav-item">
+                                <a href="#p_@i" data-toggle="tab" aria-expanded="false" class="nav-link product-thumb">
+                                    <img src="@dr1["ImageUrl"]" alt="" class="img-fluid mx-auto d-block rounded">
+                                </a>
+                            </li>
+                                        }
+                                    }
+                                }
+                        </ul>
+                    </div> <!-- end col -->
+                    <div class="col-xl-7">
+                        <div class="pl-xl-3 mt-3 mt-xl-0">
+                            @*<a href="#" class="text-primary">Jack & Jones</a>*@
+                            <h4 class="mb-3">@Model.dt.Rows[0]["ItemName"]</h4>
+                            <p class="text-muted float-left mr-3">
+                                <span class="mdi mdi-star text-warning"></span>
+                                <span class="mdi mdi-star text-warning"></span>
+                                <span class="mdi mdi-star text-warning"></span>
+                                <span class="mdi mdi-star text-warning"></span>
+                                <span class="mdi mdi-star"></span>
+                            </p>
+                            <p class="mb-4"><a href="#" class="text-muted">( 36 Customer Reviews )</a></p>
+                            @*<h6 class="text-danger text-uppercase">20 % Off</h6>*@
+                            <h4 class="mb-4">Price : @*<span class="text-muted mr-2"><del>$80 USD</del></span>*@ <b>&#8377;@Model.dt.Rows[0]["OnlinePrice"]</b></h4>
+                            <h4>
+                                @if (Model.dt.Rows[0]["AvlStock"].ToString() != "")
+                                {
+                                    <input type="hidden" id="hdStockBal" value="@Model.dt.Rows[0]["AvlStock"]" />
+                                    if (Convert.ToDecimal(Model.dt.Rows[0]["AvlStock"].ToString()) > 0)
+                                    {
+                                        <span class="badge bg-soft-success text-success mb-4">Instock</span>
+                                        
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-soft-danger text-danger mb-4">Out of stock</span>
+                                    }
+                                }
+                            </h4>
+                            <div class="form-inline mb-4">
+                                <label class="my-1 mr-2" for="quantityinput">Quantity</label>
+                                <select class="custom-select my-1 mr-sm-3" id="quantityinput">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                </select>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-danger mr-2" style="display:none"><i class="mdi mdi-heart-outline"></i></button>
+                                <button type="button" class="btn btn-success waves-effect waves-light" onclick="InsertToCart()">
+                                    <span class="btn-label"><i class="mdi mdi-cart"></i></span>Add to cart
+                                </button>
+                            </div>
+                            @if (Model.dt.Rows[0]["ProductSpecification"].ToString() != "")
+                            {
+                                <hr />
+                                <h4 class="mb-3">Product Specification</h4>
+                                @Html.Raw(Model.dt.Rows[0]["ProductSpecification"])
+                            }                           
+                        </div>
+                    </div> <!-- end col -->
+                </div>
+
+            }
+
+            <!-- end row -->
+            <hr />
+        <div class="row">
+            
+            <div class="col-md-12">
+                <h4>Product Description</h4>
+                <hr />
+                @Html.Raw(Model.dt.Rows[0]["ProductDescription"])
+            </div>
+        </div>
+
+        </div> <!-- end card-->
+    </div> <!-- end col-->
+</div>
+<!-- end row-->

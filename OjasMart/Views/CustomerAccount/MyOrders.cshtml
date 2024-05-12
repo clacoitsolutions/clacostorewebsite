@@ -1,0 +1,345 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "MyOrders";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+@using System.Data;
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<!-- jQuery CDN -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Bootstrap JS CDN -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script>
+    // Get the content of the <h4> element with id "proName"
+    var productName = document.getElementById("proName").innerText;
+    console.log(productName); // Output the product name to the console
+</script>
+<style>
+    #proName {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .shadow-box:hover {
+        box-shadow: 0 0 20px #c6c2c2; /* Box shadow ka hover state definition */
+    }
+
+    .orderdate {
+        margin: 10px;
+    }
+
+    .truncate {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 15ch; /* Limiting to 20 characters */
+    }
+
+    .order-dtsll li {
+        padding: 10px 15px;
+    }
+</style>
+<script>
+    function redirectToOrderDetails(orderId) {
+        debugger;
+        window.location.href = "/CustomerAccount/Myorderdetails?OrderId=" + orderId;
+
+        /*        window.location.href = "\CustomerAccount\Myordersdetails?OrderId=" + orderId;*/
+    }
+</script>
+<script>
+    function ProceedOrderCancel(OrderId) {
+        if (OrderId != '') {
+            /*  $('#exampleModal').modal('show');*/
+            $('#spnOrderId').text(OrderId);
+        }
+    }
+
+    function CancelYourOrder() {
+        if ($('#spnOrderId').text() == '') {
+            alert('Order Id not found!');
+            return;
+        }
+        if ($('#txtCancelReason').val() == '') {
+            alert('Please Enter Reason!');
+            $('#txtCancelReason').focus();
+            return;
+        }
+        var x = confirm("Are you sure you want to cancel?");
+        if (x) {
+            var dataobject = {
+                OrderId: $('#spnOrderId').text(),
+                Reason: $('#txtCancelReason').val(),
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                type: "POST",
+                url: "/CustomerAccount/CancelOrder",
+                data: dataobject,
+                dataType: "json",
+                success: function (r) {
+                    if (r.strId == "1") {
+                        alert(r.msg);
+                        //getDetails();
+                        $("#showSpinner").hide();
+                        location.reload();
+                    }
+                    else {
+                        alert(r.msg);
+                        $("#showSpinner").hide();
+                    }
+                }
+            });
+        }
+        else {
+            return false;
+        }
+    }
+    function ProceedOrderReturn(OrderId) {
+        debugger
+        if (OrderId != '') {
+            //$('#address_model').modal('show');
+            $('#spnOrderId').text(OrderId);
+        }
+    }
+    function ReturnYourOrder() {
+        if ($('#spnOrderId').text() == '') {
+            alert('Order Id not found!');
+            return;
+        }
+        if ($('#txtReturnReason').val() == '') {
+            alert('Please Enter Reason!');
+            $('#txtReturnReason').focus();
+            return;
+        }
+        var x = confirm("Are you sure you want to Return?");
+        if (x) {
+            var dataobject = {
+                OrderId: $('#spnOrderId').text(),
+                Reason: $('#txtReturnReason').val(),
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                type: "POST",
+                url: "/CustomerAccount/ReturnOrder",
+                data: dataobject,
+                dataType: "json",
+                success: function (r) {
+                    if (r.strId == "1") {
+                        alert(r.msg);
+                        //getDetails();
+                        $("#showSpinner").hide();
+                        location.reload();
+                    }
+                    else {
+                        alert(r.msg);
+                        $("#showSpinner").hide();
+                    }
+                }
+            });
+        }
+        else {
+            return false;
+        }
+    }
+    function getDetails() {
+        $.ajax({
+            url: "../CustomerAccount/MyOrders",
+            type: "POST",
+            data: {},
+            datatype: "json",
+            success: function (data1) {
+                var htmlNew = data1;
+                $('#div').html($(htmlNew).find('#div1'));
+            }
+        });
+    }
+
+</script>
+
+
+<div class="container">
+    <div class="row" style="margin-top:60px;background:white">
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="../WebHome/Index" style="color:red!important">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">My Orders</li>
+            </ol>
+        </nav>
+
+    </div>
+
+
+    @*<div class="dashboard-group">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        @Html.Action("_pUserHeader", "CustomerAccount")
+                    </div>
+                </div>
+            </div>
+        </div>*@
+
+    <div class="">
+
+        <div class="row">
+            @Html.Action("_pUserSideMenu", "CustomerAccount")
+            <div class="col-lg-9 col-md-8" id="div" style="background: #F7F7F9;">
+                <div class="dashboard-right" id="div1">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="main-title-tab">
+                                <h4><i class="uil uil-box"></i>My Orders</h4>
+                            </div>
+                        </div>
+                        @{
+                            string Status = "cancelled";
+                            string CheckStatus;
+
+                        }
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            <div class="col-lg-12 col-md-12 rwclr">
+
+                                @foreach (DataRow dr in Model.dt.Rows)
+                                {
+                                    CheckStatus = dr["DeliveryStatus"].ToString();
+
+                                    //if (CheckStatus != Status)
+                                    //{
+
+                                    <div class="pdpt-bg shadow-box">
+                                        @*<div class="pdpt-title">
+                                                <h6>Order Date & Time @dr["OrdDate"] <span style="float:right">OrderId: #@dr["OrderId"]</span> </h6>
+                                            </div>*@
+                                        <div class="order-body10" onclick="redirectToOrderDetails('@dr["OrderId"]')">
+                                            @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+                                            {
+                                                <div style="display:flex;justify-content:space-between;width:100%;">
+                                                    <div style="float:left;padding:10px 20px">
+
+                                                        <h6>@*<i class="fa fa-circle" style="color:green"></i> &nbsp; Order on @dr["OrdDate"]*@ <span type="hidden"><b>OrderId:</b> #@dr["OrderId"]</span></h6>
+                                                    </div>
+                                                    <div style="float: right; padding: 10px 20px ">
+
+
+                                                        @if (CheckStatus != Status)
+                                                        {
+                                                            <h6><i class="fa fa-circle" style="color:green"></i> &nbsp;  @dr["DeliveryStatus"] </h6>
+                                                        }
+                                                        else
+                                                        {
+                                                            <h6><i class="fa fa-circle" style="color:red"></i> &nbsp; @dr["DeliveryStatus"] </h6>
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                                foreach (DataRow dr1 in Model.dt1.Rows)
+                                                {
+                                                    if (Convert.ToString(dr["OrderId"]) == Convert.ToString(dr1["OrderId"]))
+                                                    {
+                                                        <ul class="order-dtsll row">
+                                                            <li>
+                                                                <div class="order-dt-img">
+
+                                                                    <a href="/ProductDetail/ShowProduct_detail?proId=@dr1["ProductCode"]&&title=@dr1["ProductName"]&&CatId=@dr1["MainCategoryCode"]">  <img src="@dr1["MainImage"]" alt=""></a>
+                                                                </div>
+                                                            </li>
+
+                                                            <li>
+                                                                <div class="order-dt47">
+                                                                    <h4 class="truncate">@dr1["ProductName"]</h4>
+                                                                    @if (Convert.ToString(dr1["VarriationName"]) != "")
+                                                                    {
+                                                                        <p>
+                                                                            <ul class="kggrm-now">
+                                                                                <li>
+                                                                                    <input type="radio" id="1" name="cart1" disabled="">
+                                                                                    <label for="1" style="background-color:#1cacb7">@dr1["VarriationName"]</label>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </p>
+                                                                    }
+                                                                    <p>Total Quantity: @dr1["Quantity"]</p>
+                                                                    <p><i class="fa fa-inr" aria-hidden="true"></i> @dr1["UnitRate"]</p>
+                                                                    @*<div class="order-title">2 Items <span data-inverted="" data-tooltip="2kg broccoli, 1kg Apple" data-position="top center">?</span></div>*@
+                                                                </div>
+                                                            </li>
+
+                                                        </ul>
+
+                                                    }
+                                                }
+
+                                            }
+
+                                            @if (Model.dtcombooffer != null && Model.dtcombooffer.Rows.Count > 0)
+                                            {
+                                                <div class="pdpt-title">
+                                                    <h3 style="margin-left: 2%;">Free Item</h3>
+                                                </div>
+
+                                                foreach (DataRow drcombooffer in Model.dtcombooffer.Rows)
+                                                {
+                                                    if (Convert.ToString(dr["OrderId"]) == Convert.ToString(drcombooffer["OrderId"]))
+                                                    {
+                                                        <ul class="order-dtsll">
+                                                            <li>
+                                                                <div class="order-dt-img">
+                                                                    <img src="@drcombooffer["MainImage"]" alt="">
+                                                                </div>
+                                                            </li>
+                                                            <li>
+                                                                <div class="order-dt47">
+                                                                    <h4 class="truncate">@drcombooffer["ProductName"]</h4>
+                                                                    @if (Convert.ToString(drcombooffer["VarriationName"]) != "")
+                                                                    {
+                                                                        <p>
+                                                                            <ul class="kggrm-now">
+                                                                                <li>
+                                                                                    <input type="radio" id="1" name="cart1" disabled="">
+                                                                                    <label for="1" style="background-color:#1cacb7">@drcombooffer["VarriationName"]</label>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </p>
+                                                                    }
+                                                                    <p>Total Quantity: @drcombooffer["qty"]</p>
+                                                                    @*<div class="order-title">2 Items <span data-inverted="" data-tooltip="2kg broccoli, 1kg Apple" data-position="top center">?</span></div>*@
+                                                                </div>
+                                                            </li>
+                                                        </ul>
+                                                    }
+                                                }
+                                            }
+
+                                        </div>
+
+                                        @*<a href="/CustomerAccount/orderdetails?OrderId=@dr["OrderId"]">
+                                                <div style="margin:10px;margin-left:85% ;height:40px; width:200px;">
+
+                                                    <p style="font-size: 15px;color:#eb2461;font-weight:600;">View More</p>
+
+                                                </div>
+                                            </a>*@
+
+
+                                    </div>
+
+
+                                }
+
+                            </div>
+
+                        }
+
+                    </div>
+                </div>
+            </div>
+            <!---for mobile view-->
+            <!----end-->
+        </div>
+    </div>
+</div>

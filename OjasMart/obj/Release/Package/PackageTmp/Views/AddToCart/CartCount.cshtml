@@ -1,0 +1,9 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+
+    Layout = null;
+}
+@using System.Data;
+
+<a href="~/AddToCart/ShowCartSummary" class="cart__btn hover-btn" title="Cart" id="">
+    <i class="uil uil-shopping-cart-alt"></i><span>Cart</span><ins>@Model.TotalCountCart</ins><i class="uil uil-angle-down"></i></a>

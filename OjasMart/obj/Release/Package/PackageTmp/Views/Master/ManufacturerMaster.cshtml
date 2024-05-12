@@ -1,0 +1,289 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Category Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+        $('select').select2();
+        $('#chkIsParrent').click(function () {
+            $('#divParrent').fadeToggle();
+        })
+
+        $("#tblItemHead").DataTable({
+            dom: 'Bfrtip',
+            //pageLength: 5,
+            lengthMenu: [[10, 20, 50, 100, 500, -1], [10, 20, 50, 100, 500, "All"]],
+            buttons: [
+               'pageLength',
+           {
+               extend: 'excelHtml5', footer: true
+           },
+           { extend: 'csvHtml5', footer: true },
+           {
+               extend: 'pdfHtml5', footer: true, orientation: 'landscape',
+
+               pageSize: 'LEGAL',
+               text: '<i class="fa fa-file-pdf-o"> PDF</i>',
+               titleAttr: 'PDF'
+           }
+            ]
+        });
+
+
+    });
+
+
+    function InsertCategoryDetails() {
+        debugger;
+        var username = '@Request.RequestContext.HttpContext.Session["UserName"]';
+        if (username == '') {
+            window.location.href = '../adminlogin/index';
+        }
+       
+        if ($("#txtCategoryName").val() == "") {
+            alert("Please Enter Manufaturer Name !");
+            $("#txtCategoryName").focus();
+            return;
+        }        
+
+        var Imagefile = $("#fuUpload").get(0).files;
+        var data = new FormData;
+        data.append("MainImage", Imagefile[0]);
+        data.append("Action", '1');
+        data.append("RespoCode", $("#hdSrNo").val());
+        data.append("GroupName", $("#txtCategoryName").val());
+
+        $("#showSpinner").show();
+        $.ajax({
+            url: "../Master/insertmanufacturer",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                if (r.strId == '1') {
+                    alert(r.msg);
+                    $("#showSpinner").hide();
+                    location.reload();
+                }
+                else {
+                    alert(r.msg);
+                    $("#showSpinner").hide();
+                }
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+
+    function GetDetailsForEdit(ItemCode) {
+        var dataobject = {
+            SrNo: ItemCode
+        };
+        $.ajax({
+            type: "POST",
+            url: "/Master/GetDetailsForManufacturerEdit",
+            data: dataobject,
+            dataType: "json",
+            success: function (r) {
+                debugger;
+                if (r != null) {
+                    $("#txtCategoryName").val(r.GroupName);
+                    $("#hdSrNo").val(r.RespoCode);
+                    
+                    if (r.PurchaseFile != '') {
+                        $('#imgPrv').attr('src', r.PurchaseFile);
+                    }
+                    else {
+                        $('#imgPrv').removeAttr('src');
+                    }
+                    $("#hdimageFile").val(r.BatchNo);
+                    $("#txtCategoryName").focus();
+
+                    $("#btnSave").hide();
+                    $("#btnUpdate").show();
+                }
+                else {
+                    alert("Details Not Found !!!");
+                }
+            }
+        });
+    }
+
+    function UpdateDetails() {
+        debugger;
+        var username = '@Request.RequestContext.HttpContext.Session["UserName"]';
+        if (username == '') {
+            window.location.href = '../adminlogin/index';
+        }
+        if ($("#hdSrNo").val() == "") {
+            alert("Id Not Found !");
+            $("#hdSrNo").focus();
+            return;
+        }
+    
+
+        var Imagefile = $("#fuUpload").get(0).files;
+        var data = new FormData;
+        data.append("MainImage", Imagefile[0]);
+        data.append("Action", '4');
+        data.append("RespoCode", $("#hdSrNo").val());
+        data.append("GroupName", $("#txtCategoryName").val());
+       
+        $("#showSpinner").show();
+        $.ajax({
+            url: "../Master/insertmanufacturer",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                if (r.strId == '1') {
+                    alert(r.msg);
+                    $("#showSpinner").hide();
+                    location.reload();
+                }
+                else {
+                    alert(r.msg);
+                    $("#showSpinner").hide();
+                }
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#showSpinner").hide();
+            }
+        });
+    }
+    function DeleteItemDetails(ItemCode) {
+        var x = confirm("Are you sure you want to delete?");
+        if (x) {
+            var data = new FormData;
+            data.append("Action", '5');
+            data.append("RespoCode", ItemCode);
+            $.ajax({
+                url: "../Master/insertmanufacturer",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: data,
+                success: function (r) {
+                    if (r.strId == "1") {
+                        alert(r.msg);
+                        location.reload();
+                    }
+                    else {
+                        alert(r.msg);
+                        $("#showSpinner").hide();
+                    }
+                }
+            });
+        }
+        else {
+            return false;
+        }
+    }
+
+
+    function cancelOp() {
+        location.reload();
+    }
+</script>
+@using System.Data;
+
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<!-- start page title -->
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Master</a></li>
+                    <li class="breadcrumb-item active">Product Manufaturer</li>
+                </ol>
+            </div>
+            <h4 class="page-title">Add / Edit Manufaturer</h4>
+        </div>
+    </div>
+</div>
+<!-- end page title -->
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card-box">
+            <h5 class="text-uppercase bg-light p-2 mt-0 mb-3">General</h5>
+            <div class="form-group mb-3">
+                <label for="product-name">Manufaturer Name <span class="text-danger">*</span></label>
+                <input type="text" id="txtCategoryName" class="form-control" placeholder="e.g : Pepsico,Cocacola">
+                <input type="hidden" id="hdSrNo" />
+            </div>            
+            <div class="form-group mb-3">
+                <label for="product-description">Manufaturer Image</label>
+                <input type="file" id="fuUpload" class="form-control" /><hr />
+                <img id="imgPrv" class="img-rounded" style="width: 31%;" />
+                <input type="hidden" id="hdimageFile" />
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="text-center mb-3">
+                        <button type="button" class="btn w-sm btn-light waves-effect" onclick="cancelOp()">Cancel</button>
+                        <button type="button" class="btn w-sm btn-success waves-effect waves-light" id="btnSave" onclick="InsertCategoryDetails()">Save</button>
+                        <button type="button" class="btn w-sm btn-warning waves-effect waves-light" style="display:none" id="btnUpdate" onclick="UpdateDetails()">update</button>
+                    </div>
+                </div> <!-- end col -->
+            </div>
+        </div> <!-- end card-box -->
+    </div> <!-- end col -->
+    <div class="col-lg-8">
+
+        <div class="card-box">
+            <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Manufaturer List</h5>
+            <div class="table-responsive">
+                <table id="tblItemHead" class="table table-borderless table-hover table-centered m-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sr.No</th>
+                            <th>Image</th>
+                            <th>Manufaturer Name</th>                            
+                            <th>Added Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                i++;
+                                <tr>
+                                    <td>@i</td>
+                                    <td style="width:1%"><img style="width:118%" id="imgCat" src="@dr["ManufacturerImage"]" /></td>
+                                    <td>@dr["ManufacturerName"]</td>                                  
+                                    <td>@dr["AddedDate"]</td>
+                                    <td>
+                                        <a href="javascript:void(0);" title="Edit" class="action-icon" onclick="GetDetailsForEdit('@dr["SrNo"]')"> <i class="mdi mdi-square-edit-outline" style="color:#51bfd0"></i></a>
+                                        <a href="javascript:void(0);" title="Delete" class="action-icon" onclick="DeleteItemDetails('@dr["SrNo"]')"> <i class="mdi mdi-delete" style="color:red"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- end col-->
+
+    </div> <!-- end col-->
+</div>
+<!-- end row -->
+<!-- end row -->

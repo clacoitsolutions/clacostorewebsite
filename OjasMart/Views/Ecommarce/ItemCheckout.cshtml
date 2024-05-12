@@ -1,0 +1,771 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Checkout";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using System.Data;
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('select').select2();
+
+        var row_count = $('#tblCartList').find('tr').length - 1;
+        $('#totalCount').text(row_count);
+
+        var ttamt = 0;
+        $('#tblCartList TBODY TR').each(function () {
+            var row = $(this);
+            var qty = $('#txtQty', this).val();
+            if (qty == "1") {
+                $('.btnReduce', this).off('click');
+            }
+            var amt1 = $.trim(row.find('.tAmt').text()) != "" ? parseFloat(row.find('.tAmt').text()) : 0;
+            ttamt = ttamt + amt1;
+        });
+        $("#lblGrossTotal").text(ttamt.toFixed(2));
+        $("#lblTotal").text(ttamt.toFixed(2));
+
+        $('.btnAdd').click(function () {
+            var row = $(this).closest('tr');
+            var qty = row.find('.txtcls').val() != "" ? parseInt(row.find('.txtcls').val()) : 0;
+            var itemCode = row.find('.hdItemCode').val();
+            var Rate = row.find('.hdRate').val() != "" ? parseFloat(row.find('.hdRate').val()) : 0;
+            if (itemCode == "") {
+                alert("Product Code is Empty !!!");
+                return;
+            }
+            var dataobject = {
+                ItemCode: itemCode,
+                Quantity: "1",
+                Action: "1",
+                Status: "A"
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Ecommarce/InsertToCartList",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                //data: dataobject,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    if (r.strId == '1') {
+                        var NewQty = qty + 1;
+                        row.find('.txtcls').val(NewQty);
+                        var tt = Rate * NewQty;
+                        row.find('.tAmt').text(tt.toFixed(2));
+                        var amt = 0;
+                        $('#tblCartList tbody tr').each(function () {
+                            var trow = $(this);
+                            var amt1 = $.trim(trow.find('.tAmt').text()) != "" ? parseFloat(trow.find('.tAmt').text()) : 0;
+                            amt = amt + amt1;
+                        });
+                        $("#lblGrossTotal").text(amt.toFixed(2));
+                        $("#lblTotal").text(amt.toFixed(2));
+                        toastr.success('Item successfully updated in cart.');
+                        //location.reload();
+                        CheckWalletBalance();
+                    }
+                    else {
+                        //alert('Item is not added with Cart !!!');
+                        toastr.error('Server not Responding.');
+
+                    }
+                    $("#showSpinner").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    //alert('Server not Responding !!!');
+                    toastr.error('Server not Responding.');
+                    $("#showSpinner").hide();
+                }
+            });
+        });
+
+        $('.btnReduce').click(function () {
+            var row = $(this).closest('tr');
+            var qty = row.find('.txtcls').val() != "" ? parseInt(row.find('.txtcls').val()) : 0;
+            if (qty > 1) {
+                var itemCode = row.find('.hdItemCode').val();
+                if (itemCode == "") {
+                    alert("Product Code is Empty !!!");
+                    return;
+                }
+                var dataobject = {
+                    ItemCode: itemCode,
+                    Quantity: "1",
+                    Action: "1",
+                    Status: "R"
+                };
+                $("#showSpinner").show();
+                $.ajax({
+                    url: "/Ecommarce/InsertToCartList",
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    //data: dataobject,
+                    data: JSON.stringify(dataobject),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (r) {
+                        if (r.strId == '1') {
+                            var Rate = row.find('.hdRate').val() != "" ? parseFloat(row.find('.hdRate').val()) : 0;
+                            var NewQty = qty - 1;
+                            row.find('.txtcls').val(NewQty);
+
+                            var tt = Rate * NewQty;
+                            row.find('.tAmt').text(tt.toFixed(2));
+                            var amt = 0;
+                            $('#tblCartList tbody tr').each(function () {
+                                var trow = $(this);
+                                var amt1 = $.trim(trow.find('.tAmt').text()) != "" ? parseFloat(trow.find('.tAmt').text()) : 0;
+                                amt = amt + amt1;
+                            });
+                            $("#lblGrossTotal").text(amt.toFixed(2));
+                            $("#lblTotal").text(amt.toFixed(2));
+
+                            toastr.success('Item successfully updated in cart.');
+                            //location.reload();
+                            CheckWalletBalance();
+                        }
+                        else {
+                            //alert('Item is not added with Cart !!!');
+                            toastr.error('Server not Responding.');
+
+                        }
+                        $("#showSpinner").hide();
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        //alert('Server not Responding !!!');
+                        toastr.error('Server not Responding.');
+                        $("#showSpinner").hide();
+                    }
+                });
+
+
+
+
+            }
+        });
+
+        $('.rem').click(function () {
+            var row = $(this).closest('tr');
+            var itemCode = row.find('.hdItemCode').val();
+
+            var x = confirm("Are you sure you want to remove this Item?");
+            if (x) {
+                if (itemCode == "") {
+                    alert("Item Code is Empty !!!");
+                    return;
+                }
+                var dataobject = {
+                    ItemCode: itemCode,
+                    Quantity: 0,
+                    Action: "4",
+                    Status: 'A'
+                };
+                $("#showSpinner").show();
+                $.ajax({
+                    url: "/Ecommarce/InsertToCartList",
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    //data: dataobject,
+                    data: JSON.stringify(dataobject),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (r) {
+                        if (r.strId == '1') {
+                            alert('Item successfully Removed from the cart. !!!');
+                            location.reload();
+                        }
+                        else {
+                            alert('Item details not found !!!');
+                            $("#showSpinner").hide();
+
+                        }
+                        $("#showSpinner").hide();
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert('Server not Responding !!!');
+                        //toastr.error('Server not Responding.');
+                        $("#showSpinner").hide();
+                    }
+                });
+            }
+            else {
+                return false;
+            }
+        });
+
+        $('input[type=radio][name=customRadio]').change(function () {
+            if (this.value == 'Wallet') {
+                CheckWalletBalance();
+            }
+            else {
+                $('#lblBalMsg').hide();
+                return;
+            }
+        });
+
+        $("#btnPlaceOrder").click(function () {
+            var row_count = $('#tblCartList').find('tr').length - 1;
+            if (row_count <= 0) {
+                alert('There is no Item added in Item List !!!');
+                return;
+            }
+            var PayOption = $('[name=customRadio]:checked').val();
+            if (PayOption == "" || PayOption == undefined) {
+                alert('Please Select Payment Option !!!');
+                $('input[name=customRadio]').focus();
+                return;
+            }
+            var PaidAmt = $.trim($('#lblTotal').text()) != "" ? parseFloat($.trim($('#lblTotal').text())) : 0;
+            if (PaidAmt <= 0) {
+                alert('Total Payable Should be greater than 0 !!!');
+                return;
+            }
+            var st = null;
+            if (PayOption == "Wallet") {
+                var WalletBal = $.trim($('#hdWalletBal').val()) != "" ? parseFloat($.trim($('#hdWalletBal').val())) : 0;
+                var PaidAmt = $.trim($('#lblTotal').text()) != "" ? parseFloat($.trim($('#lblTotal').text())) : 0;
+                if (PaidAmt > WalletBal) {
+                    alert('Insufficient Wallet Balance !!!');
+                    return;
+                }
+                st = "success";
+            }
+            else {
+                st = "pending"
+            }
+            //if (PayOption == "Online") {
+            //    alert("This Feature is under Maintenance. !!!");
+            //    return;
+            //}
+            var ItemList = [];
+            $("#tblCartList tbody tr").each(function () {
+                var row = $(this);
+                item = {};
+                item["ItemCode"] = row.find(".hdItemCode").val();
+                item["Quantity"] = $.trim(row.find(".txtcls").val()) != "" ? parseFloat($.trim(row.find(".txtcls").val())) : 0;
+                item["TotalAmount"] = $.trim(row.find(".tAmt").text()) != "" ? parseFloat($.trim(row.find(".tAmt").text())) : 0;
+                ItemList.push(item);
+            });
+            var dataobject = {
+                GrossPayable: $.trim($('#lblGrossTotal').text()) != "" ? parseFloat($.trim($('#lblGrossTotal').text())) : 0,
+                deliverycharges: 0,
+                iscoupenapplied: "0",
+                CoupenAmount: 0,
+                DiscAmt: 0,
+                DeliveryTo: $("#hdDefAddress").val(),
+                PayMode: PayOption,
+                Status: st,
+                NetTotal: $.trim($('#lblTotal').text()) != "" ? parseFloat($.trim($('#lblTotal').text())) : 0,
+                ItemList: ItemList,
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Ecommarce/InsertOnlineOrder",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                //data: dataobject,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    if (r.strId != "0") {                        
+                        if (PayOption == "Wallet") {
+                            alert('Your Order Successfully  Placed. !!!');
+                            var url = '../Ecommarce/PrintInvoice?OrderId=' + r.OrderId;
+                            window.location.href = url;
+                        }
+                        else if (PayOption == "Online") {
+                            window.location.href = "../frmOnlinePurchasePaymentRequest.aspx?txnId=" + r.OrderId;
+                        }
+                        $("#showSpinner").hide();
+                    }
+                    else {
+                        alert("Error !!!");
+                        $("#showSpinner").hide();
+                    }
+                }
+            });
+        });
+
+        $('#divCustAddress .Delhere').click(function () {
+            var row = $(this);
+            //$('#lblDefName').text(row.find('.custName').text());
+            var name = row.closest('div').find('#div1').find('.custName').text();           
+            var Id = row.closest('div').find('#div1').find('.custId').val();
+            var Address = row.closest('div').find('#div1').find('.hdcustAdd').val();
+            var PinCode = row.closest('div').find('#div1').find('.hdCustPin').val();
+
+            $('#lblDefName').text(name);
+            $('#lblDefAddress').text(Address);
+            $('#lbldefPincode').text(PinCode);
+            $('#hdDefAddress').val(Id);
+
+            $("#DefAddress").show();
+            $("#divEditAdd").hide();
+            $("#divAddAddress").hide();
+        });
+
+    });
+
+    function InsertDeliverAddress() {
+        if ($("#txtName").val() == "") {
+            alert("Please Enter Name !!!");
+            $("#txtName").focus();
+            return;
+        }
+        if ($("#txtMobileNo").val() == "") {
+            alert("Please Enter Mobile No !!!");
+            $("#txtMobileNo").focus();
+            return;
+        }
+        if ($("#txtPinCode").val() == "") {
+            alert("Please Enter Pin Code !!!");
+            $("#txtPinCode").focus();
+            return;
+        }
+        if ($("#txtLocality").val() == "") {
+            alert("Please Enter Locality !!!");
+            $("#txtLocality").focus();
+            return;
+        }
+        if ($("#txtAddress").val() == "") {
+            alert("Please Enter Address !!!");
+            $("#txtAddress").focus();
+            return;
+        }
+        if ($("#txtCity").val() == "") {
+            alert("Please Enter City/District/Town !!!");
+            $("#txtCity").focus();
+            return;
+        }
+        if ($("#ddlState").val() == "") {
+            alert("Please Select State !!!");
+            $("#ddlState").focus();
+            return;
+        }
+        var AddressType = $("input:radio[name=radioInline0]:checked").val();
+
+        var dataobject = {
+            SSName: $("#txtName").val(),
+            ContactNo: $("#txtMobileNo").val(),
+            PinCode: $("#txtPinCode").val(),
+            locality: $("#txtLocality").val(),
+            Address: $("#txtAddress").val(),
+            CityName: $("#txtCity").val(),
+            StCode: $("#ddlState").val(),
+            landmark: $("#txtLandmark").val(),
+            altmobileno: $("#txtAltMobileNo").val(),
+            OfferType: AddressType
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Ecommarce/InsertDeliveryAddress",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            //data: dataobject,
+            data: JSON.stringify(dataobject),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                if (r.strId == '1') {
+                    location.reload();
+                }
+                else {
+                    alert('Server not Responding !!!');
+                    $("#showSpinner").hide();
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Server not Responding !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+    function ChangeDelAddress() {
+        $("#DefAddress").hide();
+        $("#divEditAdd").show();
+        $("#divChng").show();
+        //$("#divDefChk").hide();
+        $("#chkNew").prop("checked", false);
+        $("#divDefChk").hide();
+    }
+    function DelHere() {
+        $("#DefAddress").show();
+        $("#divEditAdd").hide();
+    }
+    function AddnewDelAddress() {
+        $("#DefAddress").hide();
+        $("#divEditAdd").show();
+        $("#divAddAddress").show();
+        //$("#divDefChk").show();
+        $("#chkNew").prop('checked', 'checked');
+        //$("#chkDefault").prop("checked", false);
+        //$("#divEidt").hide();
+        //$("#btnDelhere").hide();
+    }
+    function CheckDefCheckbox() {
+        $("#DefAddress").hide();
+        $("#divEditAdd").show();
+        $("#divAddAddress").hide();
+        $("#divDefChk").show();
+        $("#chkNew").prop("checked", false);
+        $("#divEidt").show();
+        $("#btnDelhere").show();
+    }
+
+    function CheckWalletBalance() {
+        if ($("#hdCustomerCode").val() != "") {
+            var dataobject = {
+                AccountCode: $("#hdCustomerCode").val()
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Sales/GetCustomerAccDetail",
+                type: "POST",
+                data: dataobject,
+                dataType: "json",
+                success: function (r) {
+                    var PaybleAmt = $.trim($('#lblTotal').text()) != "" ? parseFloat($.trim($('#lblTotal').text())) : 0;
+                    $('#hdWalletBal').val(r.WalletBal);
+                    if (PaybleAmt > r.WalletBal) {
+                        $('#lblBalMsg').show();
+                    }
+                    else {
+                        $('#lblBalMsg').hide();
+                    }
+                    $("#showSpinner").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });
+        }
+        else {
+            $('#lblBalMsg').hide();
+        }
+    }
+
+    function CancelAddDel() {
+        $('#DefAddress').show();
+        $('#divEditAdd').hide();
+        $('#divAddAddress').hide();
+        $("#chkNew").prop("checked", false);
+    }
+</script>
+<style>
+    .txtcls {
+        width: 56px;
+        height: 28px;
+        float: left;
+        margin: 0px 7px 0px 7px;
+    }
+</style>
+
+<input type="hidden" id="hdCustomerCode" value="@Model.CustomerId" />
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <i class="fa fa-refresh fa-spin nexo-refresh-icon" style="color: rgb(0, 0, 0); font-size: 50px; position: absolute; top: 50%; left: 50%; margin-top: -25px; margin-left: -25px; width: 44px; height: 50px;">
+        </i>
+    </div>
+</my-spinner>
+<!-- start page title -->
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">eCommarce</a></li>
+                    <li class="breadcrumb-item"><a href="../Ecommarce/EcommarceCustomerDashboard">Home</a></li>
+                    <li class="breadcrumb-item active">Checkout</li>
+                </ol>
+            </div>
+            <h4 class="page-title">Checkout</h4>
+        </div>
+    </div>
+</div>
+<!-- end page title -->
+<div class="row">
+    <div class="col-lg-8 col-xl-8" id="divDelAdd">
+        <div class="card-box" id="divRef">
+            <h4>1. DELIVERY ADDRESS</h4>
+            <hr />
+            @if (Model.dt != null && Model.dt.Rows.Count > 0)
+            {
+                foreach (DataRow dr in Model.dt.Rows)
+                {
+                    if (dr["IsDefaultAccount"].ToString() == "Default")
+                    {
+                        <div id="DefAddress">
+                            <div class="row">
+                                <div class="col-md-10">
+                                    <p>
+                                        <span style="font-weight:bold" id="lblDefName">@dr["Name"]</span>
+                                        <span id="lblDefAddress">@dr["compAdd"] </span>
+                                        <span id="lbldefPincode" style="font-weight:bold">@dr["PinCode"]</span>
+                                        <input type="hidden" id="hdDefAddress" value="@dr["SrNo"]" />
+                                    </p>
+                                </div>
+                                <div class="col-md-2">
+                                    <a href="JavaScript:Void(0);" class="btn btn-outline-blue waves-effect waves-light" onclick="ChangeDelAddress()">Change</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                <div id="divEditAdd" style="display:none">
+                    @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                {
+                    foreach (DataRow dr in Model.dt.Rows)
+                    {
+                    <div class="row">
+                        <div class="col-md-10" id="divCustAddress">
+                            <p>
+                                <div class="row">
+                                    <div class="col-md-2" style="text-align:right;display:none" id="divDefChk">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input chk" id="chkDefault" onchange="CheckDefCheckbox()">
+                                            <label class="custom-control-label" for="chkDefault"></label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-10" id="div1">
+                                        <span style="font-weight:bold" class="custName">@dr["Name"]</span>
+                                        <span class="badge badge-info custAdd">@dr["AddressType"]</span>
+                                        <span style="font-weight:bold" class="custMobile">@dr["MobileNo"]</span>
+                                        @if (dr["IsDefaultAccount"].ToString() == "Default")
+                                        {
+                                            <span class="badge badge-warning">@dr["IsDefaultAccount"]</span>
+                                        }                                        
+                                        <input type="hidden" class="custId" value="@dr["SrNo"]" />
+                                        <input type="hidden" class="hdcustAdd" value="@dr["compAdd"]" />
+                                        <input type="hidden" class="hdCustPin" value="@dr["PinCode"]" />
+                                    </div>
+                                </div>
+                            </p>
+                            <p>
+                                <span>@dr["compAdd"] </span>
+                                <span style="font-weight:bold">@dr["PinCode"]</span>
+                            </p>
+                            <p>
+                                <button type="button" class="btn btn-primary waves-effect waves-light Delhere" id="btnDelhere">DELIVER HERE</button>
+                            </p>
+                        </div>
+                        <div class="col-md-2" id="divEidt" style="display:none">
+                            <a href="JavaScript:Void(0);" class="btn btn-outline-blue waves-effect waves-light btn-xs" onclick="ChangeDelAddress()">Edit</a>
+                        </div>
+                    </div>
+                    <hr />
+                        }
+                    }
+                    <hr />
+                    <p>
+                        <a href="JavaScript:Void(0);" style="color:#2874f0" onclick="AddnewDelAddress()"><i class="fa fa-plus" aria-hidden="true"></i> Add a new Address </a>
+                    </p>
+                </div>
+            }
+            else
+            {
+
+            }
+            <div id="divAddAddress" style="display:none">
+                <hr />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="chkNew">
+                            <label class="custom-control-label" for="chkNew" style="color: #7164e0;font-weight: bold;font-size: 16px;">Add New Address</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="inputPassword4" class="col-form-label">Name<span class="text-danger">*</span> </label>
+                        <input type="text" class="form-control" id="txtName" placeholder="Enter Name">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputPassword4" class="col-form-label">Mobile No<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="txtMobileNo" placeholder="Enter 10 digit Mobile No.">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="inputPassword4" class="col-form-label">Pin Code<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="txtPinCode" placeholder="Enter 6 digit Pin Code">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputPassword4" class="col-form-label">Locality<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="txtLocality" placeholder="Enter Locality">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="inputPassword4" class="col-form-label">Address (Area and Street)<span class="text-danger">*</span></label>
+                        <textarea id="txtAddress" class="form-control" rows="3" placeholder="">Address (Area and Street)</textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="inputPassword4" class="col-form-label">City/District/Town<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="txtCity" placeholder="Enter City/District/Town">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputPassword4" class="col-form-label">State<span class="text-danger">*</span></label>
+                        @Html.DropDownList("ddlState", (List<SelectListItem>)ViewBag.StateList, new { @id = "ddlState", @class = "form-control" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="inputPassword4" class="col-form-label">Landmark (optional)</label>
+                        <input type="text" class="form-control" id="txtLandmark" placeholder="Enter Landmark (optional)">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputPassword4" class="col-form-label">Alternate Mobile No. (optional)</label>
+                        <input type="text" class="form-control" id="txtAltMobileNo" placeholder="Enter Alternate Mobile No. (optional)">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p class="text-muted mt-3 mb-2">Address Type</p>
+                        <div class="radio radio-info form-check-inline">
+                            <input type="radio" id="inlineRadio1" value="Home" name="radioInline0" checked>
+                            <label for="inlineRadio1"> Home (All day delivery) </label>
+                        </div>
+                        <div class="radio form-check-inline">
+                            <input type="radio" id="inlineRadio2" value="Work" name="radioInline0">
+                            <label for="inlineRadio2"> Work (Delivery between 100 AM - 5 PM) </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px">
+                    <div class="col-md-6 text-right">
+                        <input type="submit" class="btn btn-info" value="Save and Deliver Here" onclick="InsertDeliverAddress()" />
+                    </div>
+                    <div class="col-md-6" style="margin-top:8px">
+                        <a href="javascript: void(0);" style="font-weight: bold;font-size: 16px;" onclick="CancelAddDel()">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-box">
+            <h4>2. ORDER SUMMARY</h4>
+            <hr />
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-borderless table-hover table-centered m-0" id="tblCartList">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th colspan="2">Particulars</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+                                {
+                                    int i = 0;
+                                    foreach (DataRow dr in Model.dt1.Rows)
+                                    {
+                                <tr>
+                                    <td style="width: 36px;">
+                                        <img src="@dr["ProductMainImageUrl"]" alt="contact-img" title="contact-img" class="rounded-circle avatar-sm" />
+                                        <input type="hidden" class="hdRate" id="hdRate" value="@dr["OnlinePrice"]" />
+                                        <input type="hidden" class="hdItemCode" id="hdItemCode" value="@dr["ProductID"]" />
+                                    </td>
+                                    <td>
+                                        <h5 class="m-0 font-weight-normal">@dr["ItemName"]</h5>
+                                        <p style="margin-top:9px">
+                                            <a href="javascript: void(0);" class="btn btn-xs btn-danger btnReduce" id="btnMinus" style="float:left"><i class="mdi mdi-minus"></i></a>
+                                            <input type="text" id="txtQty" class="form-control txtcls" value="@dr["Quantity"]" disabled />
+                                            <a href="javascript: void(0);" class="btn btn-xs btn-primary btnAdd" id="btnPlus" style="float:left"><i class="mdi mdi-plus"></i></a>
+
+                                        </p>
+                                    </td>
+                                    <td>
+                                        &#8377; <span class="tAmt">@dr["TotalPrice"]</span>
+                                        <p style="margin-top:9px"><a href="javascript: void(0);" class="btn btn-link waves-effect btn-xs rem"><i class="far fa-trash-alt"></i> REMOVE</a> </p>
+                                    </td>
+                                </tr>
+                                    }
+
+                                }
+                                else
+                                {
+                                <tr>
+                                    <td colspan="3" style="color:red">No Item added in Item List...</td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-box">
+            <h4>3. PAYMENT OPTION</h4>
+            <hr />
+            <div class="row">
+                <div class="col-md-12" style="font-size:15px">
+                    <div class="custom-control custom-radio">
+                        <input type="radio" id="rbWallet" name="customRadio" class="custom-control-input" value="Wallet">
+                        <label class="custom-control-label" for="rbWallet">
+                            Wallet
+                            <span id="lblBalMsg" style="color:red;display:none">*Insufficient Wallet Balance, Please use other Payment method.</span>
+                            <input type="hidden" id="hdWalletBal" />
+                        </label>
+                    </div>
+                    <div class="custom-control custom-radio" style="margin-top:10px">
+                        <input type="radio" id="rbOnline" name="customRadio" class="custom-control-input" value="Online">
+                        <label class="custom-control-label" for="rbOnline">Online/Debit Card/Credit Card/Net Banking</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <!-- end col -->
+    <div class="col-xl-4">
+        <div class="card-box">
+            <h4 class="header-title mb-3">PRICE DETAILS</h4>
+            <hr />
+            <div class="row" style="font-weight: bold;font-size: 16px;">
+                <div class="col-md-8">
+                    <span>Price(<span id="totalCount"></span> Items)</span>
+                </div>
+                <div class="col-md-4" style="float:right">
+                    &#8377; <span id="lblGrossTotal">0.00</span>
+                </div>
+            </div>
+            <div class="row" style="font-weight: bold;font-size: 16px;margin-top:12px">
+                <div class="col-md-8">
+                    <span>Delivery</span>
+                </div>
+                <div class="col-md-4" style="float:right">
+                    <span style="color:#388e3c">FREE</span>
+                </div>
+            </div>
+            <div class="row" style="font-weight: bold;font-size: 16px;margin-top:12px;border-top:dotted;border-top-width:1px">
+                <div class="col-md-8" style="padding-top:12px">
+                    <span>Total Payable</span>
+                </div>
+                <div class="col-md-4" style="float:right;padding-top:12px">
+                    &#8377; <span id="lblTotal">0.00</span>
+                </div>
+            </div>
+            <div class="row" style="font-weight: bold;font-size: 16px;margin-top:12px;border-top:dotted;border-top-width:1px">
+                <div class="col-md-12" style="padding-top:12px;text-align:right;margin-top:28px">
+                    <a href="javascript: void(0);" id="btnPlaceOrder" class="btn btn-info btn-sm"> PLACE ORDER <i class="fas fa-arrow-right"></i> </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- end row-->

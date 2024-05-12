@@ -1,0 +1,106 @@
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\ApplicationInsights.config
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\csc.exe
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\Microsoft.CodeAnalysis.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\Microsoft.CSharp.Core.targets
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\Microsoft.VisualBasic.Core.targets
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\System.Collections.Immutable.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\System.Reflection.Metadata.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\vbc.exe
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\VBCSCompiler.exe
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\VBCSCompiler.exe.config
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\OjasMart.dll.config
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\OjasMart.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\OjasMart.pdb
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\EntityFramework.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\EntityFramework.SqlServer.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.Agent.Intercept.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.DependencyCollector.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.PerfCounterCollector.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.ServerTelemetryChannel.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.Web.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.WindowsServer.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.ApplicationInsights.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.Web.Infrastructure.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\Newtonsoft.Json.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Helpers.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Mvc.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Razor.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Webpages.Deployment.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Webpages.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Webpages.Razor.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\EntityFramework.xml
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\EntityFramework.SqlServer.xml
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.DependencyCollector.xml
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.ServerTelemetryChannel.xml
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.Web.xml
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.WindowsServer.xml
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.ApplicationInsights.xml
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Razor.xml
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Webpages.xml
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Webpages.Deployment.xml
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Webpages.Razor.xml
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Helpers.xml
+D:\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Mvc.xml
+D:\Copy_SigmaIT\claco_software\OjasMart\obj\Release\OjasMart.csproj.AssemblyReference.cache
+D:\Copy_SigmaIT\claco_software\OjasMart\obj\Release\OjasMart.csproj.CoreCompileInputs.cache
+D:\Copy_SigmaIT\claco_software\OjasMart\obj\Release\OjasMart.csproj.CopyComplete
+D:\Copy_SigmaIT\claco_software\OjasMart\obj\Release\OjasMart.dll
+D:\Copy_SigmaIT\claco_software\OjasMart\obj\Release\OjasMart.pdb
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\ApplicationInsights.config
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\csc.exe
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\Microsoft.CodeAnalysis.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\Microsoft.CSharp.Core.targets
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\Microsoft.VisualBasic.Core.targets
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\System.Collections.Immutable.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\System.Reflection.Metadata.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\vbc.exe
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\VBCSCompiler.exe
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\roslyn\VBCSCompiler.exe.config
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\OjasMart.dll.config
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\OjasMart.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\OjasMart.pdb
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\EntityFramework.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\EntityFramework.SqlServer.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.Agent.Intercept.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.DependencyCollector.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.PerfCounterCollector.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.ServerTelemetryChannel.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.Web.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.WindowsServer.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.ApplicationInsights.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.Web.Infrastructure.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\Newtonsoft.Json.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Helpers.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Mvc.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Razor.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Webpages.Deployment.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Webpages.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Webpages.Razor.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\EntityFramework.xml
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\EntityFramework.SqlServer.xml
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.DependencyCollector.xml
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.ServerTelemetryChannel.xml
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.Web.xml
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.AI.WindowsServer.xml
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.ApplicationInsights.xml
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Razor.xml
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Webpages.xml
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Webpages.Deployment.xml
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Webpages.Razor.xml
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Helpers.xml
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\bin\System.Web.Mvc.xml
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\obj\Release\OjasMart.csproj.AssemblyReference.cache
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\obj\Release\OjasMart.csproj.CoreCompileInputs.cache
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\obj\Release\OjasMart.csproj.CopyComplete
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\obj\Release\OjasMart.dll
+D:\claco website\Copy_SigmaIT\claco_software\OjasMart\obj\Release\OjasMart.pdb

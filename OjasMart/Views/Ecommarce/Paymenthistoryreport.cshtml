@@ -1,0 +1,232 @@
+﻿@model OjasMart.Models.clsearchOrder
+@{
+    ViewBag.Title = "Paymenthistoryreport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@using System.Data;
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#tblItemHead").DataTable({
+            dom: 'Bfrtip',
+            //pageLength: 5,
+            lengthMenu: [[5, 10, 20, 50, 100, 500, -1], [5, 10, 20, 50, 100, 500, "All"]],
+            buttons: [
+               'pageLength',
+           {
+               extend: 'excelHtml5', footer: true
+           },
+           { extend: 'csvHtml5', footer: true },
+           {
+               extend: 'pdfHtml5', footer: true, orientation: 'landscape',
+
+               pageSize: 'LEGAL',
+               text: '<i class="fa fa-file-pdf-o"> PDF</i>',
+               titleAttr: 'PDF'
+           }
+            ]
+        });
+
+        $('#txtStartDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+        $('#txtEndDate').datepicker({
+            format: 'dd-MM-yyyy'
+        });
+
+        var RoleId = '@Request.RequestContext.HttpContext.Session["Role"]';
+        if (RoleId == '') {
+            window.location.href = "../Account/Index"
+        }
+        if (RoleId != "1") {
+            $("#ddlBillBy").val($("#UCode").val());
+            $("#ddlBillBy").attr("disabled", "disabled");
+        }
+
+
+        $("body").on("click", "#tblItemHead .details", function () {
+            var dataobject = {
+                OrderId: $(this).attr('id')
+            };
+            $.ajax({
+                url: "@Url.Action("OrderItemDetails", "Ecommarce")",
+                type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (data) {
+                $('#tblItemDetails tbody').empty();
+                $.each(data.poList, function (i, item) {
+                    var rows = "<tr>" +
+                        "<td>" + item.ItemName + "-" + item.VariationId + "</td>" +
+                        "<td>" + item.Quantity + "</td>" +
+                        "<td>" + item.Rate + "</td>" +
+                        "<td>" + item.gstamount + "</td>" +
+                        "<td>" + item.NetTotal + "</td>" +
+                        "</tr>";
+                    $('#tblItemDetails tbody').append(rows);
+                });
+            },
+            error: function () {
+
+            }
+        });
+
+    });
+    });
+
+    function getDetails() {
+        $("#showSpinner").show();
+        $.ajax({
+            url: "../Ecommarce/FilterOrderReport",
+            type: "POST",
+            data: { 'ddlOrder': $('#ddlOrder').val() },
+            datatype: "json",
+            success: function (data1) {
+                $("#tblItemHead").DataTable().destroy();
+                var htmlNew = data1;
+                $('#divDetails').html($(htmlNew).find('#tblItemHead'));
+                $("#tblItemHead").DataTable({
+                    dom: 'Bfrtip',
+                    //pageLength: 5,
+                    lengthMenu: [[5, 10, 20, 50, 100, 500, -1], [5, 10, 20, 50, 100, 500, "All"]],
+                    buttons: [
+                       'pageLength',
+                   {
+                       extend: 'excelHtml5', footer: true
+                   },
+                   { extend: 'csvHtml5', footer: true },
+                   {
+                       extend: 'pdfHtml5', footer: true, orientation: 'landscape',
+
+                       pageSize: 'LEGAL',
+                       text: '<i class="fa fa-file-pdf-o"> PDF</i>',
+                       titleAttr: 'PDF'
+                   }
+                    ]
+                });
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+</script>
+
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+            </div>
+            <h4 class="page-title"> Order Report</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="inputEmail4" class="col-form-label">Select </label>                        
+                        <select class="form-control" id="ddlOrder">
+                            <option>Select </option>
+                            <option value="Today">Today Wise</option>
+                            <option value="Weekly">Weekly Wise</option>
+                            <option value="Monthly">Monthly Wise</option>
+                            <option value="Yearly">Yearly Wise</option>                          
+                        </select>
+                    </div>                 
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <button type="submit" class="btn btn-primary waves-effect waves-light" onclick="getDetails()">Filter Record</button>
+                    </div>
+                </div>
+
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <div class="table-responsive" id="divDetails">
+                <table id="tblItemHead" class="table table-centered mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th nowrap>Sr.No</th>
+                            <th nowrap>Customer Code</th>
+                            <th nowrap>Name </th>
+                            <th nowrap>MobileNo</th>
+                            <th nowrap>OrderId</th>
+                            <th nowrap>OrderDate</th>
+                            <th nowrap>Vendor Name</th>
+                            <th nowrap>Pay Mode</th>
+                            <th nowrap>ItemCode</th>
+                            <th nowrap>Item Name</th>
+                            <th nowrap>Quantity</th>
+                            <th nowrap>MRP</th>
+                            <th nowrap>Discount</th>
+                            <th nowrap>Price</th>
+                            <th nowrap>Total MRP</th>
+                            <th nowrap>Total Discount</th>
+                            <th nowrap>Total Price</th>
+                            <th nowrap>Gst(%)</th>
+                            <th nowrap>CGST Amount</th>
+                            <th nowrap>SCGST Amount</th>
+                            <th nowrap>Delivery  Charges</th>
+                            <th nowrap>Payable Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model._dtOrder != null && Model._dtOrder.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow dr in Model._dtOrder.Rows)
+                            {
+                                i++;
+                                <tr>
+                                    <td nowrap>@i</td>
+                                    <td nowrap>@dr["CustomerCode"]</td>
+                                    <td nowrap>@dr["Name"]</td>
+                                    <td nowrap>@dr["MobileNo"]</td>
+                                    <td nowrap>@dr["OrderId"]</td>
+                                    <td nowrap>@dr["OrderDate"]</td>
+                                    <td nowrap>@dr["vendorname"]</td>
+                                    <td nowrap>@dr["PaymentMode"]</td>
+                                    <td nowrap>@dr["ItemCode"]</td>
+                                    <td nowrap>@dr["ItemName"]</td>
+                                    <td nowrap>@dr["Quantity"]</td>
+                                    <td nowrap>@dr["MRP"]</td>
+                                    <td nowrap>@dr["DiscountAmt"]</td>
+                                    <td nowrap>@dr["Price"]</td>
+                                    <td nowrap>@dr["TotalRegularPrice"]</td>
+                                    <td nowrap>@dr["TotalDiscountAmt"]</td>
+                                    <td nowrap>@dr["TotalSalePrice"]</td>
+                                    <td nowrap>@dr["GstRAte"]</td>
+                                    <td nowrap>@dr["CGstAmount"]</td>
+                                    <td nowrap>@dr["SGstAmount"]</td>
+                                    <td nowrap>@dr["DeliveryCharges"]</td>
+                                    <td nowrap>@dr["NetPayable"]</td>
+                                </tr>
+                            }
+
+                        }
+                    </tbody>
+                     
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>
+

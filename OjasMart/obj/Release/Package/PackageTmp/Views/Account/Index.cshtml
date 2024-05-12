@@ -1,0 +1,170 @@
+﻿
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html> 
+<head>
+    <meta charset="utf-8" />
+    <title>Claco Store</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+    <meta content="Coderthemes" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="../img/logo.jpeg">
+    <!-- App css -->
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/app.min.css" rel="stylesheet" type="text/css" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(document).bind('keydown', function (e) {
+                if (e.which === 13) { // return
+                    $('#btnSignIn').trigger('click');
+                }
+            });
+
+            $("#btnSignIn").click(function () {
+
+                var UserName = $("#emailaddress").val();
+                var password = $("#password").val();
+                if (UserName == "") {
+                    alert("Please Enter UserName");
+                    $("#emailaddress").focus();
+                    return;
+                }
+                if (password == "") {
+                    alert("Please Enter password");
+                    $("#password").focus();
+                    return;
+                }
+                var dataobject = {
+                    UserName: UserName,
+                    Password: password
+                };
+                $("#showSpinner").show();
+                $.ajax({
+
+                    url: "/Account/AuthenticateUser",
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    //data: dataobject,
+                    data: JSON.stringify(dataobject),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (r) {
+                        if (r[0] == '1') {
+                            var url = null;
+                            var url = "../Home/Dashboard";
+                            window.location.href = url;
+                            //window.location(url);
+                        }
+                        if (r[0] == "0") {
+                            alert("Invalid User Name or Password!");
+                            $("#showSpinner").hide();
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("Please Check Credentials Entered by you!");
+                        $("#showSpinner").hide();
+                    }
+                });
+            });
+        });
+    </script>
+
+    <style>
+        .footer {
+            background-color: #F7F8FA !important;
+            position: fixed !important;
+            z-index: 99999 !important;
+            padding: 0px !important;
+            left: 0px !important;
+        }
+
+            .footer .copyright {
+                background: #ca0008 !important;
+                background: linear-gradient(black, black) !important;
+            }
+
+                .footer .copyright p {
+                    text-align: center !important;
+                    margin: 0 !important;
+                    padding: 0px !important;
+                    color: white !important;
+                }
+
+
+      
+    </style>
+
+
+
+
+</head>
+<body class="authentication-bg authentication-bg-pattern" style="background-image: url(../img/back.jpg) !important;height:350px;">
+    <my-spinner>
+        <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+            <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+        </div>
+    </my-spinner>
+    <div class="account-pages mt-5 mb-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6 col-xl-4">
+                    <div class="card bg-pattern" style="margin-bottom:0px">
+                        <div class="card-body p-4">
+                            <div class="text-center w-75 m-auto">
+                                <a href="javascript: void(0);">
+                                    <span style="font-size: 27px;font-weight: bold;">
+                                        <img src="/img/logo111.png" alt="" style="height:70px">                                        
+                                        @*Ozas Mart*@
+                                    </span>
+                                </a>
+                                <h2 class=" mb-4 mt-3">LOGIN</h2>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="emailaddress">User Id</label>
+                                <input class="form-control" type="email" id="emailaddress" required="" placeholder="Enter your User Id">
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="password">Password</label>
+                                <input class="form-control" type="password" required="" id="password" placeholder="Enter your password">
+                            </div>
+                            <div class="form-group mb-3" style="display:none;">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="checkbox-signin" checked>
+                                    <label class="custom-control-label" for="checkbox-signin">Remember me</label>
+                                </div>
+                            </div>
+                            <div class="form-group mb-0 text-center">
+                                <button class="btn btn-success btn-block" type="submit" id="btnSignIn"> Log In </button>
+                            </div>                           
+                        </div> <!-- end card-body -->
+                    </div>                   
+
+                </div> <!-- end col -->
+            </div>
+            <!-- end row -->
+        </div>
+        <!-- end container -->
+    </div>
+    <!-- end page -->
+
+    @*<footer class="footer footer-alt">
+        2020 - 2021 &copy; kalash 
+    </footer>*@
+
+    
+
+
+    <!-- Vendor js -->
+    <script src="../assets/js/vendor.min.js"></script>
+    <!-- App js -->
+    <script src="../assets/js/app.min.js"></script>
+</body>
+</html>

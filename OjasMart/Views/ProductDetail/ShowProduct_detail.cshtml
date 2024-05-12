@@ -1,0 +1,2554 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Product details";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+@using System.Data;
+@using OjasMart.Models;
+
+<style>
+
+    /*date - 30/03/24 css by tanu */
+
+    .phn {
+        display: none;
+    }
+
+    .tt1 {
+        display: block !important;
+    }
+
+    @@media only screen and (max-width:767px) {
+        .hh {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .phn {
+            display: block;
+            position: fixed;
+            bottom: 0px;
+        }
+
+        .btn {
+            background: white;
+            border: 1px solid gray;
+            color: black;
+            height: 40px;
+            margin-left: 30px
+        }
+
+            .btn:hover {
+                background: white;
+                border: 1px solid gray;
+                color: black;
+                height: 40px;
+                margin-left: 30px
+            }
+
+        #rr {
+            display: none !important;
+        }
+
+        #rr1 {
+            display: none !important
+        }
+
+        #rrp {
+            display: block !important;
+        }
+
+        #rrp1 {
+            display: block !important;
+        }
+    }
+
+    #rr {
+        display: block;
+    }
+
+    #rr1 {
+        display: block;
+    }
+
+
+    #rrp {
+        display: none;
+    }
+
+    #rrp1 {
+        display: none;
+    }
+
+    @@media only screen and (max-width:767px) {
+        .tt1 {
+            display: none !important;
+        }
+    }
+
+    /* date - 30/03/24 css end */
+
+    .dd {
+        display: block;
+        background: none;
+    }
+
+    .ddphn {
+        display: none;
+    }
+
+    @@media only screen and (max-width:767px) {
+        .dd {
+            display: none;
+        }
+
+        .ddphn {
+            display: block;
+        }
+    }
+
+
+    span.fa.fa-star {
+        color: #f5cf09;
+    }
+
+    .gray {
+        color: #939393 !important;
+    }
+
+    .colorstyle {
+        border: 4px solid #f55d2c;
+    }
+
+    .sizestyle {
+        background-color: #f55d2c;
+    }
+    /*.owl-stage{
+            width:100% !important;
+        }*/
+
+
+    .color-g {
+        float: right;
+        text-transform: uppercase;
+        font-weight: 500;
+        letter-spacing: 2px;
+    }
+
+    .left-new {
+        position: absolute;
+        left: 0px;
+        right: 64px;
+        top: 273px;
+    }
+
+    a.reviews_button {
+        color: #000000 !important;
+    }
+
+    a#new-w {
+        color: #337ab7 !important;
+    }
+
+
+    @@media screen and (max-width:768px) {
+        ul #without-dsc {
+            display: inline-grid !important;
+        }
+
+        #switcher23 {
+            /* margin: 6px 0px 5px 0px; */
+            list-style: none;
+            margin: 6px 59px 62px 0px !important;
+            padding: 0;
+            overflow: hidden;
+            float: unset !important;
+            position: relative !important;
+            left: 0px !important;
+        }
+
+        .left-new {
+            position: absolute;
+            left: 0px;
+            right: 163px !important;
+            top: 313px !important;
+        }
+
+        #switcher {
+            list-style: none;
+            margin: 9px 5px 0 0px !important;
+            padding: 0;
+            overflow: hidden;
+            float: right;
+            position: relative;
+            left: 0px !important;
+            top: -5px !important;
+        }
+
+        li.ggg {
+            /* margin: 0px auto; */
+
+            float: right;
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 2px;
+            position: relative !important;
+            left: 7px !important;
+            top: 4px !important;
+        }
+    }
+
+    .item img {
+        transition: transform 0.5s ease 0s;
+    }
+
+    .owl-carousel .owl-item img :hover {
+        transform: scale(1.1)
+    }
+
+
+
+    #days {
+        color: #db4844;
+    }
+
+    #hours {
+        /*  font-size: 100px;*/
+        color: #f07c22;
+    }
+
+    #minutes {
+        color: #f6da74;
+    }
+
+    #seconds {
+        font-size: 50px;
+        color: #abcd58;
+    }
+
+    .position {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 15%;
+        height: 50%
+    }
+
+    @@media screen and (max-width:760px) {
+        .position {
+            position: unset;
+            position: unset;
+            height: 100%;
+        }
+    }
+
+    span.like-icon {
+        color: #808080;
+        /*color: rgb(246, 151, 51);*/
+        font-size: 25px;
+        position: absolute;
+        z-index: 101;
+        right: 0px;
+        top: 0px;
+        cursor: pointer;
+        display: block;
+        height: 35px;
+        width: 35px;
+        line-height: 37px;
+        /*border-radius: 30px;*/
+        transition: all 0.4s ease 0s;
+        background: none;
+        margin-left: -50%;
+    }
+
+    .like-icon::before, .like-icon::after {
+        transition: opacity 0.3s ease 0s, transform 0.4s cubic-bezier(0, -0.41, 0.19, 2.5) 0s;
+        font-family: "Font Awesome 5 Free";
+        position: absolute;
+        right: 0px;
+        left: 0px;
+        text-align: center;
+        top: 0px;
+        background: none !important;
+    }
+
+    .like-icon::before {
+        content: "";
+        transform: scale(0.95);
+        background: none !important;
+    }
+
+    .like-icon::after {
+        content: "";
+        opacity: 0;
+        transform: scale(0.3);
+        font-weight: 900;
+    }
+
+    .like-icon.liked::after {
+        opacity: 1;
+        transform: scale(0.95);
+        background: none !important;
+    }
+
+    .like-icon:hover, .like-icon.liked {
+        /*background-color: rgb(237 26 99);*/
+        color: #fa2365;
+        background: none;
+    }
+
+        .like-icon.liked::before {
+            opacity: 0;
+            background: none !important;
+        }
+
+    .alertMessage {
+        position: fixed;
+        bottom: 20px; /* Adjust this value to set the distance from the bottom */
+        left: 50%;
+        background: black; /* Black color with 70% opacity */
+        color: white !important;
+        padding: 10px;
+        border-radius: 5px;
+        z-index: 9999;
+    }
+</style>
+
+<script>
+    timeLeftForLaunch = (new Date()).getTime();
+    /* debugger;*/
+    $('#countdown').countdown({
+        timestamp: timeLeftForLaunch,
+        callback: function (days, hours, minutes, seconds) {
+            var message = "Launch Coming Soon in " + days + " days " + hours + " hours " + minutes + " minutes and " + seconds + " seconds ";
+            $('#countdown-detail').html(message);
+        }
+    });
+</script>
+<script>
+
+    function getcolorimg(Obj) {
+
+
+        var mainimage = $(Obj).attr("value");
+        // var sprice = $(Obj).attr("sprice");
+        //$("#SPrice").html(sprice);
+        $("#switcher").find('li').attr("class", "normal");
+        $(Obj).attr("class", "active");
+         }
+    function Activeli(Obj) {
+        debugger;
+        $("#checksize").val('1');
+
+        $("#switcher23").find('li').css("background-color", "white");
+        $(Obj).css("background-color", "red");
+        $("#switcher23").find('li').attr("class", "normal");
+        $(Obj).attr("class", "active");
+    }
+    function redirect_directSale() {
+    /*    debugger;*/
+        var ProductId = $('#hdProductId').val();
+        var CatName = $('#hdCatName').val();
+        var CatId = $('#hdCatId').val();
+        var QTy = $('#proQty').val() != '' && $('#proQty').val() != '0' ? $('#proQty').val() : 1;
+        var AttrId = $('input[name="option"]:checked').attr("attrId");
+        var varId = $('input[name="option"]:checked').attr("varId");
+
+        window.location.href = '../Checkout/Index?cName=' + CatName + "&&pCode=" + ProductId + "&&cId=" + CatId + "&&pQty=" + QTy + "&&cType=p" + "&&AttrId=" + QTy + "&&varId=" + varId;
+    }
+    function AddItemInCart(pId, obj, AttrId, varId, SizeId, color) {
+      /*  debugger;*/
+        var Qty = $(obj).parent().find('input[type=number]').val();
+        var AttrId = AttrId;
+        var varId = varId;
+        var SizeId = SizeId
+        if (Qty > 0) {
+            AdditemToCart(pId, Qty, AttrId, varId, SizeId, color);
+        }
+        else {
+            $.notify("Please at least add one quantity", "error");
+            return false;
+        }
+    }
+
+    function AddItemInCartSingle() {
+        debugger;
+        var AttrId = null;
+        var varId = null;
+        var SizeId = null;
+        var color = null;
+        var pId = $('#hdProductId').val();
+        var Qty = $('#proQty').val();
+
+        if ($("#hdnproducttype").val() != "Simple Product" && $("#hdnfashiontype").val() == "True") {
+            AttrId = 1;
+         /*   $('ul#switcher23').find('li.active').val();*/
+            var SizeId = $('ul#switcher23').find('li.active').attr('value');
+        }
+        else if ($("#hdnproducttype").val() != "Simple Product" && $("#hdnfashiontype").val() == "False") {
+            AttrId = $('input[name="option"]:checked').attr("attrId");
+            varId = $('input[name="option"]:checked').attr("varId");
+
+        }
+        else {
+
+        }
+
+        var color = $("#switcher").find('li[class=active]').attr('value');
+        if (SizeId == null) {
+            var SizeId = $("#switcher23").find('li[class=active]').attr('value')
+        }
+        AdditemToCart(pId, Qty, AttrId, varId, SizeId, color);
+    }
+
+    function ChangeRate(RegPrice, SalePrice, DiscPer) {
+        RegPrice = RegPrice != '' ? parseFloat(RegPrice) : 0;
+        SalePrice = SalePrice != '' ? parseFloat(SalePrice) : 0;
+        DiscPer = DiscPer != '' ? parseFloat(DiscPer) : 0;
+
+        if (DiscPer > 0) {
+            $('#spnPMRP').text(RegPrice.toFixed(2));
+            $('.spnSaleRate').text(SalePrice.toFixed(2));
+            $("#sp_price").show();
+        }
+        else {
+            $('.spnSaleRate').text(SalePrice.toFixed(2)); $("#sp_price").hide();
+        }
+    }
+  function Activeli(Obj) {
+        debugger;
+
+
+        $("#switcher23").find('li').css("background-color", "white");
+        $(Obj).css("background-color", "#f55d2c");
+        $("#switcher23").find('li').attr("class", "normal");
+        $(Obj).attr("class", "colorstyle");
+        $(Obj).attr("class", "active");
+
+        var pId = $(Obj).attr("prodId");
+        var pvarname = $(Obj).attr("varname");
+
+        var dataobject = {
+            ProductId: pId,
+            variationname: pvarname
+        };
+
+
+        $.ajax({
+            url: "@Url.Action("Getcolorlistbysize", "ProductDetail")",
+            type: "POST",
+        data: dataobject,
+        datatype: "json",
+        success: function (result) {
+            if (result != null) {
+                if (result.ColorImg != null) {
+                    var licolor = eval(result.ColorImg);
+                    var limulti = eval(result.Positioncolorimg);
+
+                    for (var i = 0; i < licolor.length; i++) {
+
+                        if (licolor[i].ActiveStatus == 1) {
+                            $("#switcher").html("");
+                            $("#switcher").append('<li id="Button2" onclick="getcolorimg(this)" value=' + licolor[i].Color + ' code=' + licolor[i].ColorValue + ' style="background-color:' + licolor[i].ColorValue + '" prodId=' + licolor[i].ProductId + ' varId=' + licolor[i].VariationId + ' class="colorstyle active"></li>');
+
+                            $("#SPrice").html(licolor[i].SalePrice);
+
+                            $(Obj).addClass("colorstyle");
+
+                            for (var z = 0; z < limulti.length; z++) {
+                                var mainimage = limulti[z].ImageUrl;
+                                if (z == 0) {
+
+                                    $("#sync1").find(".owl-stage").html("");
+                                    $("#sync1").find(".owl-stage").append('<div class="owl-item cloned" id="1" style="width:340px; height:340" ><div class="item"> <img src=' + limulti[0].ImageUrl + ' alt="" class="product-image-zoom  maincolorpic" data-zoom-image=' + limulti[0].ImageUrl + '></div></div>');
+                                    $("#sync1").find(".owl-stage").append('<div class="owl-item cloned" id="2"  style="width:340px; height:340" ><div class="item"> <img src=' + limulti[1].ImageUrl + ' alt="" class="product-image-zoom  maincolorpic" data-zoom-image=' + limulti[1].ImageUrl + '></div></div>');
+                                    $("#sync1").find(".owl-stage").append('<div class="owl-item active" id="3"  style="width:340px; height:340"><div class="item"> <img src=' + mainimage + ' alt="" class="product-image-zoom  maincolorpic" data-zoom-image=' + mainimage + '></div></div>');
+
+                                    $("#sync2").find(".owl-stage").html("");
+                                    $("#sync2").find(".owl-stage").append('<div class="owl-item active current" id="4" style="width:73px; height:73"><div class="item"> <img alt="" class="product-image-zoom  maincolorpic" data-zoom-image=' + mainimage + ' src=' + mainimage + '> </div></div>');
+
+
+                                }
+                                else {
+
+                                    if ((limulti.length - 1) == z) {
+                                        $("#sync1").find(".owl-stage").append('<div class="owl-item"id="5" style="width:340px; height:340"><div class="item"> <img src=' + mainimage + ' alt="" class="product-image-zoom  maincolorpic" data-zoom-image=' + mainimage + '></div></div>');
+
+                                        $("#sync1").find(".owl-stage").append('<div class="owl-item cloned" id="6" style="width:340px; height:340"><div class="item"> <img src=' + limulti[limulti.length - 1].ImageUrl + ' alt="" class="product-image-zoom  maincolorpic" data-zoom-image=' + limulti[limulti.length - 1].ImageUrl + '></div></div>');
+
+                                        $("#sync1").find(".owl-stage").append('<div class="owl-item cloned"id="7"  style="width:73px; height:73"><div class="item"> <img src=' + limulti[limulti.length].ImageUrl + ' alt="" class="product-image-zoom  maincolorpic" data-zoom-image=' + limulti[limulti.length].ImageUrl + '></div></div>');
+                                    }
+                                    else {
+                                        $("#sync1").find(".owl-stage").append('<div class="owl-item"id="8" style="width:340px; height:340"><div class="item"> <img src=' + mainimage + ' alt="" class="product-image-zoom  maincolorpic" data-zoom-image=' + mainimage + '></div></div>');
+                                    }
+
+
+
+
+                                    $("#sync2").find(".owl-stage").append('<div class="owl-item active"id="9" style="width:73px; height:73"><div class="item"> <img alt="" class="product-image-zoom  maincolorpic" data-zoom-image=' + mainimage + ' src=' + mainimage + '> </div></div>');
+                                }
+
+
+
+                            }
+                        }
+                        else {
+
+                            $("#switcher").append('<li id="Button2" onclick="getcolorimg(this)" value=' + licolor[i].Color + ' code=' + licolor[i].ColorValue + ' prodId=' + licolor[i].ProductId + ' varId=' + licolor[i].VariationId + ' style="background-color:' + licolor[i].ColorValue + '" ></li>');
+                        }
+
+                    }
+                }
+            }
+
+        },
+        error: function () {
+            alert('Error!')
+
+        }
+        });
+
+
+    }
+
+
+    function CheckPinCode() {
+        if ($('#txtPinCode').val() == '') {
+            alert('Please Enter Pincode !');
+            $('#txtPinCode').focus();
+            return;
+        }
+        var dataobject = {
+            PinCode: $('#txtPinCode').val()
+        };
+        $.ajax({
+            type: "POST",
+            url: "/Master/GetPinCodeForEdit",
+            data: dataobject,
+            dataType: "json",
+            success: function (r) {
+                if (r.RespoCode != "0") {
+                    $('#Divavail').show();
+                    $('#divNotAvl').hide();
+                }
+                else {
+                    $('#Divavail').hide();
+                    $('#divNotAvl').show();
+                }
+            }
+        });
+
+    }
+
+
+
+    function myFunction() {
+     /*   alert('dgdfg');*/
+        window.scroll(1000, 1000);
+    }
+    function AddToWhishlist() {
+        /* start codeby muskan 6may */
+        var data = new FormData();
+        var Id = $("#hdProductId").val();
+        data.append("ProductId", Id);
+
+        $.ajax({
+            url: "../ProductDetail/AddToWhishlist",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: data,
+            success: function (r) {
+                // Create a message element
+                var messageElement = $('<div>').addClass('alertMessage').text(r.msg);
+
+                // Append it to the body
+                $('body').append(messageElement);
+
+                // Set timeout to remove the message after 3 seconds
+                setTimeout(function () {
+                    messageElement.remove();
+                }, 3000);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                // Handle error
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+</script>
+
+<style>
+    #switcher {
+        list-style: none;
+        margin: 9px 5px 0 0px;
+        padding: 0;
+        overflow: hidden;
+        float: right;
+        position: relative;
+        left: 146px;
+        top: 20px;
+    }
+
+    #switcher23 {
+        /* margin: 6px 0px 5px 0px; */
+        list-style: none;
+        margin: 6px 59px 62px 0px;
+        padding: 0;
+        overflow: hidden;
+        float: right;
+        position: relative;
+        left: 70px;
+    }
+
+    .sizestyle {
+        background-color: #f55d2c00;
+    }
+
+    #switcher23 li {
+        color: #000 !important;
+        text-transform: uppercase;
+        border: 1px solid #bfbfbf;
+        line-height: 1;
+        padding: 10px;
+        padding-bottom: 8px;
+        display: inline-block;
+        /*float: left;
+            width: auto;
+            min-width: 25px;
+            height: 25px;
+            text-align: center;
+            padding: 3px;
+            padding-top: 3px;
+            border-radius: 1px;
+            border: 1px solid #a59b9a;
+            cursor: pointer;*/
+    }
+
+    #switcher li {
+        float: left;
+        width: 31px;
+        height: 20px;
+        border-radius: 30px;
+        border: 2px solid #ffffff;
+        padding: 8px;
+        cursor: pointer;
+    }
+
+    li.ggg {
+        /* margin: 0px auto; */
+        float: right;
+        float: right;
+        text-transform: uppercase;
+        font-weight: 500;
+        letter-spacing: 2px;
+        position: relative;
+        left: -41px;
+    }
+</style>
+
+
+
+
+
+
+
+<style>
+
+    #spacilprice {
+        color: forestgreen;
+        margin-top: 1%;
+        font-family: Monospace;
+    }
+
+    #SPrice {
+        margin-left: 1px !important;
+        font-size: 25px;
+        color: black;
+        margin-top: 2%;
+    }
+
+    #incrig {
+        line-height: 10px;
+        margin-top: 1%;
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<!--share dropdown code css-->
+<style>
+    /* Style for dropdown menu */
+    .dropdown {
+        position: relative;
+        display: flex;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: white;
+        min-width: 10px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+            .dropdown-content a:hover {
+                background-color: white;
+            }
+
+    .dropdown:hover .dropdown-content {
+        display: inline;
+    }
+
+    .dropdown-content a .fa {
+        margin-right: 10px;
+    }
+
+    #myDIV {
+        text-align: center;
+        margin-top: 20px;
+        margin-left: -60%;
+    }
+</style>
+<!--end share dropdown code css-->
+<!--img image border css-->
+<style>
+
+    #mvimg {
+        border: 1px ridge;
+    }
+
+    .owl-theme .owl-controls {
+        margin-top: 10px;
+        text-align: center;
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        display: block !important;
+    }
+
+        /* Styling Next and Prev buttons */
+
+        .owl-theme .owl-controls .owl-buttons div {
+            color: none !important;
+            display: none !important;
+            zoom: 1;
+            *display: none !important; /*IE7 life-saver */
+            margin: 5px;
+            padding: 3px 10px;
+            font-size: 12px;
+            -webkit-border-radius: 30px;
+            -moz-border-radius: 30px;
+            border-radius: 30px;
+            background: none !important;
+            filter: none !important; /*IE7 fix*/
+            opacity: 0.5;
+        }
+        /* Clickable class fix problem with hover on touch devices */
+        /* Use it for non-touch hover action */
+        .owl-theme .owl-controls.clickable .owl-buttons div:hover {
+            filter: none !important; /*IE7 fix*/
+            opacity: 1;
+            text-decoration: none;
+        }
+
+        /* Styling Pagination*/
+
+        .owl-theme .owl-controls .owl-page {
+            display: none !important;
+            zoom: 1;
+            *display: none !important; /*IE7 life-saver */
+        }
+
+            .owl-theme .owl-controls .owl-page span {
+                display: none !important;
+                width: none !important;
+                height: 12px;
+                margin: 5px 7px;
+                filter: none !important; /*IE7 fix*/
+                opacity: 0.5;
+                -webkit-border-radius: 0px !important;
+                -moz-border-radius: 0px !important;
+                border-radius: 0px !important;
+                background: none !important;
+            }
+
+            .owl-theme .owl-controls .owl-page.active span,
+            .owl-theme .owl-controls.clickable .owl-page:hover span {
+                filter: none !important; /*IE7 fix*/
+                opacity: none !important;
+            }
+
+            /* If PaginationNumbers is true */
+
+            .owl-theme .owl-controls .owl-page span.owl-numbers {
+                height: none !important;
+                width: none !important;
+                color: none !important;
+                padding: 2px 10px;
+                font-size: 0px !important;
+                -webkit-border-radius: 30px;
+                -moz-border-radius: 30px;
+                border-radius: 30px;
+            }
+
+    /* preloading images */
+    .owl-item.loading {
+        min-height: none !important;
+        background: url(AjaxLoader.html) no-repeat center center;
+</style>
+<style>
+    .fttpp {
+        display: block !important;
+    }
+
+    @@media only screen and (max-width:767px) {
+        .fttpp {
+            display: none !important;
+        }
+    }
+
+    .fttpp1 {
+        display: none !important;
+    }
+
+    @@media only screen and (max-width:767px) {
+        .fttpp1 {
+            display: block !important;
+        }
+    }
+
+    a:hover {
+        color: white !important;
+    }
+
+    #image {
+        border: 1px solid;
+    }
+
+    .g1 {
+        box-shadow: 0px 0px 3px gray;
+        margin-left: 30px !important;
+    }
+
+    @@media only screen and (max-width:676px) {
+        .g1 {
+            box-shadow: none;
+            margin-left: 0px;
+        }
+    }
+</style>
+<!--end img image border css-->
+
+
+
+<input type="hidden" value="@Model.ItemCode" id="hdProductId" />
+<input type="hidden" value="@Model.MainCategoryName" id="hdCatName" />
+<input type="hidden" value="@Model.MainCategoryCode" id="hdCatId" />
+<input type="hidden" value="@Model.ProductType" id="hdnproducttype" />
+<input type="hidden" value="@Model.FashionType" id="hdnfashiontype" />
+<input type="hidden" value="@Model.FromTime" id="hdFromTime" />
+<input type="hidden" value="@Model.ToTime" id="hdToTime" />
+
+<!--product url-->
+<br />
+
+<div class="gambo-Breadcrumb">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="../WebHome/index">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">@Model.MainCategoryName</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@Model.ProductName</li>
+                    </ol>
+                </nav>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--end product url-->
+
+<div class="all-product-grid">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="product-dt-view" style="border:0px!important">
+                    <div class="row">
+
+                        <!--  slider image-->
+                        <!--slider-->
+
+
+
+                        <div class="col-lg-5 col-md-4 position">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div id="sync" class="owl-carousel owl-theme fttpp">
+                                        @if (Model.dt2 != null && Model.dt2.Rows.Count > 0)
+                                        {
+                                            foreach (DataRow dr in Model.dt2.Rows)
+                                            {
+
+                                                <div class="item" style="margin-top:5%!important;height:95px!important;width:80px!important;">
+                                                    <img src="@dr["ImageUrl"]" id="image" alt="" onclick="openModal('@dr["ImageUrl"]')">
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-sm-9">
+
+                                    <div id="sync1" class="owl-carousel owl-theme">
+
+                                        @if (Model.dt2 != null && Model.dt2.Rows.Count > 0)
+                                        {
+                                            foreach (DataRow dr in Model.dt2.Rows)
+                                            {
+                                                <div class="item">
+
+                                                    <!-- Add a container to hold the image for hover effect -->
+                                                    <div class="zoom-container">
+
+                                                        <img src="@dr["ImageUrl"]" class="image-zoom" alt="" onmousemove="moveimg1(event)" onclick="openModal('@dr["ImageUrl"]')" style="height:420px!important;">
+
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                    <!-- Icon element -->
+
+
+                                    <div id="sync2" class="owl-carousel owl-theme fttpp1">
+                                        @if (Model.dt2 != null && Model.dt2.Rows.Count > 0)
+                                        {
+                                            foreach (DataRow dr in Model.dt2.Rows)
+                                            {
+
+                                                <div class="item">
+                                                    <img src="@dr["ImageUrl"]" id="image" alt="" onclick="openModal('@dr["ImageUrl"]')">
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+
+                                    <div class="row tt1">
+
+
+
+                                        <div class="col-sm-6">
+                                            <ul class="ordr-crt-share">
+                                                <li><button class="add-cart-btn " onclick="AddItemInCartSingle()" style="width:155px"><i class="uil uil-shopping-cart-alt"></i>Add to Cart</button></li>
+                                            </ul>
+
+
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <ul class="ordr-crt-share">
+                                                <a href="../Checkout/Index?cType=c" class="cart-checkout-btn" onclick="AddItemInCartSingle()" style="width:155px;text-align:center">Buy Now </a>
+                                            </ul>
+                                        </div>
+
+
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+
+
+
+                        <div class="col-lg-7 col-md-7">
+                            <!-- Share button with dropdown -->
+                            <div class="dropdown sstt" style="float: right; margin-right: 2% !important;">
+                                <button class="dropbtn" onclick="toggleDropdown()" style="float:right;height:40px;width:150px;border:none;font-size:14px;background:none;">
+                                    <i class="fas fa-share" style="color:#b7b4b4"></i> share
+                                </button>
+                                <div class="dropdown-content" style="float: right; width: 250px; height: 60px; margin-top: 50px; display: none;" id="myDIV">
+                                    <div style="float:left;">
+                                        <a href="#" onclick="shareViaFacebook()">
+                                            <i class="fab fa-facebook-f mt-2" style="color:blue;font-size:25px;"></i>
+                                        </a>
+                                    </div>
+                                    <div style="float:left;margin-left:0px;">
+                                        <a href="#" onclick="shareViaInstagram()">
+                                            <i class="fab fa-instagram mt-2" style="color: orangered; font-size: 25px;"></i>
+                                        </a>
+                                    </div>
+                                    <div style="float:left;margin-left:0px;">
+                                        <a href="#" onclick="shareViaWhatsApp()">
+                                            <i class="fab fa-whatsapp mt-2" style="color: forestgreen; font-size: 25px;"></i>
+                                        </a>
+                                    </div>
+                                    <div style="float:left;margin-left:0px;">
+                                        <a href=" " onclick="copyProductLink()">
+                                            <i class="fas fa-link mt-2" style="color: purple; font-size: 25px;"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end Share button with dropdown -->
+
+                            <div class="product-dt-right">
+                                <span style="font-size:18px;font-weight:bold;margin-left:1%!important;">@Model.ProductName </span>
+
+
+                                <!--share script code-->
+
+                                <script>
+                                    function toggleDropdown() {
+                                        var x = document.getElementById('myDIV');
+                                        x.classList.toggle("show");
+                                    }
+
+                                    function shareViaFacebook() {
+                                        var productPath = "/path/to/product"; // Replace with your actual product path
+                                        var shareUrl = encodeURIComponent(window.location.origin + productPath);
+                                        window.open("https://www.facebook.com/sharer/sharer.php?u=" + shareUrl);
+                                    }
+
+                                    function shareViaWhatsApp() {
+                                        var productPath = "/path/to/product"; // Replace with your actual product path
+                                        var shareText = "Check out this product: " + window.location.origin + productPath;
+                                        var encodedShareText = encodeURIComponent(shareText);
+                                        window.open("whatsapp://send?text=" + encodedShareText);
+                                    }
+
+
+                                    function shareViaInstagram() {
+                                        var productPath = "/path/to/product"; // Replace with your actual product path
+                                        var shareUrl = encodeURIComponent(window.location.origin + productPath);
+                                        window.open("https://www.instagram.com/share?url=" + shareUrl);
+                                    }
+
+                                    function shareViaEmail() {
+                                        var productPath = "/path/to/product"; // Replace with your actual product path
+                                        var subject = encodeURIComponent("Check out this product");
+                                        var body = encodeURIComponent("I thought you might find this interesting: " + window.location.origin + productPath);
+                                        window.location.href = "mailto:?subject=" + subject + "&body=" + body;
+                                    }
+                                    function copyProductLink() {
+                                        debugger;
+                                        var currentURL = window.location.href;
+                                        var productPath = currentURL; // Set productPath to current URL
+                                        var productLink = window.location.origin + productPath;
+
+                                        var tempInput = document.createElement("input");
+                                        tempInput.value = productLink;
+                                        document.body.appendChild(tempInput);
+                                        tempInput.select();
+                                        document.execCommand("copy");
+                                        document.body.removeChild(tempInput);
+
+                                        alert("Product link copied to clipboard!");
+                                    }
+                                </script>
+                                <!--end script code-->
+
+                                <div class="box-review form-group">
+
+                                    @*<div class="">
+                                        <div class="rating-box">
+                                            <div class="rating-box">
+                                                @if (Model.AvgReviews == "0")
+                                                {<div class="star-rating">
+                                                        <span class="fa fa-star gray" data-rating="1"></span>
+                                                        <span class="fa fa-star gray" data-rating="2"></span>
+                                                        <span class="fa fa-star gray" data-rating="3"></span>
+                                                        <span class="fa fa-star gray" data-rating="4"></span>
+                                                        <span class="fa fa-star gray" data-rating="5"></span>
+                                                        <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                                                    </div>
+                                                }
+                                                @if (Model.AvgReviews == "1")
+                                                {
+                                                    <div class="star-rating">
+                                                        <span class="fa fa-star" data-rating="1"></span>
+                                                        <span class="fa fa-star gray" data-rating="2"></span>
+                                                        <span class="fa fa-star gray" data-rating="3"></span>
+                                                        <span class="fa fa-star gray" data-rating="4"></span>
+                                                        <span class="fa fa-star gray" data-rating="5"></span>
+                                                        <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                                                    </div>
+                                                }
+                                                @if (Model.AvgReviews == "2")
+                                               {
+                                                   <div class="star-rating">
+                                                       <span class="fa fa-star" data-rating="1"></span>
+                                                       <span class="fa fa-star" data-rating="2"></span>
+                                                       <span class="fa fa-star gray" data-rating="3"></span>
+                                                       <span class="fa fa-star gray" data-rating="4"></span>
+                                                       <span class="fa fa-star gray" data-rating="5"></span>
+                                                       <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                                                   </div>
+                                               }
+                                               @if (Model.AvgReviews == "3")
+                                               {
+                                                   <div class="star-rating">
+                                                       <span class="fa fa-star" data-rating="1"></span>
+                                                       <span class="fa fa-star" data-rating="2"></span>
+                                                       <span class="fa fa-star" data-rating="3"></span>
+                                                       <span class="fa fa-star gray" data-rating="4"></span>
+                                                       <span class="fa fa-star gray" data-rating="5"></span>
+                                                       <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                                                   </div>
+                                               }
+                                               @if (Model.AvgReviews == "4")
+                                               {
+                                                   <div class="star-rating">
+                                                       <span class="fa fa-star" data-rating="1"></span>
+                                                       <span class="fa fa-star" data-rating="2"></span>
+                                                       <span class="fa fa-star" data-rating="3"></span>
+                                                       <span class="fa fa-star" data-rating="4"></span>
+                                                       <span class="fa fa-star gray" data-rating="5"></span>
+                                                       <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                                                   </div>
+                                               }
+                                               @if (Model.AvgReviews == "5")
+                                               {
+                                                   <div class="star-rating">
+                                                       <span class="fa fa-star" data-rating="1"></span>
+                                                       <span class="fa fa-star" data-rating="2"></span>
+                                                       <span class="fa fa-star" data-rating="3"></span>
+                                                       <span class="fa fa-star" data-rating="4"></span>
+                                                       <span class="fa fa-star" data-rating="5"></span>
+                                               <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                                             </div>
+                                               }
+
+
+                                               </div>
+                                                 </div>
+                                                </div>*@
+
+
+                                </div>
+
+                                <ul id="without-dsc">
+                                    <ul>
+                                        <li>
+                                            <div class="main-price">
+                                                <p id="spacilprice" style="font-family:sans-serif!important;font-size:12px!important;margin-left:2%;">Special Price</p>
+                                                <ul style="margin-top:-2.5%">
+                                                    <span class="spnSaleRate" id="SPrice" style="font-size: 18px; font-weight: bold; margin-left: 2%!important;">₹@Model.SalePrice</span>
+                                                    <strike style="font-size: 15px;"> ₹@Model.RegularPrice </strike>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                    </ul>
+
+                                    <ul class="gty-wish-share" id="incrig" style="margin-left:3%;">
+                                        <li>
+                                            <div class="qty-product">
+                                                <div class="quantity buttons_added">
+                                                    <input type="button" value="-" class="minus minus-btn">
+                                                    <input type="number" step="1" name="quantity" id="proQty" value="1" class="input-text qty text">
+                                                    <input type="button" value="+" class="plus plus-btn">
+                                                </div>
+                                            </div>
+                                        </li>
+                                        @*<li><span class="like-icon save-icon" onclick="AddToWhishlist()" title="wishlist"></span></li>*@
+                                    </ul>
+
+         
+                                    <br />
+                                    <ul id="switcher23" style="margin-left: 3%; display: inline-flex; margin-left: 2% !important;">
+                                        @if (Model.sizeList != null)
+                                        {
+                                            foreach (DataRow sizeItem in Model.sizeList.Rows)
+                                            {
+                                                <li id="Button1" prodId="@sizeItem["ProductCode"]" value="@sizeItem["Size_Name"]" varname="@sizeItem["Size_Name"]" varId="@sizeItem["id"]" onclick="Activeli(this)" class="sizestyle active">@sizeItem["Size_Name"]</li>
+                                                @*<li id="size" style="height: 50px; width: 50px; border: 1px solid #bbb8b8; text-align: center; font-size: 18px; font-weight: bold; border-radius: 50%; line-height: 2.5;cursor:pointer;" onclick="toggleSize('@dr["Size_Value"]','@dr["Size_Name"]')">@dr["Size_Name"]</li>*@
+                                            }
+                                        }
+
+                                    </ul>
+                                    <br>
+                                    <br />
+                                    
+                                    <ul id="color" style="margin-left: 3%; display: inline-flex; margin-left: 2% !important;">
+                                        @if (Model.ColorList != null && Model.ColorList.Rows.Count > 0)
+                                        {
+
+                                            foreach (DataRow dr in Model.ColorList.Rows)
+                                            {
+                                                <li id="colorcode" style="height: 40px; width: 80px; border: 1px solid #bbb8b8; text-align: center; font-size: 15px; font-weight: bold; margin-left: 4% !important; line-height: 2.5; cursor: pointer;" onclick="toggleColor('@dr["ColorName"]')">@dr["ColorName"]</li>
+
+                                            }
+                                        }
+                                    </ul>
+
+                                        <br />
+
+
+                                        <div class="no-stock">
+                                            <p class="pd-no" style="display:none">Product No.<span>@Model.ItemCode</span></p>
+                                            @if (Model.StockStatus == "1")
+                                            {
+                                                <p class="stock-qty" style="margin-left: 2%!important;">Available<span class="stockInclr">(Instock)</span></p>
+                                            }
+
+                                            else
+                                            {
+                                                <p class="stock-qty" style="margin-left: 2%!important;">Available<span class="stockclr">(Out Of Stock)</span></p>
+                                            }
+                                            @*<p class="">Vendor Name<span>@Model.vendorname</span></p>*@
+
+                                        </div>
+                                        <ul style="line-height: -10px; margin-left: 2% !important;">
+
+                                            <span class="reviews_button"> @Model.TotalReviews  reviews </span>
+
+                                            @*<a class="write_review_button" onclick="myFunction()" id="new-w"> Write a review </a>*@
+
+                                        </ul>
+                                        <br />
+
+                                    </ul>
+
+
+                                    <img src="~/img/location13.png" style="height: 30px; width: 30px; margin-left: 2% !important;" />
+
+
+                                    <span style="font-size: 14px;font-weight: bold;color: #242323;">Check Availability</span>
+                                    <div class="row" style="margin-top: 6px;">
+                                        <div class="col col-md-8" style="margin-left: 2%!important;">
+                                            <div class="checkout-login">
+                                                <div style="display: inline-block;">
+                                                    <input type="number" id="txtPinCode" class="form-control" placeholder="Enter Pincode" pattern="[0-9]{6}" title="Please enter a 6-digit PIN code" required>
+                                                </div>
+                                                <a class="chck-btn" role="button" data-toggle="collapse" onclick="CheckPinCode()" style="height:37px;">Check</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:5px">
+                                        <div class="col-md-8">
+                                            <span style="color:green;font-weight:bold;display:none" id="Divavail"><i class="fa fa-check"></i> Delivery Available</span>
+                                            <span style="color:red;font-weight:bold;display:none" id="divNotAvl"><i class="fa fa-times"></i> Sorry, currently we are not serving at this Pincode.</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+
+                                        <div class="col-sm-11 g1">
+                                            <span style="background:white!important;font-weight:bold!important;font-size:20px;margin-left:5px;">Product Detail</span>
+                                            @*<div class="pdpt-title">
+                    <h4 style="background:white!important;color:black;">Product Detail</h4>
+                    <p style="background:white!important;color:black;padding-left:30px">Ideal For:</p>
+                    <p style="background: white !important; color: black; padding-left: 30px">Fabric:</p>
+                    <p style="background: white !important; color: black; padding-left: 30px">Type:</p>
+                    <p style="background: white !important; color: black; padding-left: 30px">Brand Color:</p>
+                    <p style="background: white !important; color: black; padding-left: 30px">Occasion:</p>
+                    <p style="background: white !important; color: black; padding-left: 30px">Pattern:</p>
+                    <h4 style="background:white!important;color:black;">Details</h4>
+                </div>*@
+                                            @*<div class="pdpt-body scrollstyle_4" style="font-size:10px!important;">
+
+                    <div class="pdct-dts-1" style="font-size:14px!important;">
+                        @Html.Raw(Model.Description)
+                    </div>
+                </div>*@
+
+                                            <div class="producttab">
+                                                <div class="tabsslider horizontal-tabs  col-xs-12">
+                                                    @*<ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#tab-1">Description</a></li>
+
+                        </ul>*@
+                                                    <div class="tab-content col-xs-12" style="border:none">
+                                                        <div id="tab-1" class="tab-pane fade active in">
+
+                                                            <span> @Html.Raw(Model.Description)</span>
+
+                                                        </div>
+                                                        <div id="tab-review" class="tab-pane fade">  </div>
+
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+
+
+
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="row" style="display: flex; flex-wrap: wrap">
+                                                <div class="col-sm-9" style="flex: 1; padding: 10px; box-sizing: border-box;margin-left:3.5%;">
+                                                    <h3 class="pb-5 hh">Ratings & Reviews</h3>
+
+                                                </div>
+                                                <div class="col-sm-3" style="flex: 1; padding: 10px; box-sizing: border-box;">
+                                                    <button type="button" class="btn-lg btn" data-toggle="modal" data-target="#myModal" style="background:#fa2365;height:40px;width:120px;color:white;border-radius:10px;border:none;"> Get Review</button>
+
+                                                    <!-- Modal -->
+                                                    <div class="modal fade" id="myModal" role="dialog" style="margin-top:200px">
+                                                        <div class="modal-dialog">
+
+                                                            <!-- Modal content-->
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <div class="row">
+                                                                        <div class="col-lg-12" style="margin-top:35px">
+
+                                                                            <div class="card kll">
+
+                                                                                <h2 id="#new-w">Write a review</h2>
+                                                                                <form id="myForm" enctype="multipart/form-data">
+                                                                                    <div class="contacts-form">
+                                                                                        <div class="row">
+                                                                                            <div class="col-sm-12">
+                                                                                                <div class="form-group">
+                                                                                                    <input id="txtcuname" type="text" class="form-control" placeholder="Please Enter your Name">
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div><br />
+                                                                                        <div class="container">
+                                                                                            <div class="row">
+                                                                                                <div class="col-sm-12">
+                                                                                                    <div class="form-group" id="fileInputContainer">
+                                                                                                        <div id="chooseFileOption" onclick="openFileInput()">
+                                                                                                            <i class="fas fa-plus"></i>
+                                                                                                        </div>
+                                                                                                        <input id="imgupld" name="image" type="file" class="form-control" style="display: none;" multiple onchange="displaySelectedImages(event)">
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div id="selectedImages"></div>
+                                                                                        </div>
+                                                                                        <br />
+                                                                                        <div class="row">
+                                                                                            <div class="col-sm-12">
+                                                                                                <div class="form-group">
+                                                                                                    <textarea id="txtreviewdec" class="form-control" name="text" placeholder="Please Enter Review"></textarea>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div><br />
+                                                                                        <div class="row">
+                                                                                            <div class="col-sm-12">
+                                                                                                <b>Rating</b>
+                                                                                                <div class="star-rating1">
+                                                                                                    <span class="fa fa-star" data-rating="1"></span>
+                                                                                                    <span class="fa fa-star" data-rating="2"></span>
+                                                                                                    <span class="fa fa-star" data-rating="3"></span>
+                                                                                                    <span class="fa fa-star" data-rating="4"></span>
+                                                                                                    <span class="fa fa-star" data-rating="5"></span>
+                                                                                                    <input type="hidden" id="cskRating" name="whatever1" class="rating-value" value="5">
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <hr />
+                                                                                        <div class="row">
+                                                                                            <div class="col-sm-12">
+                                                                                                <input type="button" class="btn primary" style="background: #c1134f; color: #fff;" value="Save Review" onclick="SaveReview()" />
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </form>
+                                                                            </div>
+                                                                            <br>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="display: flex; flex-wrap: wrap;">
+                                        <!--Review Scale Start-->
+                                        @{
+                                            var star_5 = 0;
+                                            var star_2 = 0;
+                                            var star_3 = 0;
+                                            var star_4 = 0;
+                                            var star_1 = 0;
+                                            if (Model.TableReview != null && Model.TableReview.Rows.Count > 0)
+                                            {
+                                                foreach (DataRow dr in Model.TableReview.Rows)
+                                                {
+                                                    var review = Convert.ToInt32(dr["ReviewStatus"]);
+
+                                                    if (review == 1)
+                                                    {
+                                                        star_1++;
+                                                    }
+
+                                                    if (review == 2)
+                                                    {
+                                                        star_2++;
+                                                    }
+                                                    if (review == 3)
+                                                    {
+                                                        star_3++;
+                                                    }
+                                                    if (review == 4)
+                                                    {
+                                                        star_4++;
+                                                    }
+                                                    if (review == 5)
+                                                    {
+                                                        star_5++;
+                                                    }
+                                                }
+                                            }
+                                            var TotalReview = star_1 + star_2 + star_3 + star_4 + star_5;
+
+                                            <div class="col-sm-3 pt-5 " id="rr" style="flex: 1; padding: 10px; box-sizing: border-box;">
+
+                                                <span class="averageRating" style="font-size:4vh; font-weight:bold;"></span>
+                                                <span><i class="fa fa-star text-success"></i></span><br />
+                                                <span>Out Of</span>
+                                                <span class="totalRating">@TotalReview</span>
+                                            </div>
+                                            <div class="col-sm-9" id="rr1" style="flex: 1; padding: 10px; box-sizing: border-box;">
+                                                <div class="row">
+                                                    <div class="side">
+                                                        <div>5 <i class="fa fa-star text-warning"></i></div>
+                                                    </div>
+                                                    <div class="middle">
+                                                        <div class="bar-container" style="height:5px;border-radius:10px">
+                                                            <div class="bar-5" style="height:5px;border-radius:10px"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="side right">
+                                                        <div class="star5">@star_5</div>
+                                                    </div>
+                                                    <div class="side">
+                                                        <div>4 <i class="fa fa-star text-warning"></i></div>
+                                                    </div>
+                                                    <div class="middle">
+                                                        <div class="bar-container" style="height:5px;border-radius:10px">
+                                                            <div class="bar-4" style="height:5px;border-radius:10px"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="side right">
+                                                        <div class="star4">@star_4</div>
+                                                    </div>
+                                                    <div class="side">
+                                                        <div>3 <i class="fa fa-star text-warning"></i></div>
+                                                    </div>
+                                                    <div class="middle">
+                                                        <div class="bar-container" style="height:5px;border-radius:10px">
+                                                            <div class="bar-3" style="height:5px;border-radius:10px"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="side right">
+                                                        <div class="star3">@star_3</div>
+                                                    </div>
+                                                    <div class="side">
+                                                        <div>2 <i class="fa fa-star text-warning"></i></div>
+                                                    </div>
+                                                    <div class="middle">
+                                                        <div class="bar-container" style="height:5px;border-radius:10px">
+                                                            <div class="bar-2" style="height:5px;border-radius:10px"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="side right">
+                                                        <div class="star2">@star_2</div>
+                                                    </div>
+                                                    <div class="side">
+                                                        <div>1 <i class="fa fa-star text-warning"></i></div>
+                                                    </div>
+                                                    <div class="middle">
+                                                        <div class="bar-container" style="height:5px;border-radius:10px">
+                                                            <div class="bar-1" style="height:5px;border-radius:10px"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="side right">
+                                                        <div class="star1">@star_1</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!--for phone view responsive start-->
+
+
+
+                                            <div class="col-sm-1" id="rrp" style="flex: 1; box-sizing: border-box;border-right: margin-top:25px;height:100px;width:100px!important;">
+
+                                                <span class="averageRating" style="font-size:4vh; font-weight:bold;padding-left:10px"></span>
+                                                <span><i class="fa fa-star text-success"></i></span><br />
+                                                <span style="padding-left: 10px">Out Of</span>
+                                                <span class="totalRating">@TotalReview</span>
+                                            </div>
+                                            <div class="col-sm-11" id="rrp1" style="flex: 1; box-sizing: border-box;margin-left:-70px!important;">
+                                                <div class="row" style="display: flex; flex-wrap: wrap;">
+                                                    <div class="side" style="flex: 1; box-sizing: border-box;">
+                                                        <div>5 <i class="fa fa-star text-warning"></i></div>
+                                                    </div>
+                                                    <div class="middle" style="flex: 1; padding: 10px; box-sizing: border-box;">
+                                                        <div class="bar-container" style="height: 5px; border-radius: 10px; margin-left: -45px !important; width: 120px">
+                                                            <div class="bar-5" style="height:5px;border-radius:10px"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="side right">
+                                                        <div class="star5">@star_5</div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="display: flex; flex-wrap: wrap">
+                                                    <div class="side" style="flex: 1; box-sizing: border-box">
+                                                        <div>4 <i class="fa fa-star text-warning"></i></div>
+                                                    </div>
+                                                    <div class="middle" style="flex: 1; padding: 10px; box-sizing: border-box;">
+                                                        <div class="bar-container" style="height: 5px; border-radius: 10px; margin-left: -45px !important; width: 120px">
+                                                            <div class="bar-4" style="height:5px;border-radius:10px;"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="side right">
+                                                        <div class="star4">@star_4</div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="display: flex; flex-wrap: wrap;">
+                                                    <div class="side" style="flex: 1; box-sizing: border-box">
+                                                        <div>3 <i class="fa fa-star text-warning"></i></div>
+                                                    </div>
+                                                    <div class="middle" style="flex: 1; padding: 10px; box-sizing: border-box;">
+                                                        <div class="bar-container" style="height: 5px; border-radius: 10px; margin-left: -45px !important; width: 120px">
+                                                            <div class="bar-3" style="height:5px;border-radius:10px"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="side right">
+                                                        <div class="star3">@star_3</div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="display: flex; flex-wrap: wrap;">
+                                                    <div class="side" style="flex: 1; box-sizing: border-box;">
+                                                        <div>2 <i class="fa fa-star text-warning"></i></div>
+                                                    </div>
+                                                    <div class="middle" style="flex: 1; padding: 10px; box-sizing: border-box">
+                                                        <div class="bar-container" style="height: 5px; border-radius: 10px; margin-left: -45px !important; width: 120px">
+                                                            <div class="bar-2" style="height:5px;border-radius:10px"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="side right">
+                                                        <div class="star2">@star_2</div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="display: flex; flex-wrap: wrap;">
+                                                    <div class="side" style="flex: 1; box-sizing: border-box;">
+                                                        <div>1 <i class="fa fa-star text-warning"></i></div>
+                                                    </div>
+                                                    <div class="middle" style="flex: 1; padding: 10px; box-sizing: border-box">
+                                                        <div class="bar-container" style="height: 5px; border-radius: 10px; margin-left: -45px !important; width: 120px">
+                                                            <div class="bar-1" style="height:5px;border-radius:10px"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="side right">
+                                                        <div class="star1">@star_1</div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+
+                                            <!--for phone view responsive end-->
+                                        }
+                                        <!--Review Scale End-->
+
+                                    </div>
+                                    <hr />
+
+
+                                    <div class="row" style="margin-top:100px">
+
+                                        <!-- Rating review row end -->
+                                        <!-- Customer review -->
+
+                                        <div class="col-sm-12" style="margin-top:20px">
+                                            <table class="" id="tblReview">
+                                                <tbody style="border:none">
+
+                                                    @{
+
+                                                        int counter = 0;
+                                                        if (Model.TableReview != null && Model.TableReview.Rows.Count > 0)
+                                                        {
+                                                            <p style="font-weight:bold;margin-left:6%;">Real Image and videos from customers</p>
+                                                            foreach (System.Data.DataRow dr in Model.TableReview.Rows)
+                                                            {
+                                                                if (counter < 3)
+                                                                {
+
+                                                                    <tr style="color: black;background:none;border:none">
+                                                                        <td style="width: 50%;"><span class="fa fa-user" style="margin-left: 2%;"></span><strong style="padding-left: 10px; margin-left: 1%;">@dr["CustomertName"]</strong></td>
+                                                                        <td class="text-right"><p style="margin-right: 4%;">@dr["AddedOn"]</p></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="2">
+                                                                            <p style="margin-left:2%;">@dr["ReviewDiscription"]</p>
+                                                                            <div style="height: 22px; width: 50px; background: #38a718; border-radius: 20px; margin-left: 2%;"><p style="color: white; text-align: center; ">@dr["ReviewStatus"].0&nbsp;☆</p></div>
+                                                                            <h3></h3>
+                                                                            <img src="~/Content/UploadFile/@dr["image"]" height="50" width="50" style="margin-left: 3%;" />
+                                                                            <div class="">
+                                                                                <hr />
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                    counter++;
+                                                                }
+                                                            }
+
+                                                            if (Model.TableReview.Rows.Count > 3)
+                                                            {
+                                                                <tr>
+                                                                    <td colspan="2">
+                                                                        <button type="button" data-toggle="modal" data-target="#myModall" style="margin:0px;background:#fa2365;border:none!important;height:40px;color:white;width:140px;border-radius:5px;">View More Reviews</button>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <!--for phone view by tanu start-->
+                                        <div class="phn fixed-bottom" style="z-index:5;padding:0px;bottom:0">
+
+                                            <div style="width:100%;height:50px;float:left">
+                                                <div style="width:50%;height:50px;float:left">
+
+                                                    <button class="add-cart-btn hover-btn form-control" onclick="AddItemInCartSingle()" style="height:55px"><i class="uil uil-shopping-cart-alt"></i>Add to Cart </button>
+
+                                                </div>
+                                                <div style="width:50%;height:50px;float:left">
+
+                                                    <a href="../Checkout/Index?cType=c">
+                                                        <button class="cart-checkout-btn hover-btn form-control" style="height:55px;color:white!important;margin:0px;padding:0px;background:#ef0058">Buy Now </button>
+                                                    </a>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <!--for phone view by tanu end-->
+
+                                    </div>
+
+                                    <div class="p" style="margin-top:70px;"></div>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="myModall" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="myModalLabel">Additional Reviews</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <table class="" id="tblReview">
+                                                        <tbody style="border:none">
+                                                            @{
+                                                                int skippedRows = 0;
+                                                                if (Model.TableReview != null && Model.TableReview.Rows.Count > 0)
+                                                                {
+
+                                                                    foreach (System.Data.DataRow dr in Model.TableReview.Rows)
+                                                                    {
+                                                                        if (skippedRows < 3)
+                                                                        {
+                                                                            skippedRows++;
+                                                                            continue; // Skip this row
+                                                                        }
+
+                                                                        // Render the review data here
+                                                                        <tr style="color: black;background:none;border:none">
+                                                                            <td style="width: 50%;"><span class="fa fa-user"></span><strong style="padding-left:10px">@dr["CustomertName"]</strong></td>
+                                                                            <td class="text-right">@dr["AddedOn"]</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td colspan="2">
+                                                                                <p>@dr["ReviewDiscription"]</p>
+                                                                                <div style="height:20px;width:35px;background:#38a718;border-radius:20px"><p style="color:white;text-align:center">@dr["ReviewStatus"]&nbsp;☆</p></div>
+                                                                                <img src="~/Content/UploadFile/@dr["image"]" height="50" width="50" />
+
+                                                                                <div class="">
+                                                                                    <hr />
+                                                                                </div>
+
+                                                                            </td>
+                                                                        </tr>
+                                                                    }
+
+                                                                }
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!--Customer Review End-->
+
+
+
+</div>
+
+
+                            @if (Model.ProductType != "Simple Product")
+                            {
+                                if (Model.dtCatProduct != null && Model.dtCatProduct.Rows.Count > 0)
+                                {
+                                    int i = 0;
+                                    <div class="product-radio">
+                                        <ul class="product-now">
+                                            @foreach (DataRow dr in Model.dtCatProduct.Rows)
+                                            {
+                                                <li>
+                                                    @if (i == 0)
+                                                    {
+                                                        <input type="radio" id="@dr["SrNo"]" name="option" attrId="@dr["AttributeId"]" varId="@dr["VariationId"]"
+                                                               onchange="ChangeRate('@dr["RegularPrice"]','@dr["saleValue"]','@dr["DiscPer"]')" checked>
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="radio" id="@dr["SrNo"]" name="option" attrId="@dr["AttributeId"]"
+                                                               varId="@dr["VariationId"]" onchange="ChangeRate('@dr["RegularPrice"]','@dr["saleValue"]','@dr["DiscPer"]')">
+                                                    }
+                                                    <label for="@dr["SrNo"]" nowrap>@dr["VarriationName"]</label>
+                                                </li>
+                                                i++;
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                            }
+
+
+
+                            <p class="pp-descp">@Html.Raw(Model.ProductSpacification)</p>
+                            <div class="product-group-dt" style="display:none">
+                                @if (Model.DiscPer > 0)
+                                {
+
+                                    <ul id="without-dsc">
+                                        <li><div class="main-price"> Price &#8377;<span class="spnSaleRate" id="SPrice" style="margin-left: 1px !important;">@Model.SalePrice</span><strike>&nbsp;  ₹@Model.RegularPrice</strike> </div></li>
+                                        @*<li class="ggg"><h5>Select Size4</h5></li>*@
+                                    </ul>
+                                }
+                                else
+                                {
+
+                                    <ul id="without-dsc">
+                                        <li>
+                                            <div class="main-price">
+                                                Price &#8377;<span class="spnSaleRate" id="SPrice" style="margin-left: 1px !important;">@Model.SalePrice</span>
+                                                &nbsp; @if (Model.SalePrice != Model.RegularPrice)
+                                                {<strike>
+                                                        ₹@Model.RegularPrice
+                                                    </strike>}
+                                            </div>
+                                        </li>
+                                        <li>
+
+                                            <div id="countdown">
+
+                                                <p id="countdown-detail"></p>
+
+                                            </div>
+
+                                        </li>
+                                        @if (Model.sizeList != null && Model.sizeList.Rows.Count > 0)
+                                        {
+                                            <li class="ggg"><h5>Select Size</h5></li>
+                                        }
+
+                                    </ul>
+
+                                }
+
+                                <div class="form-group">
+                                    @if (Model.VariationId != null)
+                                    {
+                                        if (Model.sizeList != null && Model.sizeList.Rows.Count > 0)
+                                        {<ul id="switcher23">
+                                                @foreach (DataRow sizeItem in Model.sizeList.Rows)
+                                                {
+                                                    if (Convert.ToString(@sizeItem["ActiveStatus"]) == "1")
+                                                    {
+                                                        <li id="Button1" prodId="@sizeItem["ProductId"]" value="@sizeItem["VarriationName"]" varname="@sizeItem["VarriationName"]" class="sizestyle active" onclick="Activeli(this)">@sizeItem["VarriationName"]</li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li id="Button1" prodId="@sizeItem["ProductId"]" value="@sizeItem["VarriationName"]" varname="@sizeItem["VarriationName"]" onclick="Activeli(this)">@sizeItem["VarriationName"]</li>
+                                                    }
+
+
+                                                }
+
+                                            </ul>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (Model.sizeList != null && Model.sizeList.Rows.Count > 0)
+                                        {<ul id="switcher23">
+                                                @foreach (DataRow sizeItem in Model.sizeList.Rows)
+                                                {
+                                                    if (Convert.ToString(@sizeItem["ActiveStatus"]) == "1")
+                                                    {
+                                                        <li id="Button1" prodId="@sizeItem["ProductCode"]" value="@sizeItem["Size_Name"]" varname="@sizeItem["Size_Name"]" varId="@sizeItem["id"]" onclick="Activeli(this)" class="sizestyle active">@sizeItem["Size_Name"]</li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li id="Button1" prodId="@sizeItem["ProductCode"]" value="@sizeItem["Size_Name"]" varname="@sizeItem["Size_Name"]" varId="@sizeItem["id"]" onclick="Activeli(this)">@sizeItem["Size_Name"]</li>
+                                                    }
+
+
+                                                }
+
+                                            </ul>
+                                        }
+                                    }
+                                </div>
+                                
+                                <div class="form-group left-new">
+                                    @if (Model.ColorList != null && Model.ColorList.Rows.Count > 0)
+                                    {
+
+                                    }
+                                    @if (Model.VariationId != null)
+                                    {
+
+                                        if (Model.ColorList != null && Model.ColorList.Rows.Count > 0)
+
+                                        {<ul id="switcher">
+                                                @foreach (DataRow ColorItem in Model.ColorList.Rows)
+                                                {
+                                                    if (Convert.ToString(@ColorItem["ActiveStatus"]) == "1")
+                                                    {
+                                                        <li id="Button2" onclick="getcolorimg(this)" value="@ColorItem["Color"]" code="@ColorItem["ColorValue"]" prodId="@ColorItem["ProductId"]" varId="@ColorItem["VariationId"]" class="colorstyle active" style="background-color:@ColorItem["ColorValue"]"></li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li id="Button2" onclick="getcolorimg(this)" value="@ColorItem["Color"]" prodId="@ColorItem["ProductId"]" varId="@ColorItem["VariationId"]" code="@ColorItem["ColorValue"]" style="background-color:@ColorItem["ColorValue"]"></li>
+                                                    }
+                                                }
+                                            </ul>
+                                        }
+                                    }
+                                    else
+                                    {
+
+                                    }
+
+                                </div>
+
+                                <ul class="gty-wish-share">
+                                    <li>
+                                        <div class="qty-product">
+                                            <div class="quantity buttons_added">
+                                                <input type="button" value="-" class="minus minus-btn">
+                                                <input type="number" step="1" name="quantity" id="proQty" value="1" class="input-text qty text">
+                                                <input type="button" value="+" class="plus plus-btn">
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li><span class="like-icon save-icon" onclick="AddToWhishlist()" title="wishlist"></span></li>
+                                </ul>
+
+                                <ul class="ordr-crt-share">
+                                    <li><button class="add-cart-btn hover-btn" onclick="AddItemInCartSingle()"><i class="uil uil-shopping-cart-alt"></i>Add to Cart</button></li>
+
+
+                                    <a href="../Checkout/Index?cType=c" class="cart-checkout-btn hover-btn">ShowCart </a>
+                                </ul><hr />
+                                <span style="font-size: 14px;font-weight: bold;color: #242323;">Check Availability</span>
+                                <div class="row" style="margin-top: 6px;">
+                                    <div class="col col-md-8">
+                                        <div class="checkout-login">
+                                            <div style="display: inline-block;">
+                                                <input type="text" id="txtPinCode" class="form-control" placeholder="Enter Pincode">
+                                            </div>
+                                            <a class="chck-btn hover-btn" role="button" data-toggle="collapse" onclick="CheckPinCode()">Check</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top:5px">
+                                    <div class="col-md-8">
+                                        <span style="color:green;font-weight:bold;display:none" id="Divavail"><i class="fa fa-check"></i> Delivery Available</span>
+                                        <span style="color:red;font-weight:bold;display:none" id="divNotAvl"><i class="fa fa-times"></i> Sorry, currently we are not serving at this Pincode.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pdp-details" style="display:none">
+                                <ul>
+                                    @*<li>
+                                            <div class="pdp-group-dt">
+                                                <div class="pdp-icon"><i class="uil uil-usd-circle"></i></div>
+                                                <div class="pdp-text-dt">
+                                                    <span>Lowest Price Guaranteed</span>
+                                                    <p>Get difference refunded if you find it cheaper anywhere else.</p>
+                                                </div>
+                                            </div>
+                                        </li>*@
+                                    <li>
+                                        <div class="pdp-group-dt" style="display:none">
+                                            <div class="pdp-icon"><i class="uil uil-cloud-redo"></i></div>
+                                            <div class="pdp-text-dt">
+                                                <span>Easy Returns & Refunds</span>
+                                                <p>@Html.Raw(Model.ReturnAndRefundPolicy)</p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <br />
+
+            </div>
+
+        </div>
+
+
+
+
+
+        <!--code for more like this -->
+
+        <div class="row dd">
+            <div class="pdpt-bg">
+                <div class="pdpt-title">
+                    <h4>More Like This</h4>
+                </div>
+                <div class="row" style="margin-top:10px">
+                    @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+                    {
+                        foreach (DataRow dr in Model.dt1.Rows)
+                        {
+                            <div class="col-sm-3" style="border:1px solid #f2ecec;margin:px">
+
+                                <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" class="cart-product-img" style="margin:0px;padding:0px">
+                                    <img src="@dr["ProductMainImageUrl"]" alt="f">
+                                    <span class="like-icon" title="wishlist" onclick="AddToWhishlist()" style="margin-top:-45%;"></span>
+                                    @*<div class="product-price">
+                                            @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                            {
+                                                <span class="offer-badge-1" style="font-size:14px;color:green;">@dr["Discper"]% OFF</span>
+                                            }
+
+                                        </div>*@
+                                </a>
+                                <div class="cart-text">
+                                    <p>Available<span>(In Stock)</span></p>
+                                    <p style="font-size:16px;font-weight:bold;">@dr["pName"]</p>
+
+                                    <label class="cart-item-price" style="font-size:16px;font-weight:bold;color:black;">
+                                        &#8377;@dr["saleValue"]
+
+                                        @*<button class="add-cart-btn hover-btn" onclick="AddItemInCartSingle()" style="background:none!important;color:black!important;margin-left:130px"><i class="uil uil-shopping-cart-alt"></i></button>*@
+
+                                    </label>
+                                </div>
+
+
+                                @if (Model.dtCatProduct != null && Model.dtCatProduct.Rows.Count > 0)
+                                {
+                                    <div class="col-md-12">
+                                        <div class="owl-carousel featured-slider owl-theme">
+                                            @foreach (DataRow drr in Model.dtCatProduct.Rows)
+                                            {
+                                                <div class="item">
+                                                    <div class="product-item ">
+                                                        <div class="product-text-dt">
+                                                            <p>Available<span>(In Stock)</span></p>
+                                                            <h4>@drr["pName"]</h4>
+
+                                                            <div class="row">
+                                                                <div class="product-price col-sm-10">
+
+                                                                    @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                                                    {
+
+                                                                        <label class="salepice" style="font-size:15px;color:black !important;font-weight:bold;">
+                                                                            &#8377; @drr["SaleValue"]
+                                                                        </label>
+
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        if (Convert.ToDecimal(dr["RegularPrice"]) == Convert.ToDecimal(dr["SaleValue"]))
+                                                                        {
+                                                                            <label class="salepice" style="font-size:15px;color:black !important;font-weight:bold;">
+                                                                                &#8377;@drr["SaleValue"]
+                                                                            </label>
+                                                                        }
+                                                                        else
+                                                                        {
+
+                                                                            <label class="salepice" style="font-size:15px;color:black !important;font-weight:bold;">
+                                                                                &#8377; @drr["SaleValue"]
+                                                                            </label>
+                                                                        }
+                                                                    }
+
+
+                                                                    @*else if (!string.IsNullOrEmpty(Convert.ToString(dr["VarId"])))
+                                                                        {
+                                                                            @Html.Action("VariationPrice", "ProductDetail", new { VariationId = dr["VarId"], discount = dr["Discper"] })
+                                                                        }*@
+
+                                                                    @if (Convert.ToString(dr["ProductType"]) == "Attribute Product")
+                                                                    {
+                                                                        LogicClass objL = new LogicClass();
+                                                                        DataTable dt = objL.Proc_GetProductDetail_Varaiation(Convert.ToString(dr["ProductCode"]), "Proc_GetProductDetail_Varaiation");
+                                                                        if (dt != null && dt.Rows.Count > 0)
+                                                                        {
+                                                                            <div>
+                                                                                <select class="form-control ddl_PVariation sp_@drr["ProductCode"]">
+                                                                                    @foreach (DataRow drvariation in dt.Rows)
+                                                                                    {
+                                                                                        <option value="@drvariation["VarId"]" RegularPrice="@drvariation["RegularPrice"]" SalePrice="@drvariation["SalePrice"]"> @drvariation["VarriationName"]</option>
+                                                                                    }
+                                                                                </select>
+                                                                            </div>
+
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <div class="form-control" style="border: none;"> </div>
+                                                                    }
+
+                                                                </div>
+                                                                <div class="col-sm-2" id="crt">
+                                                                    <span class="cart-icon" onclick="AddItemInCart('@drr["ProductCode"]',this,'@drr["AttrId"]','@drr["VarId"]')"><a href="../Checkout/Index?cType=c" style="color:black"><i class="uil uil-shopping-cart-alt" style="color:black"></i></a></span>
+                                                                </div>
+
+
+                                                            </div>
+                                                            <div style="display:none">
+                                                                <select style="width:67%">
+                                                                    <option>Select</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="qty-cart">
+                                                                @*<div class="quantity buttons_added">
+                                                                        <input type="button" value="-" class="minus minus-btn">
+                                                                        <input type="number" step="1" name="quantity" value="0" class="input-text qty text">
+                                                                        <input type="button" value="+" class="plus plus-btn">
+                                                                    </div>*@
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+
+
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+
+        <!--end code for more like this -->
+        <!--For Phone View-->
+        <div class="row ddphn">
+            <div class="pdpt-bg">
+                <div class="pdpt-title">
+                    <h4>More Like This</h4>
+                </div>
+                <div class="row">
+                    @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+                    {
+                        foreach (DataRow dr in Model.dt1.Rows)
+                        {
+                            <div class="col-6" style=" padding: 10px;border:1px solid #f2ecec;">
+                                <span class="like-icon" title="wishlist" onclick="AddToWhishlist()"></span>
+                                <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" class="cart-product-img" style="margin:0px;padding:0px;">
+
+                                    <img src="@dr["ProductMainImageUrl"]" alt="f">
+                                    @*<div class="product-absolute-options">
+                                            @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                            {
+                                                <span class="ttp" style="position:absolute;left:25%; color:green; bottom:90px!important;">@dr["Discper"]% off</span>
+                                            }
+                                        </div>*@
+                                </a>
+                                <div class="cart-text" style="margin:2%;">
+                                    <p>Available<span>(In Stock)</span></p>
+                                    <p style="font-size:13px;font-weight:bold;padding-top:10px">@dr["pName"]</p>
+                                    @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                    {
+                                        <label class="salepice" style="font-weight:bold!important;">
+                                            &#8377; @dr["SaleValue"]
+                                        </label>
+                                    }
+                                    else
+                                    {
+                                        if (Convert.ToDecimal(dr["RegularPrice"]) == Convert.ToDecimal(dr["SaleValue"]))
+                                        {
+                                            <label class="salepice" style="font-weight:bold!important;">
+                                                &#8377;@dr["SaleValue"]
+                                            </label>
+
+                                        }
+                                        else
+                                        {
+
+                                            <label class="salepice" style="font-weight:bold!important;">
+                                                &#8377; @dr["SaleValue"]
+                                            </label>
+                                        }
+                                    }
+                                </div>
+
+                                @*<div style="margin-left:-15px">
+                                        <button class="add-cart-btn hover-btn" onclick="AddItemInCartSingle()" style="background:none!important;color:black!important;"><i class="uil uil-shopping-cart-alt"></i>Add to Cart </button>
+                                    </div>*@
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        <!--End phone view-->
+
+
+
+    </div>
+</div>
+<!-- Featured Products Start -->
+@if (Model.dt != null && Model.dt.Rows.Count > 0)
+{
+    <div class="section145">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-title-tt">
+                        <div class="main-title-left">
+                            <span>For You</span>
+                            <h2>Top Featured Products</h2>
+                        </div>
+                        <a href="#" class="see-more-btn" style="display:block">See All</a>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="owl-carousel featured-slider owl-theme">
+                        @foreach (DataRow dr in Model.dt.Rows)
+                        {
+                            <div class="item">
+                                <div class="product-item">
+                                    <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" class="product-img">
+                                        <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]">
+                                        <div class="product-absolute-options">
+                                            @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                            {
+                                                <span class="offer-badge-1">@dr["Discper"]% off</span>
+                                            }
+                                            <span class="like-icon" title="wishlist" onclick="AddToWhishlist()"></span>
+                                        </div>
+                                    </a>
+                                    <div class="product-text-dt">
+                                        <p>Available<span>(In Stock)</span></p>
+                                        <h4>@dr["pName"]</h4>
+                                        <div class="product-price">
+                                            &#8377;@dr["saleValue"]
+                                            @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                            {
+                                                <span>&#8377;@dr["RegularPrice"]</span>
+                                            }
+                                        </div>
+                                        <div class="qty-cart">
+                                            <div class="quantity buttons_added">
+                                                <input type="button" value="-" class="minus minus-btn">
+                                                <input type="number" step="1" name="quantity" value="0" class="input-text qty text">
+                                                <input type="button" value="+" class="plus plus-btn">
+                                            </div>
+                                            <span class="cart-icon" onclick="AddItemInCart('@dr["ProductCode"]',this,'@dr["AttrId"]','@dr["VarId"]')"><i class="uil uil-shopping-cart-alt"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<!-- Featured Products End -->
+<!--review page -->
+<!--script star reting-->
+<script>
+
+    var $star_rating = $('.star-rating1 .fa');
+
+    var SetRatingStar = function () {
+        return $star_rating.each(function () {
+            if (parseInt($star_rating.siblings('input.rating-value').val()) >= parseInt($(this).data('rating'))) {
+                return $(this).removeClass('fa-star gray').addClass('fa-star');
+            } else {
+                return $(this).removeClass('fa-star').addClass('fa-star  gray');
+            }
+        });
+    };
+
+    $star_rating.on('click', function () {
+        $star_rating.siblings('input.rating-value').val($(this).data('rating'));
+        return SetRatingStar();
+    });
+
+    SetRatingStar();
+    $(document).ready(function () {
+
+    });
+</script>
+
+<!-- end script star reting-->
+
+<script>
+    function openFileInput() {
+        document.getElementById('imgupld').click();
+    }
+
+    function displaySelectedImages(event) {
+        const files = event.target.files;
+        const selectedImagesContainer = document.getElementById('selectedImages');
+        const chooseFileOption = document.getElementById('chooseFileOption');
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.width = '50px&nbsp;';
+                img.style.height = '50px';
+                selectedImagesContainer.appendChild(img);
+            }
+
+            reader.readAsDataURL(file);
+        }
+
+        // Always show the plus icon
+        chooseFileOption.style.display = 'block';
+    }
+</script>
+
+<script>
+
+    function SaveReview() {
+        debugger;
+        var ReviewNum = $('#cskRating').val();
+        var ReverName = $('#txtcuname').val();
+        var fileInput = document.getElementById('imgupld');
+        var RevDis = $('#txtreviewdec').val();
+        var ProductId = $("#hdProductId").val();
+        $('.form-group span').text('');
+
+        // Check if the name is empty
+        if (ReverName.trim() === "") {
+            $('#txtcuname').closest('.form-group').find('span').text("Please Enter your Name").css('color', 'red');
+            $('#txtcuname').focus();
+            return;
+        }
+        if (ReviewNum.trim() === "") {
+            $('#cskRating').closest('.form-group').find('span').text("Please Select Review").css('color', 'red');
+            $('#cskRating').focus();
+            return;
+        }
+        if (RevDis.trim() === "") {
+            $('#txtreviewdec').closest('.form-group').find('span').text("Please Enter Review").css('color', 'red');
+            $('#txtreviewdec').focus();
+            return;
+        }
+        var formData = new FormData();
+        formData.append('ReiewStatus', ReviewNum);
+        formData.append('CustmerName', ReverName);
+        formData.append('ReiewDis', RevDis);
+        formData.append('ProductId', ProductId);
+        formData.append('image', fileInput.files[0]);
+
+        var files = $('#imgupld')[0].files;
+        for (var i = 0; i < files.length; i++) {
+            formData.append('image', files[i]); // Selected files ko FormData object mein add karein
+        }
+        $.ajax({
+            url: "/Ecommarce/SaveReview",
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (data1) {
+                if (data1 != "0") {
+                    // Create a message element
+                    var successMessageElement = $('<div>').addClass('alertMessage success').text(data1);
+
+                    // Create success icon element
+                    var successIcon = $('<i>').addClass('fa fa-check-circle').css({ 'color': 'green', 'margin-right': '5px' });
+
+
+
+                    // Append success icon to the message element
+                    successMessageElement.prepend(successIcon);
+
+                    // Append the message element to the body
+                    $('body').append(successMessageElement);
+
+                    // Set timeout to remove the message after 3 seconds
+                    setTimeout(function () {
+                        successMessageElement.remove();
+                    }, 3000);
+
+                    BindReviewDetails();
+                    $('#txtcuname').val('');
+                    $('#txtreviewdec').val('');
+                    $('#imgupld').val('');
+                } else {
+                    // Create a message element
+                    var errorMessageElement = $('<div>').addClass('alertMessage error').text("Server Error. Please try after some time.");
+
+                    // Create error icon element
+                    var errorIcon = $('<i>').addClass('fa fa-exclamation-circle').css({ 'color': 'red', 'margin-right': '5px' });
+
+                    // Append error icon to the message element
+                    errorMessageElement.prepend(errorIcon);
+
+                    // Append the message element to the body
+                    $('body').append(errorMessageElement);
+
+                    // Set timeout to remove the message after 3 seconds
+                    setTimeout(function () {
+                        errorMessageElement.remove();
+                    }, 3000);
+                }
+            }
+        });
+
+    }
+
+
+    function BindReviewDetails() {
+        $.ajax({
+            url: "/SEOURL/SaleProduct",
+            type: "POST",
+            data: { 'Category': $.trim($('#hdCategory').val()), 'ProductName': $.trim($('#hdproductTitle').val()), 'ProductId': $.trim($('#hdproductId').val()) },
+            datatype: "json",
+            success: function (data1) {
+                debugger;
+                var htmlNew = data1;
+                $('#review').html($(htmlNew).find('#tblReview'));
+                // $('#divtable').html($(htmlNew).find('#divcnt'));
+            }
+        });
+    }
+
+</script>
+<!--Review Scale Code Start-->
+<style>
+    .side {
+        float: left;
+        width: 15%;
+        margin-top: 5px;
+    }
+
+    .middle {
+        float: left;
+        width: 60%;
+        margin-top: 5px;
+    }
+
+    .right {
+        text-align: right;
+    }
+
+    .row:after {
+        content: "";
+        display: flex;
+        clear: both;
+    }
+
+    .bar-container {
+        width: 100%;
+        background-color: #f1f1f1;
+        text-align: center;
+    }
+
+    .bar-5 {
+        height: 18px;
+        background-color: #04AA6D;
+    }
+
+    .bar-4 {
+        height: 18px;
+        background-color: #04AA6D;
+    }
+
+    .bar-3 {
+        height: 18px;
+        background-color: #04AA6D;
+    }
+
+    .bar-2 {
+        height: 18px;
+        background-color: #04AA6D;
+    }
+
+    .bar-1 {
+        height: 18px;
+        background-color: #04AA6D;
+    }
+
+    @@media (max-width: 400px) {
+        .side, .middle {
+            width: 100%;
+        }
+
+        .right {
+            display: none;
+        }
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        var totalText = $(".totalRating").text();
+        var total = parseInt(totalText);
+
+        var star1 = $(".star1").text();
+        var star_1 = parseInt(star1);
+
+        var star2 = $(".star2").text();
+        var star_2 = parseInt(star2);
+
+        var star3 = $(".star3").text();
+        var star_3 = parseInt(star3);
+
+        var star4 = $(".star4").text();
+        var star_4 = parseInt(star4);
+
+        var star5 = $(".star5").text();
+        var star_5 = parseInt(star5);
+
+        var totalStars = star_1 + star_2 + star_3 + star_4 + star_5;
+        var averageRating = (star_1 * 1 + star_2 * 2 + star_3 * 3 + star_4 * 4 + star_5 * 5) / totalStars;
+
+        $(".bar-1").css("width", star_1 > 0 ? (star_1 / totalStars) * 100 + "%" : "0%");
+        $(".bar-2").css("width", star_2 > 0 ? (star_2 / totalStars) * 100 + "%" : "0%");
+        $(".bar-3").css("width", star_3 > 0 ? (star_3 / totalStars) * 100 + "%" : "0%");
+        $(".bar-4").css("width", star_4 > 0 ? (star_4 / totalStars) * 100 + "%" : "0%");
+        $(".bar-5").css("width", star_5 > 0 ? (star_5 / totalStars) * 100 + "%" : "0%");
+
+        $(".averageRating").text(averageRating > 0 ? averageRating.toFixed(1) : 0);
+    });
+
+</script>
+<!--Review Scale Code End -->
+<!-----mani singh ka code ha photo slide kaelebaren-->
+<script>
+
+
+
+</script>
+
+<script>
+    window.addEventListener('scroll', function () {
+        var phnDiv = document.querySelector('.phn');
+        var ddphnDiv = document.querySelector('.p');
+
+        var phnHeight = phnDiv.offsetHeight;
+        var ddphnOffsetTop = ddphnDiv.offsetTop;
+
+        if (window.pageYOffset >= ddphnOffsetTop - phnHeight) {
+            phnDiv.style.position = 'absolute';
+            phnDiv.style.bottom = 'initial';
+            phnDiv.style.top = ddphnOffsetTop - phnHeight + 'px';
+        } else {
+            phnDiv.style.position = 'fixed';
+            phnDiv.style.bottom = '0';
+            phnDiv.style.top = 'initial';
+        }
+    });
+</script>
+
+<!--end review page-->
+
+<script>
+    function toggleSize(str, str1) {
+        document.getElementById("size").style.backgroundColor ="#ED1A63";
+        let price = document.getElementById("SPrice").innerText;
+        let result = price.replace(/₹/g, '');//main price product ₹20 replace ₹ to 20 
+        let result1;
+        let characters = str.match(/[a-zA-Z]/g); //str 100g-200g replace g to 100200 
+        let numbers = str.match(/\d/g);//str1 100g-200g replace g to 100200 
+        let Size_Valuecharactor = characters ? characters.join('') : "";//gg string
+        let Size_Value = numbers ? numbers.join('') : "";// nunber int
+        if (Size_Valuecharactor === "gg") {
+            result1 = result * Size_Value * 0.01;
+                        20*100*0.01
+        }
+        else if (Size_Valuecharactor === "kg") {
+            result1 = result * Size_Value;
+        }
+        else {
+            result1 = result;
+        }
+        console.log(char1);
+        console.log(Size_Value);
+        console.log(result1);
+        console.log(str1);
+        
+    }
+</script>
+
+<script>
+    function toggleColor(obj) {
+        
+    }
+</script>

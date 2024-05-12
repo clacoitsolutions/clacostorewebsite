@@ -1,0 +1,139 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Stock Position";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#tblItemHead").DataTable();
+    });
+
+
+    function getDetails() {
+        $("#showSpinner").show();
+        $.ajax({
+            url: "../ProductManagement/StockPosition",
+            type: "POST",
+            data: { 'StartDate': $.trim($('#txtStartDate').val()), 'EndDate': $.trim($('#txtEndDate').val()), 'StoreCode': $.trim($('#ddlStore').val()) },
+            datatype: "json",
+            success: function (data1) {
+                $("#tblItemHead").DataTable().destroy();
+                var htmlNew = data1;
+                $('#divDetails').html($(htmlNew).find('#tblItemHead'));
+                //$("#tblItemHead").DataTable();
+
+                // $('#divtable').html($(htmlNew).find('#divcnt'));
+
+                $("#tblItemHead").DataTable({
+                    dom: 'Bfrtip',
+                    //pageLength: 5,
+                    lengthMenu: [[5, 10, 20, 50, 100, 500, -1], [5, 10, 20, 50, 100, 500, "All"]],
+                    buttons: [
+                       'pageLength',
+                   {
+                       extend: 'excelHtml5', footer: true
+                   },
+                   { extend: 'csvHtml5', footer: true },
+                   {
+                       extend: 'pdfHtml5', footer: true, orientation: 'landscape',
+
+                       pageSize: 'LEGAL',
+                       text: '<i class="fa fa-file-pdf-o"> PDF</i>',
+                       titleAttr: 'PDF'
+                   }
+                    ]
+                });
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+
+
+
+</script>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Stock Detail</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="inputEmail4" class="col-form-label">Start Date </label>
+                        <input type="date" class="form-control" id="txtStartDate" placeholder="Start Date">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="inputPassword4" class="col-form-label">End Date</label>
+                        <input type="date" class="form-control" id="txtEndDate" placeholder="End Date">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="inputPassword4" class="col-form-label">Account Code</label>
+                        @Html.DropDownList("ddlStore", (List<SelectListItem>)ViewBag.StoreList,"--Select Store", new { @id = "ddlStore", @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-3" style="margin-top: 36px;">
+                        <button type="submit" class="btn btn-primary waves-effect waves-light" onclick="getDetails()">Filter Record</button>
+                    </div>
+                </div>
+
+
+            </div> <!-- end card-body -->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <div class="table-responsive" id="divDetails">
+                <table id="tblItemHead" class="table table-centered mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sr.No</th>                            
+                            <th>Item Name</th>
+                            <th>HSN Code</th>
+                            <th>Bar Code</th>
+                            <th>Opening Stock</th>                            
+                            <th>Sold Stock/Transfer Stock</th>
+                            <th>Available Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                i++;
+                                <tr>
+                                    <td>@i</td>                                   
+                                    <td>
+                                        @dr["ItemName"]
+                                    </td>
+                                    <td>@dr["HSNCode"]</td>
+                                    <td>@dr["barCode"]</td>
+                                    <td>@dr["OpenStock"]</td>
+                                    <td>@dr["SoldStock"]</td>
+                                    <td>@dr["AvlStock"]</td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>
+

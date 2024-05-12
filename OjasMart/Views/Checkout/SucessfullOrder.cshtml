@@ -1,0 +1,86 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Order Sucessfull";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+
+</script>
+<style>
+    a {
+        color: white !important;
+    }
+
+        a:hover {
+            color: white !important;
+        }
+
+    .g1 {
+        font-size: 32px !important;
+    }
+
+    .g2 {
+        font-size: 16px !important;
+    }
+
+    @@media only screen and (max-width:767px) {
+        .g1 {
+            font-size: 23px !important;
+        }
+
+        .g2 {
+            font-size: 14px !important;
+        }
+    }
+</style>
+<div class="gambo-Breadcrumb">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="../WebHome/Index">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Order Placed</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="all-product-grid">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="order-placed-dt delivery-address-bg">
+                    <i class="uil uil-check-circle" style="font-size:85px;color:#fa2365;margin-left:40%"></i>
+                    <p style="font-size:20px;margin-top:-1%;">Hey &nbsp;<span>@Model.SSName</span></p><br />
+                    <p style="font-weight:bold;" class="g1">Order Successfully Placed</p><br />
+                    @*<p>Thank you for your order! will received order timing - <span>(Today, 3.00PM - 5.00PM)</span></p>*@
+                    <p class="g2">We'll send you a shipping confirmation email</p><p>as soon as your order ships.</p>
+                    <p>Your order will be sent to this address</p>
+                    <p>@Model.Address</p>
+                    <p>+91-@Model.ContactNo</p>
+                    <p><span>@Model.PayableAmt</span><span> rupees only</span></p>
+                    <p>@Model.PayMode</p>
+
+
+
+                    <div class="stay-invoice">
+                        <a href="../CustomerAccount/Myorderdetails" class="invc-link hover-btn" style="background:#fa2365;margin-left:-1%;width:130px;text-align:center;">Check Status</a>
+                        <a href="../WebHome/Index" class="invc-link hover-btn" style="background:#fa2365;">Countinue</a>
+                    </div>
+                    @if (Convert.ToString(Model.PayMode) == "COD")
+                    {
+                        <div class="placed-bottom-dt">
+                            The payment of <span style="color:#fa2365">&#8377;@Model.PayableAmt</span> you'll make when the deliver arrives with your order.
+                        </div>
+                    }
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

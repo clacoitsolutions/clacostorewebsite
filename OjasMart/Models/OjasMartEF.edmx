@@ -1,0 +1,476 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="ozasmartModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="mst_Role">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Role" Type="nvarchar" MaxLength="50" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="EntryDate" Type="datetime" />
+          <Property Name="EntryBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="type" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="State_Master">
+          <Key>
+            <PropertyRef Name="SNo" />
+          </Key>
+          <Property Name="SNo" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="State_name" Type="nvarchar" MaxLength="150" />
+          <Property Name="State_id" Type="varchar" MaxLength="50" />
+          <Property Name="State_Abr" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="tbl_Login">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Password" Type="nvarchar" MaxLength="50" />
+          <Property Name="Role" Type="int" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="EntryDate" Type="datetime" />
+          <Property Name="LastLoginDate" Type="datetime" />
+          <Property Name="CompanyCode" Type="varchar" MaxLength="50" />
+          <Property Name="EmailAddress" Type="varchar" MaxLength="50" />
+          <Property Name="ContactNo" Type="varchar" MaxLength="50" />
+          <Property Name="LoginCount" Type="int" />
+        </EntityType>
+        <EntityType Name="tbl_MainMenu">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MainMenuName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Url" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Priority" Type="int" />
+          <Property Name="MenuIcon" Type="nvarchar" MaxLength="100" />
+          <Property Name="EntryDate" Type="datetime" />
+          <Property Name="Controller" Type="nvarchar" MaxLength="100" />
+          <Property Name="Action" Type="nvarchar" MaxLength="100" />
+          <Property Name="IsVisible" Type="bit" />
+          <Property Name="AccesibleFor" Type="varchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="tbl_MenuConfiguration">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RoleId" Type="int" />
+          <Property Name="MainMenuId" Type="int" />
+          <Property Name="SubMenuId" Type="int" />
+          <Property Name="EntryDate" Type="datetime" />
+          <Property Name="EntryBy" Type="varchar" MaxLength="100" />
+          <Property Name="ThiredLevelMenuid" Type="int" />
+        </EntityType>
+        <EntityType Name="tbl_SubMenu">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MainMenuId" Type="int" Nullable="false" />
+          <Property Name="SubMenuName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="url" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Priority" Type="int" />
+          <Property Name="MenuIcon" Type="nvarchar" MaxLength="100" />
+          <Property Name="EntryDate" Type="datetime" />
+          <Property Name="Controller" Type="nvarchar" MaxLength="100" />
+          <Property Name="Action" Type="nvarchar" MaxLength="100" />
+          <Property Name="IsVisible" Type="bit" />
+          <Property Name="AccesibleFor" Type="varchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="tbl_VendorMaster">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="VendorCode" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="StoreName" Type="varchar" MaxLength="500" />
+          <Property Name="ContactName" Type="varchar" MaxLength="200" />
+          <Property Name="MobileNo" Type="varchar" MaxLength="50" />
+          <Property Name="EmailID" Type="varchar" MaxLength="100" />
+          <Property Name="StoreLogo" Type="nvarchar(max)" />
+          <Property Name="IsMobileVarified" Type="bit" />
+          <Property Name="IsEmailVarified" Type="bit" />
+          <Property Name="EntryDate" Type="datetime" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="Description" Type="varchar" MaxLength="1000" />
+          <Property Name="LogisticType" Type="varchar" MaxLength="50" />
+          <Property Name="AdharNo" Type="varchar" MaxLength="25" />
+          <Property Name="PanNo" Type="varchar" MaxLength="25" />
+          <Property Name="GSTNo" Type="varchar" MaxLength="25" />
+          <Property Name="bussnessType" Type="varchar" MaxLength="50" />
+          <Property Name="bussnessStartDate" Type="varchar" MaxLength="24" />
+          <Property Name="MerchantRef" Type="varchar" MaxLength="32" />
+          <Property Name="CourierStatus" Type="int" />
+        </EntityType>
+        <EntityType Name="tbl_VendorRegistration">
+          <Key>
+            <PropertyRef Name="SrNo" />
+          </Key>
+          <Property Name="SrNo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="VendorId" Type="varchar" MaxLength="50" />
+          <Property Name="FrenchiseId" Type="varchar" MaxLength="50" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="EmailId" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ContactNo" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="FullAddress" Type="varchar(max)" />
+          <Property Name="ProfitAmount" Type="varchar" MaxLength="50" />
+          <Property Name="ApproveStatus" Type="varchar" MaxLength="50" />
+          <Property Name="EntryDate" Type="datetime" Nullable="false" />
+          <Property Name="Password" Type="varchar" MaxLength="25" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="GSTNo" Type="varchar" MaxLength="50" />
+          <Property Name="MSME" Type="varchar" MaxLength="50" />
+          <Property Name="CityName" Type="varchar" MaxLength="100" />
+          <Property Name="State" Type="varchar" MaxLength="50" />
+          <Property Name="userType" Type="varchar" MaxLength="50" />
+          <Property Name="UpdatedDate" Type="datetime" />
+          <Property Name="UpdatedBy" Type="varchar" MaxLength="100" />
+          <Property Name="OTP" Type="varchar" MaxLength="20" />
+          <Property Name="OTPStatus" Type="varchar" MaxLength="20" />
+          <Property Name="Locality" Type="varchar" MaxLength="100" />
+          <Property Name="Pincode" Type="varchar" MaxLength="100" />
+        </EntityType>
+        <Function Name="ApprovedVendor" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Emailid" Type="varchar" Mode="In" />
+          <Parameter Name="Status" Type="varchar" Mode="In" />
+          <Parameter Name="msg" Type="int" Mode="InOut" />
+        </Function>
+        <EntityContainer Name="ozasmartModelStoreContainer">
+          <EntitySet Name="mst_Role" EntityType="Self.mst_Role" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="State_Master" EntityType="Self.State_Master" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tbl_Login" EntityType="Self.tbl_Login" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tbl_MainMenu" EntityType="Self.tbl_MainMenu" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tbl_MenuConfiguration" EntityType="Self.tbl_MenuConfiguration" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tbl_SubMenu" EntityType="Self.tbl_SubMenu" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tbl_VendorMaster" EntityType="Self.tbl_VendorMaster" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tbl_VendorRegistration" EntityType="Self.tbl_VendorRegistration" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ozasmartModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="mst_Role">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Role" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="EntryDate" Type="DateTime" Precision="3" />
+          <Property Name="EntryBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="type" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="State_Master">
+          <Key>
+            <PropertyRef Name="SNo" />
+          </Key>
+          <Property Name="SNo" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="State_name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="State_id" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="State_Abr" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="tbl_Login">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Password" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Role" Type="Int32" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="EntryDate" Type="DateTime" Precision="3" />
+          <Property Name="LastLoginDate" Type="DateTime" Precision="3" />
+          <Property Name="CompanyCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="EmailAddress" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ContactNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LoginCount" Type="Int32" />
+        </EntityType>
+        <EntityType Name="tbl_MainMenu">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MainMenuName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Url" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Priority" Type="Int32" />
+          <Property Name="MenuIcon" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="EntryDate" Type="DateTime" Precision="3" />
+          <Property Name="Controller" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Action" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="IsVisible" Type="Boolean" />
+          <Property Name="AccesibleFor" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="tbl_MenuConfiguration">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RoleId" Type="Int32" />
+          <Property Name="MainMenuId" Type="Int32" />
+          <Property Name="SubMenuId" Type="Int32" />
+          <Property Name="EntryDate" Type="DateTime" Precision="3" />
+          <Property Name="EntryBy" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="ThiredLevelMenuid" Type="Int32" />
+        </EntityType>
+        <EntityType Name="tbl_SubMenu">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MainMenuId" Type="Int32" Nullable="false" />
+          <Property Name="SubMenuName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="url" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Priority" Type="Int32" />
+          <Property Name="MenuIcon" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="EntryDate" Type="DateTime" Precision="3" />
+          <Property Name="Controller" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Action" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="IsVisible" Type="Boolean" />
+          <Property Name="AccesibleFor" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityContainer Name="ozasmartEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="mst_Role" EntityType="Self.mst_Role" />
+          <EntitySet Name="State_Master" EntityType="Self.State_Master" />
+          <EntitySet Name="tbl_Login" EntityType="Self.tbl_Login" />
+          <EntitySet Name="tbl_MainMenu" EntityType="Self.tbl_MainMenu" />
+          <EntitySet Name="tbl_MenuConfiguration" EntityType="Self.tbl_MenuConfiguration" />
+          <EntitySet Name="tbl_SubMenu" EntityType="Self.tbl_SubMenu" />
+          <EntitySet Name="tbl_VendorMaster" EntityType="ozasmartModel.tbl_VendorMaster" />
+          <EntitySet Name="tbl_VendorRegistration" EntityType="ozasmartModel.tbl_VendorRegistration" />
+          <FunctionImport Name="ApprovedVendor">
+            <Parameter Name="Emailid" Mode="In" Type="String" />
+            <Parameter Name="Status" Mode="In" Type="String" />
+            <Parameter Name="msg" Mode="InOut" Type="Int32" />
+          </FunctionImport>
+        </EntityContainer>
+        <EntityType Name="tbl_VendorMaster">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="VendorCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="StoreName" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="ContactName" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="MobileNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="EmailID" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="StoreLogo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IsMobileVarified" Type="Boolean" />
+          <Property Name="IsEmailVarified" Type="Boolean" />
+          <Property Name="EntryDate" Type="DateTime" Precision="3" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="Description" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="LogisticType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="AdharNo" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="PanNo" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="GSTNo" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="bussnessType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="bussnessStartDate" Type="String" MaxLength="24" FixedLength="false" Unicode="false" />
+          <Property Name="MerchantRef" Type="String" MaxLength="32" FixedLength="false" Unicode="false" />
+          <Property Name="CourierStatus" Type="Int32" />
+        </EntityType>
+        <EntityType Name="tbl_VendorRegistration">
+          <Key>
+            <PropertyRef Name="SrNo" />
+          </Key>
+          <Property Name="SrNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="VendorId" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="FrenchiseId" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="EmailId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ContactNo" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="FullAddress" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ProfitAmount" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ApproveStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="EntryDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Password" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="GSTNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MSME" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CityName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="State" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="userType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="OTP" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="OTPStatus" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Locality" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Pincode" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ozasmartModelStoreContainer" CdmEntityContainer="ozasmartEntities">
+          <EntitySetMapping Name="mst_Role">
+            <EntityTypeMapping TypeName="ozasmartModel.mst_Role">
+              <MappingFragment StoreEntitySet="mst_Role">
+                <ScalarProperty Name="type" ColumnName="type" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Role" ColumnName="Role" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="EntryDate" ColumnName="EntryDate" />
+                <ScalarProperty Name="EntryBy" ColumnName="EntryBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="State_Master">
+            <EntityTypeMapping TypeName="ozasmartModel.State_Master">
+              <MappingFragment StoreEntitySet="State_Master">
+                <ScalarProperty Name="SNo" ColumnName="SNo" />
+                <ScalarProperty Name="State_name" ColumnName="State_name" />
+                <ScalarProperty Name="State_id" ColumnName="State_id" />
+                <ScalarProperty Name="State_Abr" ColumnName="State_Abr" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tbl_Login">
+            <EntityTypeMapping TypeName="ozasmartModel.tbl_Login">
+              <MappingFragment StoreEntitySet="tbl_Login">
+                <ScalarProperty Name="LoginCount" ColumnName="LoginCount" />
+                <ScalarProperty Name="ContactNo" ColumnName="ContactNo" />
+                <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
+                <ScalarProperty Name="CompanyCode" ColumnName="CompanyCode" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Role" ColumnName="Role" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="EntryDate" ColumnName="EntryDate" />
+                <ScalarProperty Name="LastLoginDate" ColumnName="LastLoginDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tbl_MainMenu">
+            <EntityTypeMapping TypeName="ozasmartModel.tbl_MainMenu">
+              <MappingFragment StoreEntitySet="tbl_MainMenu">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="MainMenuName" ColumnName="MainMenuName" />
+                <ScalarProperty Name="Url" ColumnName="Url" />
+                <ScalarProperty Name="Priority" ColumnName="Priority" />
+                <ScalarProperty Name="MenuIcon" ColumnName="MenuIcon" />
+                <ScalarProperty Name="EntryDate" ColumnName="EntryDate" />
+                <ScalarProperty Name="Controller" ColumnName="Controller" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="IsVisible" ColumnName="IsVisible" />
+                <ScalarProperty Name="AccesibleFor" ColumnName="AccesibleFor" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tbl_MenuConfiguration">
+            <EntityTypeMapping TypeName="ozasmartModel.tbl_MenuConfiguration">
+              <MappingFragment StoreEntitySet="tbl_MenuConfiguration">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="MainMenuId" ColumnName="MainMenuId" />
+                <ScalarProperty Name="SubMenuId" ColumnName="SubMenuId" />
+                <ScalarProperty Name="EntryDate" ColumnName="EntryDate" />
+                <ScalarProperty Name="EntryBy" ColumnName="EntryBy" />
+                <ScalarProperty Name="ThiredLevelMenuid" ColumnName="ThiredLevelMenuid" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tbl_SubMenu">
+            <EntityTypeMapping TypeName="ozasmartModel.tbl_SubMenu">
+              <MappingFragment StoreEntitySet="tbl_SubMenu">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="MainMenuId" ColumnName="MainMenuId" />
+                <ScalarProperty Name="SubMenuName" ColumnName="SubMenuName" />
+                <ScalarProperty Name="url" ColumnName="url" />
+                <ScalarProperty Name="Priority" ColumnName="Priority" />
+                <ScalarProperty Name="MenuIcon" ColumnName="MenuIcon" />
+                <ScalarProperty Name="EntryDate" ColumnName="EntryDate" />
+                <ScalarProperty Name="Controller" ColumnName="Controller" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="IsVisible" ColumnName="IsVisible" />
+                <ScalarProperty Name="AccesibleFor" ColumnName="AccesibleFor" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tbl_VendorMaster">
+            <EntityTypeMapping TypeName="ozasmartModel.tbl_VendorMaster">
+              <MappingFragment StoreEntitySet="tbl_VendorMaster">
+                <ScalarProperty Name="CourierStatus" ColumnName="CourierStatus" />
+                <ScalarProperty Name="MerchantRef" ColumnName="MerchantRef" />
+                <ScalarProperty Name="bussnessStartDate" ColumnName="bussnessStartDate" />
+                <ScalarProperty Name="bussnessType" ColumnName="bussnessType" />
+                <ScalarProperty Name="GSTNo" ColumnName="GSTNo" />
+                <ScalarProperty Name="PanNo" ColumnName="PanNo" />
+                <ScalarProperty Name="AdharNo" ColumnName="AdharNo" />
+                <ScalarProperty Name="LogisticType" ColumnName="LogisticType" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="EntryDate" ColumnName="EntryDate" />
+                <ScalarProperty Name="IsEmailVarified" ColumnName="IsEmailVarified" />
+                <ScalarProperty Name="IsMobileVarified" ColumnName="IsMobileVarified" />
+                <ScalarProperty Name="StoreLogo" ColumnName="StoreLogo" />
+                <ScalarProperty Name="EmailID" ColumnName="EmailID" />
+                <ScalarProperty Name="MobileNo" ColumnName="MobileNo" />
+                <ScalarProperty Name="ContactName" ColumnName="ContactName" />
+                <ScalarProperty Name="StoreName" ColumnName="StoreName" />
+                <ScalarProperty Name="VendorCode" ColumnName="VendorCode" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tbl_VendorRegistration">
+            <EntityTypeMapping TypeName="ozasmartModel.tbl_VendorRegistration">
+              <MappingFragment StoreEntitySet="tbl_VendorRegistration">
+                <ScalarProperty Name="Pincode" ColumnName="Pincode" />
+                <ScalarProperty Name="Locality" ColumnName="Locality" />
+                <ScalarProperty Name="OTPStatus" ColumnName="OTPStatus" />
+                <ScalarProperty Name="OTP" ColumnName="OTP" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="userType" ColumnName="userType" />
+                <ScalarProperty Name="State" ColumnName="State" />
+                <ScalarProperty Name="CityName" ColumnName="CityName" />
+                <ScalarProperty Name="MSME" ColumnName="MSME" />
+                <ScalarProperty Name="GSTNo" ColumnName="GSTNo" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="EntryDate" ColumnName="EntryDate" />
+                <ScalarProperty Name="ApproveStatus" ColumnName="ApproveStatus" />
+                <ScalarProperty Name="ProfitAmount" ColumnName="ProfitAmount" />
+                <ScalarProperty Name="FullAddress" ColumnName="FullAddress" />
+                <ScalarProperty Name="ContactNo" ColumnName="ContactNo" />
+                <ScalarProperty Name="EmailId" ColumnName="EmailId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="FrenchiseId" ColumnName="FrenchiseId" />
+                <ScalarProperty Name="VendorId" ColumnName="VendorId" />
+                <ScalarProperty Name="SrNo" ColumnName="SrNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="ApprovedVendor" FunctionName="ozasmartModel.Store.ApprovedVendor" />
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

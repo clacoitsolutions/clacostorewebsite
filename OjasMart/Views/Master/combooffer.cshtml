@@ -1,0 +1,282 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Create Offer";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+
+
+
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Combo Offer</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="inputEmail4" class="col-form-label">Item Name <span style="color:red">*</span> </label>
+                                    @Html.DropDownList("ddlItem", (List<SelectListItem>)ViewBag.ItemHeadList, new { @id = "ddlItem", @class = "form-control" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+
+                                <div class="form-group">
+
+                                    <label for="inputEmail4" class="col-form-label">Item Quantity <span style="color:red">*</span> </label>
+                                    <input type="text" id="txtItemQuantity" class="form-control" maxlength="3" onkeypress="return isNumberKey(event);" />
+                                </div>
+
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <div class="form-group">
+
+                                    <label for="inputEmail4" class="col-form-label">Free Item Name <span style="color:red">*</span> </label>
+                                    @Html.DropDownList("ddlFreeItem", (List<SelectListItem>)ViewBag.ItemHeadList, new { @id = "ddlFreeItem", @class = "form-control" })
+
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-2">
+
+                                <div class="form-group">
+
+                                    <label for="inputEmail4" class="col-form-label">Free Quantity <span style="color:red">*</span> </label>
+                                    <input type="text" id="txtQuantity" class="form-control" maxlength="3" onkeypress="return isNumberKey(event);" />
+                                </div>
+
+
+                            </div>
+
+
+
+                            <div class="col-md-2">
+                                <button style="margin-top:24%;width:100%;background:#e97e22;" type="submit" id="btnSave" class="btn btn-primary waves-effect waves-light" onclick="InsertComboOffer()">Save</button>
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+
+
+                </div> <!-- end row -->
+
+
+
+
+            </div>
+        </div>
+    </div> <!-- end card-body -->
+</div> <!-- end card-->
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <h4 class="header-title">Combo Offer Listing</h4>
+            <div class="table-responsive">
+                <table id="tblItemHead" class="table table-borderless table-hover table-centered m-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Sr.No</th>
+                            <th>Item Name</th>
+                            <th>item Quantity</th>
+                            <th>Free Item Name</th>
+                            <th>Free Quantity</th>
+                            <th>Generate Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                i++;
+                                <tr>
+                                    <td>@i</td>
+                                  
+                                    <td>@dr["ItemName"]</td>
+                                    <td>@dr["ItemQuantity"]</td>
+                                    <td>@dr["FreeItemName"]</td>
+                                    <td>@dr["FreeItemQuantity"]</td>
+                                    <td>@dr["Date"]</td>
+                              
+                                    <td>
+                                       
+                                        <a href="javascript:void(0);" title="Delete" class="action-icon" onclick="DeleteItemHeadDetails(@dr["Id"])"> <i class="mdi mdi-delete" style="color:red"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>
+
+
+
+
+
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+
+        $('select').select2();
+       
+    });
+
+    function isNumberKey(evt) {
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+        return true;
+    }
+
+    function InsertComboOffer() {
+
+        if ($("#ddlItem").val() == "") {
+            alert("Enter Item Name !!!");
+            $("#ddlItem").focus();
+        }
+
+        else if ($("#txtItemQuantity").val() == "") {
+            alert("Enter  Quantity !!!");
+            $("#txtItemQuantity").focus();
+        }
+        
+        else if ($("#ddlFreeItem").val() == "") {
+            alert("Enter Free Item Name !!!");
+            $("#ddlFreeItem").focus();
+        }
+        else if ($("#txtQuantity").val() == "") {
+            alert("Enter Free Quantity !!!");
+            $("#txtQuantity").focus();
+        }
+        else {
+
+            var dataobject = {
+                ItemCode: $("#ddlItem").val(),
+                FreeItemCode: $("#ddlFreeItem").val(),
+                FreeQuantity: parseInt($("#txtQuantity").val()),
+                ItemQuantity: parseInt($("#txtItemQuantity").val()),
+                Action: parseInt(1),
+                Id: parseInt(0)
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Master/InsertComboOffer",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                //data: dataobject,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    if (r == '1') {
+                        alert("Combo offer saved successfully!!");
+                        $("#showSpinner").hide();
+                        location.reload();
+                      
+                    }
+                    else if (r == '0') {
+                        alert("Something went wrong!!");
+                        $("#showSpinner").hide();
+                    }
+                    else {
+                        alert('Server not Responding !!!');
+                        $("#showSpinner").hide();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });
+
+
+        }
+
+      
+
+
+
+    }
+
+    function DeleteItemHeadDetails(ItemCode) {
+        var x = confirm("Are you sure you want to delete?");
+        if (x) {
+            var dataobject = {
+                Action: 2,
+                Id: ItemCode
+            };
+            $.ajax({
+                type: "POST",
+                url: "/Master/DeleteComboOffer",
+                data: dataobject,
+                dataType: "json",
+                success: function (r) {
+
+                    if (r == "1") {
+                        alert("Combo offer Deleted!!");
+                        location.reload();
+                    }
+                    else {
+                        alert("Something went wrong!!");
+                    }
+
+                }
+            });
+        }
+        else {
+            return false;
+        }
+    }
+
+
+</script>

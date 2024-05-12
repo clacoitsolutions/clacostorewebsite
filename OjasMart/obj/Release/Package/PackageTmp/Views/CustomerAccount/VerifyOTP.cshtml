@@ -1,0 +1,222 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Claco Store - Create New Account</title>
+
+    <!-- Favicon Icon -->
+    <link rel="icon" type="image/png" href="images/fav.png">
+
+    <!-- Stylesheets -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link href='~/webassets/vendor/unicons-2.0.1/css/unicons.css' rel='stylesheet'>
+    <link href="~/webassets/css/style.css" rel="stylesheet">
+    <link href="~/webassets/css/responsive.css" rel="stylesheet">
+    <link href="~/webassets/css/night-mode.css" rel="stylesheet">
+    <link href="~/webassets/css/step-wizard.css" rel="stylesheet">
+
+    <!-- Vendor Stylesheets -->
+    <link href="~/webassets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="~/webassets/vendor/OwlCarousel/assets/owl.carousel.css" rel="stylesheet">
+    <link href="~/webassets/vendor/OwlCarousel/assets/owl.theme.default.min.css" rel="stylesheet">
+    <link href="~/webassets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/webassets/vendor/semantic/semantic.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <style>
+        body {
+            background: #eee;
+        }
+
+        .bgWhite {
+            background: white;
+            box-shadow: 0px 3px 6px 0px #cacaca;
+        }
+
+        .title {
+            font-weight: 600;
+            margin-top: 20px;
+            font-size: 24px
+        }
+
+        .customBtn {
+            border-radius: 0px;
+            padding: 10px;
+        }
+
+        form input {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+        }
+    </style>
+
+
+    <script>
+
+
+        $(document).ready(function () {
+            $(".inputs").keyup(function () {
+                if (this.value.length == this.maxLength) {
+                    var $next = $(this).next('.inputs');
+                    if ($next.length)
+                        $(this).next('.inputs').focus();
+                    else
+                        $(this).blur();
+                }
+            }); 
+        });
+        function InsertCustomerAccount1() {
+
+            debugger;
+            var mobile = $("#mobile").val();
+
+            var otp = $("#otp1").val() + '' + $("#otp2").val() + '' + $("#otp3").val() + '' + $("#otp4").val();
+            if (otp.length == 4) {
+
+            }
+            else {
+                alert("Please Enter Otp  !!!");
+                $("#otp").focus();
+                return;
+            }
+
+            var dataobject = {
+                Otp: otp,
+                ContactNo: mobile,
+                AccountType: 'Online'
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Account/verifyotp",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    if (r.strId == '1') {
+                      /*  alert(r.msg);*/
+                        var url = null;
+                        var url = "../WebHome/Index";
+                        window.location.href = url;
+                        $("#showSpinner").hide();
+                    }
+                    else if (r.strId == '0') {
+                        alert(r.msg);
+                        $("#showSpinner").hide()
+                        $("#otp1").val('');
+                        $("#otp2").val('')
+                        $("#otp3").val('')
+                        $("#otp4").val('')
+                    }
+                    else {
+                        alert('Server not Responding, Please try later !!!');
+                        $("#showSpinner").hide();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });
+
+        }
+
+        function Resendotp12() {
+            debugger;
+            var mobile = $("#mobile").val();
+            if (mobile != "") {
+                var timeleft = 30;
+                var downloadTimer = setInterval(function () {
+                    timeleft--;
+                    document.getElementById("countdowntimer").textContent = timeleft;
+                    if (timeleft <= 0)
+                        clearInterval(downloadTimer);
+                }, 1000);
+
+            }
+
+            
+            var dataobject = {
+                ContactNo: mobile,
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Account/Resentotp",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    //if (r.strId == '1') {
+                    //    alert(r.msg);
+                    //    var url = null;
+                     
+                    //    $("#showSpinner").hide();
+                    //}
+                    
+                    //else {
+                    //    alert('Server not Responding, Please try later !!!');
+                    //    $("#showSpinner").hide();
+                    //}
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });
+
+        }
+    </script>
+  
+</head>
+<body>
+    <div class="sign-inup">
+        <div class="container">
+            <div class="row justify-content-md-center">
+                <div class="col-md-4 text-center">
+                    <div class="row">
+                        <div class="col-sm-12 mt-5 bgWhite">
+                            <div class="title">
+                                Verify OTP
+                            </div>
+                            <input type="hidden" id="mobile" value="@Session["mobile"]" />
+                            <form action="" class="mt-5">
+                                <input class="inputs" id="otp1" type="text" maxlength=1>
+                                <input class="inputs" id="otp2" type="text" maxlength=1>
+                                <input class="inputs" id="otp3" type="text" maxlength=1>
+                                <input class="inputs" id="otp4" type="text" maxlength=1>
+                            </form>
+                            <hr class="mt-4">
+                            <span onclick="Resendotp12()"> Resend OTP</span> <span id="countdowntimer"></span>
+                            <button class="btn  btn-block mt-4 mb-4 customBtn" style="background-color:#ed1a63" onclick="InsertCustomerAccount1()">Verify</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Javascripts -->
+    <script src="~/webassets/js/jquery-3.3.1.min.js"></script>
+    <script src="~/webassets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/webassets/vendor/OwlCarousel/owl.carousel.js"></script>
+    <script src="~/webassets/vendor/semantic/semantic.min.js"></script>
+    <script src="~/webassets/js/jquery.countdown.min.js"></script>
+    <script src="~/webassets/js/custom.js"></script>
+    <script src="~/webassets/js/product.thumbnail.slider.js"></script>
+    <script src="~/webassets/js/offset_overlay.js"></script>
+    <script src="~/webassets/js/night-mode.js"></script>
+</body>
+
+</html>

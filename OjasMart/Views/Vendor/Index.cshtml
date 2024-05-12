@@ -1,0 +1,1175 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/seller_layout.cshtml";
+}
+
+<!-- Bootstrap CSS -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap JS (Popper.js included) -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+<style>
+
+
+    .cid-tdxOTZpHwi .card {
+        background: #F3F3F7;
+        box-shadow: 1px 1px 4px 0px rgba(0, 33, 33, 0.06), 5px 4px 7px 0px rgba(0, 33, 33, 0.05), 11px 10px 9px 0px rgba(0, 33, 33, 0.03), 20px 18px 11px 0px rgba(0, 33, 33, 0.01), 31px 28px 12px 0px rgba(0, 33, 33, 0);
+        border-radius: 10px;
+        padding: 0px !important;
+        padding-left: 10px !important;
+        margin: 5px !important;
+        color: black;
+    }
+
+    .cid-tdxOTZpHwi .mbr-iconfont {
+        font-size: 1.2rem !important;
+        font-family: 'Moririse2' !important;
+        color: black;
+        padding: 0px !important;
+        padding-right: 20px !important;
+        padding: 0px !important;
+        padding-right: 20px !important;
+        transition: all 0.3s;
+        transform: rotate(180deg);
+        padding: 0px !important;
+        padding-right: 20px !important;
+    }
+
+    .cid-tdxOTZpHwi .mbr-iconfont {
+        font-size: 1.2rem !important;
+        font-family: 'Moririse2' !important;
+        color: black;
+        padding: 0px !important;
+        padding-right: 20px !important;
+        transition: all 0.3s;
+        transform: rotate(180deg);
+    }
+
+    .mobi-mbri-arrow-down:before {
+        content: "\e908";
+        padding: 0px !important;
+        padding-right: 20px !important;
+    }
+
+    .cid-tdxOTZpHwi .panel-title-edit {
+        color: black;
+        font-size: 20PX
+    }
+
+    .services-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        background-color: white
+    }
+
+    .services-card {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 20px;
+        padding: 20px;
+        width: 370px;
+        transition: transform 0.3s ease-in-out;
+    }
+
+        .services-card:hover {
+            transform: translateY(-5px);
+        }
+
+    .services-icon {
+        font-size: 48px;
+        color: #333;
+        text-align: center;
+    }
+
+    .services-title {
+        color: #333;
+        font-size: 24px;
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .services-text {
+        color: #666;
+        font-size: 16px;
+        margin-top: 20px;
+        /*text-align: center;*/
+    }
+
+    .panel-body {
+        max-height: none; /* Allow the panel body to expand beyond its initial height */
+        overflow-y: auto; /* Enable vertical scrolling if the content exceeds the panel body's height */
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get all the panel titles
+        var panelTitles = document.querySelectorAll('.panel-title');
+
+        // Loop through each panel title
+        panelTitles.forEach(function (panelTitle) {
+            // Add click event listener to each panel title
+            panelTitle.addEventListener('click', function (event) {
+                // Prevent the default click behavior, which includes scrolling
+                event.preventDefault();
+
+                // Toggle the 'collapsed' class on the panel title
+                this.classList.toggle('collapsed');
+
+                // Find the corresponding panel body
+                var panelBody = this.closest('.card').querySelector('.panel-collapse');
+
+                // Close all other panels
+                var allPanels = document.querySelectorAll('.panel-collapse');
+                allPanels.forEach(function (panel) {
+                    if (panel !== panelBody) {
+                        panel.classList.remove('show');
+                        panel.previousElementSibling.querySelector('.panel-title').classList.add('collapsed');
+                    }
+                });
+
+                // Toggle the 'show' class on the panel body
+                panelBody.classList.toggle('show');
+            });
+        });
+    });
+
+
+
+
+
+
+
+</script>
+
+<section data-bs-version="5.1" class="header3 cid-tdxNMUdm2F" id="header03-2" style=" background-color: rgba(200, 60, 60, 0.1);">
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-12 col-lg-5 image-wrapper">
+                <img class="w-100" src="~/Content/assets/images/Untitled Project.jpg" alt="Mobirise Website Builder" />
+                @*<img class="w-100" src="~/Content/assets/images/features2.jpg" alt="Mobirise Website Builder">*@
+                @*<img class="w-100" src="~/Content/assets/images/seller_img.png" alt="Mobirise Website Builder" />*@
+            </div>
+            <div class="col-12 col-lg col-md-12">
+                <div class="text-wrapper align-left">
+                    <h1 class="mbr-section-title mbr-fonts-style">
+                        <strong style="color:black">
+                            Sell online to 1 Cr+ customers at
+                            <p id="mani"><strong> 0% Commission</strong></p>
+                            <p class="display-7" style="font-size:18px;">
+                                Welcome to Claco - your premier destination for online selling! With Claco, you gain access to a powerful platform that connects you with over 1 crore potential customers, providing you with unparalleled exposure and opportunities to grow your business.
+                                Our platform empowers sellers like you to showcase your products to a wide audience without any commission charges, ensuring that you retain maximum profits from your sales. Whether you're a small business owner or an established brand, Claco offers the perfect solution to expand your reach and increase your sales.
+                                Join us today and experience the ease and convenience of selling online with Claco.
+                            </p>
+                        </strong>
+                    </h1>
+                    @*<p class="mbr-text mbr-fonts-style display-7">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec egestas massa vel nulla gravida
+                            pulvinar. Pellentesque habitant morbi tristique senectus et netus et malesuada egestas.
+                        </p>*@
+                    <div class="mbr-section-btn mt-3"><a class="btn btn-lg btn-secondary display-7" href="/vendor/vendorSignUp">Get Started</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<section data-bs-version="5.1" class="features6 cid-tdxO0nnOKE" id="features06-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 pb-4">
+                <h1 class="mbr-section-title mbr-fonts-style align-center   ">
+                    <strong>Features</strong>
+                </h1>
+
+            </div>
+            <div class="col-sm-6 col-md-12 col-lg-4">
+                <div class="card-wrap card1">
+                    <div class="image-wrap">
+
+                        <img src="~/Content/assets/images/indian saller1.jpg" alt="Mobirise Website Builder" />
+                    </div>
+                    <div class="content-wrap">
+                        <h5 class="mbr-section-title card-title mbr-fonts-style align-left">
+                            <strong>Branding Options</strong>
+                        </h5>
+                        <p class="card-text mbr-fonts-style align-left">
+                            Customize your vendor store with branding options. Showcase your brand logo, banners, and colors to create a unique storefront.
+                        </p>
+                        @*<div class="social-row display-7">
+                                <div class="soc-item">
+                                    <span class="tag mbr-fonts-style display-4">
+                                        Free
+                                    </span>
+                                </div>
+                                <div class="soc-item">
+                                    <span class="tag mbr-fonts-style display-4">Basic</span>
+                                </div>
+                                <div class="soc-item">
+                                    <span class="tag mbr-fonts-style display-4">
+                                        Pro
+                                    </span>
+                                </div>
+
+
+                            </div>*@
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-md-12 col-lg-4">
+                <div class="card-wrap card2">
+                    <div class="image-wrap">
+                        <img src="~/Content/assets/images/indian saller2.jpg" alt="Mobirise Website Builder" />
+
+
+
+                    </div>
+                    <div class="content-wrap">
+                        <h5 class="mbr-section-title card-title2 mbr-fonts-style align-left">
+                            <strong>Product Management</strong>
+                        </h5>
+                        <p class="card-text2 mbr-fonts-style align-left">
+                            Easily manage your products and inventory. Add, edit, or remove products with just a few clicks.
+                        </p>
+                        @*<div class="social-row display-7">
+                                <div class="soc-item soc-item2">
+                                    <span class="tag2 mbr-fonts-style display-4">
+                                        Free
+                                    </span>
+                                </div>
+                                <div class="soc-item soc-item2">
+                                    <span class="tag2 mbr-fonts-style display-4">Basic</span>
+                                </div>
+                                <div class="soc-item soc-item2">
+                                    <span class="tag2 mbr-fonts-style display-4">
+                                        Pro
+                                    </span>
+                                </div>
+
+
+                            </div>*@
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-12 col-lg-4">
+                <div class="card-wrap card3">
+                    <div class="image-wrap">
+                        <img src="~/Content/assets/images/indian4.jpg" alt="Mobirise Website Builder" />
+
+
+                    </div>
+                    <div class="content-wrap">
+                        <h5 class="mbr-section-title card-title3 mbr-fonts-style align-left">
+                            <strong>Promotional Tools</strong>
+                        </h5>
+                        <p class="card-text3 mbr-fonts-style align-left">
+                            Utilize promotional tools to boost your sales. Offer discounts, coupons, and special promotions to attract more customers.
+                        </p>
+                        @*<div class="social-row display-7">
+                                <div class="soc-item soc-item3">
+                                    <span class="tag3 mbr-fonts-style display-4">
+                                        Free
+                                    </span>
+                                </div>
+                                <div class="soc-item soc-item3">
+                                    <span class="tag3 mbr-fonts-style display-4">Basic</span>
+                                </div>
+                                <div class="soc-item soc-item3">
+                                    <span class="tag3 mbr-fonts-style display-4">
+                                        Pro
+                                    </span>
+                                </div>
+
+
+                            </div>*@
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!--polycy-->
+
+<section data-bs-version="5.1" class="people1 cid-tdxO3wSJuj" id="people01-7">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-6 mb-5 align-left">
+                <h1 class="mbr-section-maintitle mbr-fonts-style mt-3"><strong>Why Suppliers Love Claco</strong></h1>
+                <p class="mbr-section-maintext mbr-fonts-style mt-3 display-7">Discover the reasons why suppliers prefer Claco for selling their products. We offer a range of benefits designed to help you sell more and grow your business with ease.</p>
+                @*<div class="mbr-section-btn btn-section align-left"><a class="btn btn-lg article-btn btn-primary display-4" href="#"><strong>Read more</strong></a></div>*@
+                <div class="row">
+                    <img src="~/Content/bg.png" height="550" width="250" style="align-items:center;margin-top:60PX" />
+                </div>
+            </div>
+
+
+            <div class="col-lg-6">
+
+
+                <div class="row item-row">
+                    <div class="col-lg-12" style="height:-50px">
+                        <div class="article-wrapper align-left">
+                            <img src="~/Content/assets/images/commission.png" style="height:70px;width:70px" />
+                            <h5 class="mbr-section-title mbr-fonts-style " style="margin-left:20%;margin-top:-40px">
+
+                                <strong>0% Commission Fee</strong>
+                            </h5><br />
+
+                            <h6 class="mbr-section-subtitle mbr-fonts-style" style="text-align:start">Keep 100% of your profit with no commission charges. At Claco, we believe in supporting suppliers by allowing them to retain their earnings.</h6>
+
+                            @*<p class="mbr-section-text mbr-fonts-style mt-3 display-7">Full-time<br></p>*@
+                        </div>
+                    </div>
+
+                    @*<div class="col-lg-4">
+                            <div class="mbr-section-btn align-right"><a class="btn btn-lg article-btn btn-secondary display-4" href=" "><strong>Read more</strong></a></div>
+                        </div>*@
+                </div>
+
+
+
+
+                <div class="row item-row">
+                    <div class="col-lg-12">
+
+                        <div class="article-wrapper align-left">
+                            <img src="~/Content/assets/images/Penalty Charges.png" style="height:70px;width:70px" />
+
+                            <h5 class="mbr-section-title" style="margin-left:20%;margin-top:-40px"><strong>0 Penalty Charges</strong></h5><br />
+                            <h6 class="mbr-section-subtitle mbr-fonts-style" style="text-align: start">Sell online without worrying about order cancellation charges. Claco imposes zero penalties for late dispatch or order cancellations, allowing you to focus on your business.</h6>
+                            @*<p class="mbr-section-text mbr-fonts-style mt-3 display-7">Full-time<br></p>*@
+                        </div>
+                    </div>
+
+                    @*<div class="col-lg-5">
+                            <div class="mbr-section-btn align-right"><a class="btn btn-lg article-btn btn-secondary display-4" href="https://mobiri.se/"><strong>Read more</strong></a></div>
+                        </div>*@
+                </div>
+
+
+
+                <div class="row item-row">
+                    <div class="col-lg-12">
+                        <img src="~/Content/assets/images/growth.png" style="height:70px;width:70px" />
+
+                        <div class="article-wrapper align-left">
+                            <h5 class="mbr-section-title mbr-fonts-style" style="margin-left: 20%; margin-top: -40px; text-align: start"><strong>Growth for Every Supplier</strong></h5><br />
+                            <h6 class="mbr-section-subtitle mbr-fonts-style" style="text-align: start">From small to large, unbranded to branded, Claco supports the growth of all suppliers. We even welcome sellers without a regular GSTIN, ensuring inclusivity and opportunity for everyone.</h6>
+                            @*<p class="mbr-section-text mbr-fonts-style mt-3 display-7">Full-time<br></p>*@
+                        </div>
+                    </div>
+
+                    @*<div class="col-lg-5">
+                            <div class="mbr-section-btn align-right"><a class="btn btn-lg article-btn btn-secondary display-4" href="https://mobiri.se/"><strong>Read more</strong></a></div>
+                        </div>*@
+                </div>
+
+
+                <div class="row item-row">
+                    <div class="col-lg-12">
+                        <img src="~/Content/assets/images/Ease of Doing.png" style="height:70px;width:70px" />
+
+
+                        <div class="article-wrapper align-left">
+                            <h5 class="mbr-section-title mbr-fonts-style" style="margin-left:20%;margin-top:-40px"><strong>Ease of Doing Business</strong></h5><br />
+                            <h6 class="mbr-section-subtitle mbr-fonts-style" style="text-align:start">
+                                <ul class="">
+                                    <li>Easy Product Listing</li>
+                                    <li>Lowest Cost Shipping</li>
+                                    <li>7-Day Payment Cycle from the delivery date</li>
+                                </ul>
+                            </h6>
+                            @*<p class="mbr-section-text mbr-fonts-style mt-3 display-7">Full-time<br></p>*@
+                        </div>
+                    </div>
+
+                    @*<div class="col-lg-5">
+                            <div class="mbr-section-btn align-right"><a class="btn btn-lg article-btn btn-secondary display-4" href="https://mobiri.se/"><strong>Read more</strong></a></div>
+                        </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--end policy-->
+@*<section data-bs-version="5.1" class="header5 cid-tdxNYI8cif" id="header05-3">
+
+
+    <div class="container">
+        <div class="row content-wrapper justify-content-center">
+
+            <div class="col-lg-7 mbr-form">*@
+@*<div class="col-lg-12 col-md-12 col-sm-12">
+        <h1 class="mbr-section-title mbr-fonts-style mb-5 display-1">
+            <strong>Become an influencer and promote yourself</strong>
+        </h1>
+    </div>*@
+
+@*<div class="text-wrapper align-left" data-form-type="formoid">*@
+<!--Formbuilder Form
+<form action="https://mobirise.eu/" method="POST" class="mbr-form form-with-styler" data-form-title="Form Name">
+    <input type="hidden" name="email" data-form-email="true" value="mzWu9QxSMwi5Yd9daZXshwSYh9KGyAN/KkvDTqJQPaaCqnDOp5Mx95u6TBuZ/HR45VyKuF/PynmPEBqe7pX7hCXwEQOmQcdwT2eVbLdzR0ex4T6az1M2pSkpBoFojU30.d/EUhdEV76jqoBbPljfVwejCkSh6FtC9RJt2XLTVxqPY1ysqnqkZgBvnO2wz2UCmhV+svEVaRXsQ+HZMpa32TXUHlQgKkEFtB0914nmheMroCB14ridl00LnQyDM7XbA">
+    <div class="row">
+        <div hidden="hidden" data-form-alert="" class="alert alert-success col-12">
+            Thanks for filling
+            out the form!
+        </div>
+        <div hidden="hidden" data-form-alert-danger="" class="alert alert-danger col-12">
+            Oops...! some
+            problem!
+        </div>
+    </div>
+    <div class="dragArea row">
+
+        <div data-for="email" class="col-lg-6 col-md-6 col-sm-12 form-group">
+            <input type="email" name="email" placeholder="test@email.com" data-form-field="email" class="form-control display-7" value="" id="email-header05-3">
+        </div>
+        <div class="col-auto mbr-section-btn"><button type="submit" class="w-100 w-100 w-100 w-100 w-100 w-100 btn btn-success display-4">Get Started</button></div>
+    </div>
+</form>
+<!--Formbuilder Form-->
+@*</div>
+                </div>
+
+            </div>
+        </div>
+    </section>*@
+
+
+<!--code for Services--->
+<section data-bs-version="5.1" class="features6 cid-tdxO0nnOKE services-container" id="features06-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 pb-4">
+                <h1 class="mbr-section-title mbr-fonts-style align-center   ">
+                    <strong>Services</strong>
+                </h1>
+
+            </div>
+            <div class="services-card">
+                <div class="services-icon">
+                    <span class="mbr-iconfont mobi-mbri-idea mobi-mbri"></span>
+                </div>
+                <h5 class="services-title"><strong>Creation</strong></h5>
+                <p class="services-text">
+                    Got a great idea? Let's make it happen! Our team is here to turn your vision into reality. We'll work with you every step of the way to create something amazing that your customers will love.
+                </p>
+            </div>
+            <div class="services-card">
+                <div class="services-icon">
+                    <span class="mbr-iconfont mobi-mbri-growing-chart mobi-mbri"></span>
+                </div>
+                <h5 class="services-title"><strong>Promotion</strong></h5>
+                <p class="services-text">
+                    Standing out online can be tough, but we've got your back. Our experts will help you get your brand in front of the right people. Whether it's through ads, social media, or other strategies, we'll help you get the attention you deserve.
+                </p>
+            </div>
+            <div class="services-card">
+                <div class="services-icon">
+                    <span class="mbr-iconfont mobi-mbri-change-style mobi-mbri"></span>
+                </div>
+                <h5 class="services-title"><strong>Branding</strong></h5>
+                <p class="services-text">
+                    Your brand is what sets you apart from the competition. Let us help you find your unique voice. From logos to messaging, we'll make sure your brand shines bright and leaves a lasting impression.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+<!--end code for Services--->
+<!-- code for peromated--->
+@*<section data-bs-version="5.1" class="header2 cid-tdxOqvZdhb" id="header02-d">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-12 col-lg-5 image-wrapper">
+                    <img class="w-100" src="/Content/assets/images/features1.jpg" alt="Mobirise Website Builder" style="height:250px">
+                </div>
+                <div class="col-12 col-md-12 col-lg">
+                    <div class="text-wrapper align-left">
+                        <h1 class="mbr-section-title mbr-fonts-style"><strong>Promote your brands on social media</strong></h1>
+                        <p class="mbr-text align-left mbr-fonts-style  ">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec egestas massa vel nulla gravida
+                            pulvinar. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis
+                            egestas.
+                        </p>
+                        <div class="mbr-section-btn align-left mt-3"><a class="btn btn-lg btn-primary display-4" href=" ">Get Started</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>*@
+
+<!--end  code for peromated--->
+<!--policy---------------------------------------------------------------------->
+<!--<section data-bs-version="5.1" class="people1 cid-tdxO3wSJuj" id="people01-7">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-5 mb-5 align-left">
+
+                <h1 class="mbr-section-maintitle mbr-fonts-style mt-3"><strong>Why Suppliers Love Me Claco </strong></h1>
+                <p class="mbr-section-maintext mbr-fonts-style mt-3 display-7">All the benefits that come with selling on Meesho are designed to help you sell more, and make it easier to grow your business..<br></p>
+
+                <div class="mbr-section-btn btn-section align-left"><a class="btn btn-lg article-btn btn-primary display-4" href=" "><strong>Read more</strong></a></div>
+            </div>
+
+
+            <div class="col-lg-7">
+
+
+                <div class="row item-row">
+                    <div class="col-lg-8" style="height:-50px">
+                        <div class="article-wrapper align-left">
+                            <img src="~/Content/assets/images/commission.png" style="height:70px;width:70px" />
+                            <h5 class="mbr-section-title mbr-fonts-style " style="margin-left:25%;margin-top:-40px">
+
+                                <strong>0% Commission Fee</strong>
+                            </h5>
+
+                            <h6 class="mbr-section-subtitle mbr-fonts-style" style="margin-top:8%">Suppliers selling on Claco keep 100% of their profit by not paying any commission.</h6>
+
+                            @*<p class="mbr-section-text mbr-fonts-style mt-3 display-7">Full-time<br></p>*@
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="mbr-section-btn align-right"><a class="btn btn-lg article-btn btn-secondary display-4" href=" "><strong>Read more</strong></a></div>
+                    </div>
+                </div>
+
+
+
+
+                <div class="row item-row">
+                    <div class="col-lg-7">
+
+                        <div class="article-wrapper align-left">
+                            <img src="~/Content/assets/images/Penalty Charges.png" style="height:70px;width:70px" />
+
+                            <h5 class="mbr-section-title" style="margin-left:25%;margin-top:-40px"><strong>0 Penalty Charges</strong></h5>
+                            <h6 class="mbr-section-subtitle mbr-fonts-style" style="margin-top:8%">Sell online without the fear of order cancellation charges with 0 Penalty for late dispatch or order cancellations..</h6>
+                            @*<p class="mbr-section-text mbr-fonts-style mt-3 display-7">Full-time<br></p>*@
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="mbr-section-btn align-right"><a class="btn btn-lg article-btn btn-secondary display-4" href="https://mobiri.se/"><strong>Read more</strong></a></div>
+                    </div>
+                </div>
+
+
+
+                <div class="row item-row">
+                    <div class="col-lg-7">
+                        <img src="~/Content/assets/images/growth.png" style="height:70px;width:70px" />
+
+                        <div class="article-wrapper align-left">
+                            <h5 class="mbr-section-title mbr-fonts-style" style="margin-left:30%;margin-top:-40px"><strong>Growth for Every Supplier</strong></h5>
+                            <h6 class="mbr-section-subtitle mbr-fonts-style" style="margin-top:8%">From small to large and unbranded to branded, and now open for Sellers who don't have a Regular GSTIN too, Meesho fuels growth for all suppliers.</h6>
+                            @*<p class="mbr-section-text mbr-fonts-style mt-3 display-7">Full-time<br></p>*@
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="mbr-section-btn align-right"><a class="btn btn-lg article-btn btn-secondary display-4" href="https://mobiri.se/"><strong>Read more</strong></a></div>
+                    </div>
+                </div>
+
+
+                <div class="row item-row">
+                    <div class="col-lg-7">
+                        <img src="~/Content/assets/images/Ease of Doing.png" style="height:70px;width:70px" />
+
+
+                        <div class="article-wrapper align-left">
+                            <h5 class="mbr-section-title mbr-fonts-style" style="margin-left:30%;margin-top:-40px"><strong>Ease of Doing Business</strong></h5>
+                            <h6 class="mbr-section-subtitle mbr-fonts-style" style="margin-top:8%">
+                                tick
+                                Easy Product Listing
+                                tick
+                                Lowest Cost Shipping
+                                tick
+
+                                <p>7-Day Payment Cycle from the delivery date.</p>
+                            </h6>
+                            @*<p class="mbr-section-text mbr-fonts-style mt-3 display-7">Full-time<br></p>*@
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="mbr-section-btn align-right"><a class="btn btn-lg article-btn btn-secondary display-4" href="https://mobiri.se/"><strong>Read more</strong></a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>-->
+<!--end policy-->
+@*<section data-bs-version="5.1" class="video1 cid-tdxOEKI0B5" id="video01-e" style=" background-color: rgba(200, 60, 60, 0.1); height:600PX">
+
+        <div class="align-center container">
+            <div class="mbr-section-head">
+                <h1 class="mbr-section-title mbr-fonts-style  "><strong style="color:black">Watch Video</strong></h1>
+
+            </div>
+            <div class="row justify-content-center mt-4">
+                <div class="col-12 col-lg-12">
+                    <div class="box">
+                        <div class="mbr-media show-modal align-center" data-modal=".modalWindow">
+                            <img src="~/Content/assets/images/background1.jpg" style="height:300px" alt=" ">
+                            <div class="icon-wrap">
+                                <a class="text-primary" href="#"><span class="mbr-iconfont socicon-youtube socicon"></span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="modalWindow" style="display: none;">
+                <div class="modalWindow-container">
+                    <div class="modalWindow-video-container">
+                        <div class="modalWindow-video">
+                            <iframe width="100%" height="100%" frameborder="0" allowfullscreen="1" data-src="https://www.youtube.com/watch?v=VA8PzkQa8d8"></iframe>
+                        </div>
+                        <a class="close" role="button" data-dismiss="modal" data-bs-dismiss="modal">
+                            <span aria-hidden="true" class="mbr-iconfont mobi-mbri-close mobi-mbri closeModal"></span>
+                            <span class="sr-only visually-hidden">Close</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>*@
+<!--share your clinte-->
+@*<section data-bs-version="5.1" class="social2 cid-tdxO4rQvS6" id="social02-8">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="title mbr-fonts-style align-left mb-5 display-5"><strong>Share Your Content</strong></h2>
+                </div>
+                <div class="card col-12 col-md-6 col-lg-6">
+                    <div class="item-img">
+                        <img src="~/Content/assets/images/features1.jpg" alt="Mobirise Website Builder">
+                    </div>
+                    <div class="card-wrapper">
+                        <span class="mbr-iconfont m-auto socicon-instagram socicon"></span>
+                        <div class="card-box">
+                            <h4 class="card-title mbr-fonts-style mb-0 display-7"><strong>Instagram</strong></h4>
+                            <h5 class="card-text mbr-fonts-style display-4">Lorem ipsum dolor sit amet.</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="card col-12 col-md-6 col-lg-6">
+                    <div class="item-img">
+                        <img src="~/Content/assets/images/features4.jpg" alt="Mobirise Website Builder">
+                    </div>
+                    <div class="card-wrapper">
+                        <span class="mbr-iconfont m-auto socicon-tiktok socicon"></span>
+                        <div class="card-box">
+                            <h4 class="card-title mbr-fonts-style mb-0 display-7"><strong>TikTok</strong></h4>
+                            <h5 class="card-text mbr-fonts-style display-4">Lorem ipsum dolor sit amet.</h5>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>*@
+<!--end share your clinte-->
+@*<section data-bs-version="5.1" class="list1 cid-tdxOTZpHwi" id="list01-f" style="background-color:white">
+
+
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-12 col-lg-10 m-auto">
+                    <div class="content">
+                        <div class="mbr-section-head align-left mb-5">
+
+                            <h3 class="mbr-section-title mb-2 mbr-fonts-style display-2"><strong>FAQ</strong></h3>
+                        </div>
+                        <div id="bootstrap-accordion_9" class="panel-group accordionStyles accordion" role="tablist" aria-multiselectable="true">
+                            <div class="card mb-3">
+                                <div class="card-header" role="tab" id="headingOne">
+                                    <a role="button" class="panel-title collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-core="" href="#collapse1_9" aria-expanded="false" aria-controls="collapse1">
+
+                                        <h6 class="panel-title-edit mbr-semibold mbr-fonts-style mb-0 display-5">
+                                            Lorem ipsum dolor sit amet?
+                                        </h6>
+                                        <span class="sign mbr-iconfont mobi-mbri-arrow-down"></span>
+                                    </a>
+                                </div>
+                                <div id="collapse1_9" class="panel-collapse noScroll collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion" data-bs-parent="#bootstrap-accordion_9">
+                                    <div class="panel-body">
+                                        <p class="mbr-fonts-style panel-text display-4">
+                                            Lorem ipsum dolor sit amet, consectetur
+                                            adipiscing elit. Fusce vestibulum laoreet tincidunt. Proin et sapien
+                                            scelerisque, ornare lectus eget, iaculis lectus. Pellentesque viverra molestie
+                                            tortor. Nunc sed interdum est, in maximus diam. Donec eu tellus dictum, gravida
+                                            velit et, sagittis arcu. Proin et lectus dapibus. Cras fringilla elit velit
+                                            placerat tortor mollis cursus.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mb-3">
+                                <div class="card-header" role="tab" id="headingOne">
+                                    <a role="button" class="panel-title collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-core="" href="#collapse2_9" aria-expanded="false" aria-controls="collapse2">
+
+                                        <h6 class="panel-title-edit mbr-semibold mbr-fonts-style mb-0 display-5">
+                                            Pellentesque
+                                            nec purus ut massa?
+                                        </h6>
+                                        <span class="sign mbr-iconfont mobi-mbri-arrow-down"></span>
+                                    </a>
+                                </div>
+                                <div id="collapse2_9" class="panel-collapse noScroll collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion" data-bs-parent="#bootstrap-accordion_9">
+                                    <div class="panel-body">
+                                        <p class="mbr-fonts-style panel-text display-4">
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vestibulum
+                                            laoreet tincidunt. Proin et sapien scelerisque, ornare lectus eget, iaculis
+                                            lectus. Pellentesque viverra molestie tortor. Nunc sed interdum est, in maximus
+                                            diam. Donec eu tellus dictum, gravida velit et, sagittis arcu. Proin et lectus
+                                            dapibus. Cras fringilla elit velit placerat tortor mollis cursus.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mb-3">
+                                <div class="card-header" role="tab" id="headingOne">
+                                    <a role="button" class="panel-title collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-core="" href="#collapse3_9" aria-expanded="false" aria-controls="collapse3">
+                                        <h6 class="panel-title-edit mbr-semibold mbr-fonts-style mb-0 display-5">
+                                            Mauris
+                                            porttitor tempor orci vitae?
+                                        </h6>
+                                        <span class="sign mbr-iconfont mobi-mbri-arrow-down"></span>
+                                    </a>
+                                </div>
+                                <div id="collapse3_9" class="panel-collapse noScroll collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion" data-bs-parent="#bootstrap-accordion_9">
+                                    <div class="panel-body">
+                                        <p class="mbr-fonts-style panel-text display-4">
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vestibulum
+                                            laoreet tincidunt. Proin et sapien scelerisque, ornare lectus eget, iaculis
+                                            lectus. Pellentesque viverra molestie tortor. Nunc sed interdum est, in maximus
+                                            diam. Donec eu tellus dictum, gravida velit et, sagittis arcu. Proin et lectus
+                                            dapibus. Cras fringilla elit velit placerat tortor mollis cursus.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mb-3">
+                                <div class="card-header" role="tab" id="headingOne">
+                                    <a role="button" class="panel-title collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-core="" href="#collapse4_9" aria-expanded="false" aria-controls="collapse4">
+                                        <h6 class="panel-title-edit mbr-semibold mbr-fonts-style mb-0 display-5">
+                                            Ut ultricies
+                                            imperdiet volutpat?
+                                        </h6>
+                                        <span class="sign mbr-iconfont mobi-mbri-arrow-down"></span>
+                                    </a>
+                                </div>
+                                <div id="collapse4_9" class="panel-collapse noScroll collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion" data-bs-parent="#bootstrap-accordion_9">
+                                    <div class="panel-body">
+                                        <p class="mbr-fonts-style panel-text display-4">
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vestibulum
+                                            laoreet tincidunt. Proin et sapien scelerisque, ornare lectus eget, iaculis
+                                            lectus. Pellentesque viverra molestie tortor. Nunc sed interdum est, in maximus
+                                            diam. Donec eu tellus dictum, gravida velit et, sagittis arcu. Proin et lectus
+                                            dapibus. Cras fringilla elit velit placerat tortor mollis cursus.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mb-3">
+                                <div class="card-header" role="tab" id="headingOne">
+                                    <a role="button" class="panel-title collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-core="" href="#collapse5_9" aria-expanded="false" aria-controls="collapse5">
+                                        <h6 class="panel-title-edit mbr-semibold mbr-fonts-style mb-0 display-5">
+                                            Mauris dui
+                                            elit porta quis justo?
+                                        </h6>
+                                        <span class="sign mbr-iconfont mobi-mbri-arrow-down"></span>
+                                    </a>
+                                </div>
+                                <div id="collapse5_9" class="panel-collapse noScroll collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion" data-bs-parent="#bootstrap-accordion_9">
+                                    <div class="panel-body">
+                                        <p class="mbr-fonts-style panel-text display-4">
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vestibulum
+                                            laoreet tincidunt. Proin et sapien scelerisque, ornare lectus eget, iaculis
+                                            lectus. Pellentesque viverra molestie tortor. Nunc sed interdum est, in maximus
+                                            diam. Donec eu tellus dictum, gravida velit et, sagittis arcu. Proin et lectus
+                                            dapibus. Cras fringilla elit velit placerat tortor mollis cursus.
+                                        </p>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="card mb-3">
+                                <div class="card-header" role="tab" id="headingOne">
+                                    <a role="button" class="panel-title collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-core="" href="#collapse6_9" aria-expanded="false" aria-controls="collapse6">
+                                        <h6 class="panel-title-edit mbr-semibold mbr-fonts-style mb-0 display-5">
+                                            Nulla laoreet
+                                            urna purus sed ultricies?
+                                        </h6>
+                                        <span class="sign mbr-iconfont mobi-mbri-arrow-down"></span>
+                                    </a>
+                                </div>
+                                <div id="collapse6_9" class="panel-collapse noScroll collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion" data-bs-parent="#bootstrap-accordion_9">
+                                    <div class="panel-body">
+                                        <p class="mbr-fonts-style panel-text display-4">
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vestibulum
+                                            laoreet tincidunt. Proin et sapien scelerisque, ornare lectus eget, iaculis
+                                            lectus. Pellentesque viverra molestie tortor. Nunc sed interdum est, in maximus
+                                            diam. Donec eu tellus dictum, gravida velit et, sagittis arcu. Proin et lectus
+                                            dapibus. Cras fringilla elit velit placerat tortor mollis cursus.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>*@
+
+@*<section data-bs-version="5.1" class="clients2 cid-tdxO2EAyjQ" id="clients02-6">
+
+
+
+
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <h3 class="mbr-section-title mbr-fonts-style align-center mb-5 display-2"><strong>Our Clients</strong></h3>
+
+                </div>
+                <div class="col-sm-6 card col-lg-3">
+                    <div class="card-wrap card1">
+
+                        <div class="content-wrap">
+                            <div class="mbr-section-btn card-btn align-center">
+                                <a class="btn btn-white display-4" href="https://mobiri.se/"><span class="socicon socicon-instagram mbr-iconfont mbr-iconfont-btn"></span>/profilelink</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 card col-lg-3">
+                    <div class="card-wrap card2">
+
+                        <div class="content-wrap">
+
+
+                            <div class="mbr-section-btn card-btn align-center">
+                                <a class="btn btn-white display-4" href="https://mobiri.se/"><span class="socicon socicon-instagram mbr-iconfont mbr-iconfont-btn"></span>/profilelink</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 card col-lg-3">
+                    <div class="card-wrap card3">
+                        <div class="content-wrap">
+                            <div class="mbr-section-btn card-btn align-center">
+                                <a class="btn btn-white display-4" href="https://mobiri.se/"><span class="socicon socicon-instagram mbr-iconfont mbr-iconfont-btn"></span>/profilelink</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 card col-lg-3">
+                    <div class="card-wrap card4">
+                        <div class="content-wrap">
+                            <div class="mbr-section-btn card-btn align-center">
+                                <a class="btn btn-white display-4" href="https://mobiri.se/"><span class="socicon socicon-instagram mbr-iconfont mbr-iconfont-btn"></span>/profilelink</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>*@
+
+
+@*<section data-bs-version="5.1" class="article1 cid-tdxOi0lqX2" id="article01-c" style="background-color: #F6F6F6">
+
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-sm-12">
+                    <div class="row">
+                        <div class="col-sm-1"> </div>
+                        <div class="col-sm-4"><h2><strong>Claco Supplier Support Available 24/7</strong></h2></div>
+
+                        <div class="col-sm-6">
+                            Claco supplier support is available to solve all your doubts and issues before and after you start your online selling business.
+                            <br />
+
+                            <br />
+                            <p style="color:hotpink"><strong>lkoclaco@gmail.com</strong></p>
+
+                            <img src="~/Content/assets/images/email.png" style="height:50px;width:50px;background-color:hotpink" />
+                        </div>
+
+                        <div class="col-sm-"> </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>*@
+<br />
+<br />
+@Html.Action("About", "vendor")
+
+<div class="container" style="height:50px; background-color:white">
+
+</div>
+
+
+<section data-bs-version="5.1" class="list1 cid-tdxOTZpHwi" id="list01-f" style="background-color:white">
+
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-12 col-lg-10 m-auto">
+                <div class="content">
+                    <div class="mbr-section-head align-left mb-5">
+
+                        <h3 class="mbr-section-title mb-2 mbr-fonts-style  "><strong style="color:black">Frequently Asked Questions</strong></h3>
+                    </div>
+                    <div id="bootstrap-accordion_9" class="panel-group accordionStyles accordion" role="tablist" aria-multiselectable="true">
+                        <div class="card mb-3">
+                            <div class="card-header" role="tab" id="headingOne">
+                                <a role="button" class="panel-title collapsed" data-toggle="collapse" href="#collapse1_9" aria-expanded="false" aria-controls="collapse1">
+                                    <h6 class="panel-title-edit mbr-semibold mbr-fonts-style mb-0 display-5">How can I become a seller on Claco Store?</h6>
+                                    <span class="sign mbr-iconfont mobi-mbri-arrow-down"></span>
+                                </a>
+                            </div>
+                            <div id="collapse1_9" class="panel-collapse noScroll collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#bootstrap-accordion_9">
+                                <div class="panel-body">
+                                    <p class="mbr-fonts-style panel-text display-4 para" style="color:black">
+                                        To become a seller on Claco Store, simply navigate to the "Become A Seller" page and follow the instructions to register as a seller. Once registered, you can start listing your products for sale.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Repeat the above structure for other questions with unique ids -->
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header" role="tab" id="headingOne">
+                            <a role="button" class="panel-title collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-core="" href="#collapse2_9" aria-expanded="false" aria-controls="collapse2">
+
+                                <h6 class="panel-title-edit mbr-semibold mbr-fonts-style mb-0 display-5">
+                                    What are the requirements to become a seller?
+                                </h6>
+                                <span class="sign mbr-iconfont mobi-mbri-arrow-down"></span>
+                            </a>
+                        </div>
+                        <div id="collapse1_9" class="panel-collapse noScroll collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion" data-bs-parent="#bootstrap-accordion_9">
+                            <div class="panel-body">
+                                <p class="mbr-fonts-style panel-text display-4" style="color:black">
+                                    To become a seller on Claco Store, you need to provide certain information such as your contact details, business information (if applicable), and banking information for payment processing. Additionally, you may need to agree to our seller terms and conditions.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-header" role="tab" id="headingOne">
+                            <a role="button" class="panel-title collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-core="" href="#collapse3_9" aria-expanded="false" aria-controls="collapse3">
+                                <h6 class="panel-title-edit mbr-semibold mbr-fonts-style mb-0 display-5">
+                                    Is there a registration fee for sellers?
+                                </h6>
+                                <span class="sign mbr-iconfont mobi-mbri-arrow-down"></span>
+                            </a>
+                        </div>
+                        <div id="collapse1_9" class="panel-collapse noScroll collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion" data-bs-parent="#bootstrap-accordion_9">
+                            <div class="panel-body">
+                                <p class="mbr-fonts-style panel-text display-4" style="color:black">
+                                    No, there is no registration fee for becoming a seller on Claco Store. It's free to sign up and start selling your products.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-header" role="tab" id="headingOne">
+                            <a role="button" class="panel-title collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-core="" href="#collapse4_9" aria-expanded="false" aria-controls="collapse4">
+                                <h6 class="panel-title-edit mbr-semibold mbr-fonts-style mb-0 display-5">
+                                    What types of products can I sell on Claco Store?
+                                </h6>
+                                <span class="sign mbr-iconfont mobi-mbri-arrow-down"></span>
+                            </a>
+                        </div>
+                        <div id="collapse1_9" class="panel-collapse noScroll collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion" data-bs-parent="#bootstrap-accordion_9">
+                            <div class="panel-body">
+                                <p class="mbr-fonts-style panel-text display-4" style="color:black">
+                                    Claco Store caters to a wide range of products including Grocery, fashion, home decor, beauty products, and more. However, we do have certain guidelines and restrictions in place regarding the types of products that can be listed. Please refer to our seller policies for more information.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-header" role="tab" id="headingOne">
+                            <a role="button" class="panel-title collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-core="" href="#collapse5_9" aria-expanded="false" aria-controls="collapse5">
+                                <h6 class="panel-title-edit mbr-semibold mbr-fonts-style mb-0 display-5">
+                                    How do I list my products for sale?
+                                </h6>
+                                <span class="sign mbr-iconfont mobi-mbri-arrow-down"></span>
+                            </a>
+                        </div>
+                        <div id="collapse1_9" class="panel-collapse noScroll collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion" data-bs-parent="#bootstrap-accordion_9">
+                            <div class="panel-body">
+                                <p class="mbr-fonts-style panel-text display-4" style="color:black">
+                                    After registering as a seller, you can list your products by logging into your seller account dashboard. From there, you can create product listings by providing details such as product name, description, pricing, and images.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-header" role="tab" id="headingOne">
+                            <a role="button" class="panel-title collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-core="" href="#collapse6_9" aria-expanded="false" aria-controls="collapse6">
+                                <h6 class="panel-title-edit mbr-semibold mbr-fonts-style mb-0 display-5">
+                                    How are payments processed for sales made through Claco Store?
+                                </h6>
+                                <span class="sign mbr-iconfont mobi-mbri-arrow-down"></span>
+                            </a>
+                        </div>
+                        <div id="collapse1_9" class="panel-collapse noScroll collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion" data-bs-parent="#bootstrap-accordion_9">
+                            <div class="panel-body">
+                                <p class="mbr-fonts-style panel-text display-4" style="color:black">
+                                    Claco Store facilitates payments through secure payment gateways. When a customer purchases your product, the payment is processed through our platform, and you will receive the payment directly to your registered bank account.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header" role="tab" id="headingOne">
+                            <a role="button" class="panel-title collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-core="" href="#collapse6_9" aria-expanded="false" aria-controls="collapse6">
+                                <h6 class="panel-title-edit mbr-semibold mbr-fonts-style mb-0 display-5">
+                                    What are the seller fees on Claco Store?
+                                </h6>
+                                <span class="sign mbr-iconfont mobi-mbri-arrow-down"></span>
+                            </a>
+                        </div>
+                        <div id="collapse1_9" class="panel-collapse noScroll collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion" data-bs-parent="#bootstrap-accordion_9">
+                            <div class="panel-body">
+                                <p class="mbr-fonts-style panel-text display-4" style="color:black">
+                                    Claco Store charges a small commission fee on each successful sale made through our platform. The commission fee varies depending on the product category and other factors. You can find detailed information about our fees in your seller dashboard.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header" role="tab" id="headingOne">
+                            <a role="button" class="panel-title collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-core="" href="#collapse6_9" aria-expanded="false" aria-controls="collapse6">
+                                <h6 class="panel-title-edit mbr-semibold mbr-fonts-style mb-0 display-5">
+                                    How do I handle shipping and delivery of my products?
+                                </h6>
+                                <span class="sign mbr-iconfont mobi-mbri-arrow-down"></span>
+                            </a>
+                        </div>
+                        <div id="collapse1_9" class="panel-collapse noScroll collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion" data-bs-parent="#bootstrap-accordion_9">
+                            <div class="panel-body">
+                                <p class="mbr-fonts-style panel-text display-4" style="color:black">
+                                    As a seller, you are responsible for shipping and delivering your products to customers. You can choose your preferred shipping method and set shipping rates accordingly. Claco Store also provides tools to help you manage orders and track shipments.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header" role="tab" id="headingOne">
+                            <a role="button" class="panel-title collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-core="" href="#collapse6_9" aria-expanded="false" aria-controls="collapse6">
+                                <h6 class="panel-title-edit mbr-semibold mbr-fonts-style mb-0 display-5">
+                                    Can I offer discounts or promotions on my products?
+                                </h6>
+                                <span class="sign mbr-iconfont mobi-mbri-arrow-down"></span>
+                            </a>
+                        </div>
+                        <div id="collapse1_9" class="panel-collapse noScroll collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion" data-bs-parent="#bootstrap-accordion_9">
+                            <div class="panel-body">
+                                <p class="mbr-fonts-style panel-text display-4" style="color:black">
+                                    Yes, as a seller on Claco Store, you have the flexibility to offer discounts, promotions, and special deals on your products. You can set up discount codes, run sales campaigns, and participate in site-wide promotions organized by Claco Store.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header" role="tab" id="headingOne">
+                            <a role="button" class="panel-title collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-core="" href="#collapse6_9" aria-expanded="false" aria-controls="collapse6">
+                                <h6 class="panel-title-edit mbr-semibold mbr-fonts-style mb-0 display-5">
+                                    What support and resources are available to sellers on Claco Store?
+                                </h6>
+                                <span class="sign mbr-iconfont mobi-mbri-arrow-down"></span>
+                            </a>
+                        </div>
+                        <div id="collapse1_9" class="panel-collapse noScroll collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion" data-bs-parent="#bootstrap-accordion_9">
+                            <div class="panel-body">
+                                <p class="mbr-fonts-style panel-text display-4" style="color:black">
+                                    Claco Store offers comprehensive support and resources to help sellers succeed. This includes seller guides, tutorials, customer support assistance, and access to seller forums where you can connect with other sellers and share tips and advice.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+<!--<section data-bs-version="5.1" class="map1 cid-tdxO8gzjmg" id="map01-b">
+
+
+
+    <div class="container">
+        <div class="mbr-section-head mb-4">
+            <h3 class="mbr-section-title mbr-fonts-style align-center mb-0 display-1"><strong>Our office</strong></h3>
+
+        </div>-->
+@*<div class="google-map"><iframe frameborder="0" style="border:0" src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDk89J4FSunMF33ruMVWJaJht_Ro0kvoXs&amp;q=350%205th%20Ave,%20New%20York,%20NY%2010118" allowfullscreen=""></iframe></div>*@
+<!--</div>
+</section>-->
+<!--<section data-bs-version="5.1" class="footer2 cid-tdxO6UlGHf" id="footer02-a">
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8">
+
+                <div class="image-wrapper d-flex justify-content-center">-->
+@*<img src="~/Content/assets/images/uk.jpg" alt="Mobirise Website Builder">
+    <img src="~/Content/assets/images/us.jpg" alt="Mobirise Website Builder">*@
+
+<!--</div>
+                <p class="mbr-description mbr-fonts-style mt-2 align-center display-7">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec egestas massa vel nulla gravida
+                    pulvinar. Pellentesque habitant morbi tristique senectus&nbsp; fames ac turpis egestas.
+                </p>
+
+            </div>
+        </div>
+    </div>
+</section>-->

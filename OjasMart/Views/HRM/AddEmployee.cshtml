@@ -1,0 +1,341 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "AddEmployee";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script>
+    $(document).ready(function () {
+        if ($("#hdnDesignation").val() != "") {
+            $("#ddlDesignation").val($("#hdnDesignation").val());
+            $("#ddlgender").val($("#hdnGender").val())
+        }
+    });
+
+</script>
+@using System.Data;
+@using System.Data;
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="~/OperationalJs/PayrollJs.js"></script>
+
+<my-spinner>
+    <div ng-show="showSpinner" class="nexo-overlay ng-hide" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 5000; position: absolute; top: 0px; left: 0px;display:none" id="showSpinner">
+        <div class="spinner-border m-2" role="status" style="position: absolute; top: 30%; left: 50%; margin-top: -25px; margin-left: -25px;"></div>
+    </div>
+</my-spinner>
+<input type="hidden" id="hdEmpCode" value="@Model.EmpCode" />
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+
+            </div>
+            <h4 class="page-title">Add Employee</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 col-xl-12">
+        <div class="card-box">
+            <ul class="nav nav-pills navtab-bg nav-justified">
+                <li class="nav-item">
+                    <a href="#aboutme" data-toggle="tab" id="Basic" aria-expanded="false" class="nav-link active">
+                        Basic Details
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#timeline" data-toggle="tab" id="SalDetials" aria-expanded="true" class="nav-link">
+                        Salary Details
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#settings" data-toggle="tab" id="PerDetails" aria-expanded="false" class="nav-link">
+                        Personal Details
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#PayInfo" data-toggle="tab" id="PayDetails" aria-expanded="false" class="nav-link">
+                        Payment Details
+                    </a>
+                </li>
+            </ul>
+        @Html.HiddenFor(model=>model.designation, new { @Id = "hdnDesignation" })
+            @Html.HiddenFor(model => model.strgender,new {@Id="hdnGender" })
+            <div class="tab-content">
+                <div class="tab-pane show active" id="aboutme">
+                    <h5 class="mb-4 text-uppercase">
+                        Employee Basic Details
+                    </h5>
+                    <hr />
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputEmail4" class="col-form-label">Employee Name <span class="text-danger">*</span> </label>
+                            <input type="text" class="form-control" value="@Model.EmployeeName" id="txtEmployeeName" placeholder="Enter Employee Name">
+                            <input type="hidden" id="hdEmployeeCode" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputEmail4" class="col-form-label">Father Name </label>
+                            <input type="text" class="form-control" value="@Model.FatherName" id="txtFatherName" placeholder="Enter Father Name">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputEmail4" class="col-form-label">Gender <span class="text-danger">*</span> </label>
+
+                            <select id="ddlgender" class="form-control" value="@Model.strgender">
+                                <option>Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputEmail4" class="col-form-label">Date of Joining <span class="text-danger">*</span></label>
+                            <input type="date" value="@Model.eDate" class="form-control" id="txtDOJ"  data-date-autoclose="true">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputEmail4" class="col-form-label">Designation <span class="text-danger">*</span> </label>
+                            @Html.DropDownList("ddlDesignation", (List<SelectListItem>)ViewBag.DesignationList, new { @id = "ddlDesignation", @class = "form-control",@Value= "@Model.designation" })
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputEmail4" class="col-form-label">Work Email Address </label>
+                            <input type="text" value="@Model.workemailid" class="form-control" id="txtWorkEmailAddress" placeholder="Enter Work Email Address">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputEmail4" class="col-form-label">EPF Number </label>
+                            <input type="text" value="@Model.EPFNo" class="form-control" id="txtEPFNo" placeholder="Enter EPF Number">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputEmail4" class="col-form-label">ESI Number </label>
+                            <input type="text" value="@Model.ESINo" class="form-control" id="txtESINumber" placeholder="Enter ESI Number">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12" style="text-align:right">
+                            <input type="submit" class="btn btn-success" style="margin-top:37px" id="btnSaveBasicDetails" value="Save Details">
+                        </div>
+                    </div>
+                </div> <!-- end tab-pane -->
+                <!-- end about me section content -->
+                <div class="tab-pane" id="timeline">
+                    <h5 class="mb-4 text-uppercase">
+                        Salary Details
+                    </h5>
+                    <hr />
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4" class="col-form-label">Annual CTC <span class="text-danger">*</span> </label>
+                            <input type="number" class="form-control" value="@Model.annuallyctc" id="txtAnnualCTC" placeholder="Annual CTC" onchange="Salary()">
+                        </div>
+                        <div class="form-group col-md-4">
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="form-row" style="font-size:11px">
+                        <div class="form-group col-md-3">
+                            <span style="font-weight:bold">SALARY COMPONENTS</span>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <span style="font-weight:bold">CALCULATION TYPE</span>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <span style="font-weight:bold">AMOUNT MONTHLY</span>
+                        </div>
+                        <div class="form-group col-md-3" style="text-align:right">
+                            <span style="font-weight:bold">AMOUNT ANNUALLY</span>
+                        </div>
+                    </div>
+                    <hr style="margin-top: -8px;" />
+                    <h5>Earnings</h5>
+                    <div class="form-row" style="font-size:11px">
+                        <div class="form-group col-md-3" style="margin-top: 11px;">
+                            <span style="font-size: 14px;">Basic</span>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <input type="number" id="txtBasicPer" value="@Model.BasicPer" class="form-control" onchange="Salary()" />
+                        </div>
+                        <div class="form-group col-md-1">
+                            <span class="input-group-append" style="margin-top: 12px;">% of CTC</span>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <input type="number" id="txtBasicMonthlyAmount" disabled value="@Model.basicmonthly" class="form-control" />
+                        </div>
+                        <div class="form-group col-md-3" style="margin-top: 11px;text-align:right">
+                            <span style="margin-top: 12px;" id="lblAnnualAmount">0</span>
+                        </div>
+                    </div>
+                    <div class="form-row" style="font-size:11px">
+                        <div class="form-group col-md-3" style="margin-top: 11px;">
+                            <span style="font-size: 14px;">House Rent Allowance</span>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <input type="number" id="txtHRAPer" value="@Model.HRAPer" class="form-control" onchange="Salary()" />
+                        </div>
+                        <div class="form-group col-md-1">
+                            <span class="input-group-append" style="margin-top: 12px;">% of Basic</span>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <input type="number" id="txtHRAMonthlyAmount" disabled value="@Model.hramonthly" class="form-control" />
+                        </div>
+                        <div class="form-group col-md-3" style="margin-top: 11px;text-align:right">
+                            <span style="margin-top: 12px;" id="lblHRAAnnualAmount">0</span>
+                        </div>
+                    </div>
+                    <div class="form-row" style="font-size:11px">
+                        <div class="form-group col-md-3" style="margin-top: 11px;">
+                            <span style="font-size: 14px;">Conveyance Allowance</span>
+                        </div>
+                        <div class="form-group col-md-3" style="margin-top: 11px;">
+                            <span class="input-group-append" style="margin-top: 12px;">Fixed amount</span>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <input type="number" id="txtCAMonthlyAmount" value="@Model.conveyanceallowancemonthly" class="form-control" onchange="Salary()" />
+                        </div>
+                        <div class="form-group col-md-3" style="margin-top: 11px;text-align:right">
+                            <span style="margin-top: 12px;" id="lblCAAnnualAmount">0</span>
+                        </div>
+                    </div>
+                    <div class="form-row" style="font-size:11px">
+                        <div class="form-group col-md-3" style="margin-top: 11px;">
+                            <span style="font-size: 14px;">Fixed Allowance</span>
+                        </div>
+                        <div class="form-group col-md-3" style="margin-top: 11px;">
+                            <span class="input-group-append" style="margin-top: 12px;">Fixed amount</span>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <input type="number" id="txtFAMonthlyAmount" disabled value="@Model.fixedallowancemonthly" class="form-control" />
+                        </div>
+                        <div class="form-group col-md-3" style="margin-top: 11px;text-align:right">
+                            <span style="margin-top: 12px;" id="lblFAAnnualAmount">0</span>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="form-row" style="font-weight: bold;background-color: #1a6359;color: white;">
+                        <div class="form-group col-md-3">
+                            <span style="font-size: 14px;">Cost to Company</span>
+                        </div>
+                        <div class="form-group col-md-3">
+                        </div>
+                        <div class="form-group col-md-3" style="text-align:right">
+                            <span id="lblTotalMonthly">0</span>
+                        </div>
+                        <div class="form-group col-md-3" style="text-align:right">
+                            <span id="lblTotalAnnualy">0</span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12" style="text-align:right">
+                            <input type="submit" class="btn btn-success" style="margin-top:37px" id="btnSaveSalaryDetails" value="Save Details">
+                        </div>
+                    </div>
+                </div>
+                <!-- end timeline content-->
+                <div class="tab-pane" id="settings">
+                    <h5 class="mb-4 text-uppercase">
+                        Employee Personal Details
+                    </h5>
+                    <hr />
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4" class="col-form-label">Personal Email Id </label>
+                            <input type="text" class="form-control" value="@Model.EmailId" id="txtPersonalEmailId" placeholder="Enter Personal Email Id">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4" class="col-form-label">Contact No <span class="text-danger">*</span> </label>
+                            <input type="text" class="form-control" id="txtContactNo" value="@Model.ContactNo" placeholder="Enter Contact No">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4" class="col-form-label">PAN No </label>
+                            <input type="text" class="form-control" id="txtPAnNo" value="@Model.PanNo" placeholder="Enter PAN No">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4" class="col-form-label">DOB </label>
+                            <input type="date" class="form-control" id="txtDOB" value="@Model.mDate" placeholder="dd-MMM-yyyy" data-date-autoclose="true">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4" class="col-form-label">City</label>
+                            <input type="text" class="form-control" value="@Model.CityName" id="txtCity" placeholder="Enter City Name">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4" class="col-form-label">State</label>
+                            <input type="text" class="form-control" value="@Model.StateName" id="txtStateName" placeholder="Enter State Name">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-8">
+                            <label for="inputEmail4" class="col-form-label">Address</label>
+                            <textarea id="txtAddress" class="form-control" rows="2" placeholder="Enter Address">@Model.Address</textarea>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4" class="col-form-label">Pin Code</label>
+                            <input type="text" class="form-control" value="@Model.PinCode" id="txtPinCode" placeholder="Enter Pin Code">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12" style="text-align:right">
+                            <input type="submit" class="btn btn-success" style="margin-top:37px" id="btnSavePersonalDetails" value="Save Details">
+                        </div>
+                    </div>
+                </div>
+                <!-- end settings content-->
+                <div class="tab-pane" id="PayInfo">
+                    <h5 class="mb-4 text-uppercase">
+                        Payment Details
+                    </h5>
+                    <div class="mt-3">
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="customRadio1" name="rblPayType" value="Bank Transfer" class="custom-control-input" checked>
+                            <label class="custom-control-label" for="customRadio1">Bank Transfer</label>
+                        </div>
+                        <hr />
+                        <div class="form-row" id="divBank">
+                            <div class="form-group col-md-4">
+                                <label for="inputEmail4" class="col-form-label">Account Holder Name <span class="text-danger">*</span>  </label>
+                                <input type="text" class="form-control" id="txtAccHolderName" placeholder="Account Holder Name">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="inputEmail4" class="col-form-label">Bank Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" value="@Model.BanKAccName" id="txtBankName" placeholder="Bank Name">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="inputEmail4" class="col-form-label">Account Number <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" value="@Model.accountno" id="txtAccNumber" placeholder="Account Number">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="inputEmail4" class="col-form-label">IFSC Code <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="txtIFSCCode" value="@Model.ifsccode" placeholder="IFSC Code">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="inputEmail4" class="col-form-label">Account Type</label>
+                                <select id="ddlAccountType" class="form-control">
+                                    <option>Saving Account</option>
+                                    <option>Current Account</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="customRadio2" name="rblPayType" value="By Cheque" class="custom-control-input">
+                            <label class="custom-control-label" for="customRadio2">By Cheque</label>
+                        </div><hr />
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="customRadio3" name="rblPayType" value="By Cash" class="custom-control-input">
+                            <label class="custom-control-label" for="customRadio3">By Cash</label>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12" style="text-align:right">
+                            <input type="submit" class="btn btn-success" style="margin-top:37px" id="btnSavePaymentDetails" value="Save Details">
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- end tab-content -->
+        </div> <!-- end card-box-->
+    </div> <!-- end col -->
+</div>

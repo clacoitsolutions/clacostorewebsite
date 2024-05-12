@@ -1,0 +1,61 @@
+﻿
+@model OjasMart.Models.PropertyClass
+@{
+    Layout = null;
+}
+@using System.Data;
+
+@if (Model.dtMenuSub != null && Model.dtMenuSub.Rows.Count > 0)
+{
+    <ul class="media-list">
+        @foreach (DataRow dr1 in Model.dtMenuSub.Rows)
+        {
+            <li class="media-list-item" style="display: none;">
+                <div class="blog-top-item media">
+                    <div class="media-left">
+                        @if (string.IsNullOrEmpty(Convert.ToString(@dr1["CatImg"])))
+                        {
+                            <img class="ft-plus-square icon-bg-circle bg-cyan mr-0" src="~/img/noimageicon.png" />
+                        }
+                        else
+                        {
+                            <img class="ft-plus-square icon-bg-circle bg-cyan mr-0" src=@dr1["CatImg"] alt="" />
+                        }
+                    </div>
+                    <div class="media-body">
+                        <a href="../ProductDetail/SearchCategory?CatName=@dr1["ProductCategory"]&&CatId=@dr1["ParrentCategoryId"]&&SubCatId=@dr1["SrNo"]" class="top-post-link text-dark"> @dr1["ProductCategory"] </a>
+                    </div>
+                </div>
+            </li>
+        }
+
+        <button class="view-more-btn">View More</button>
+    </ul>
+
+
+}
+<script>
+    // Get all list items
+    var listItems = document.querySelectorAll('.media-list-item');
+
+    // Loop through list items to display first five
+    for (var i = 0; i < 5 && i < listItems.length; i++) {
+        listItems[i].style.display = 'block';
+    }
+
+    // Show the "View More" button if there are more than five list items
+    if (listItems.length > 5) {
+        document.querySelector('.view-more-btn').style.display = 'block';
+    }
+
+    // Function to handle click on "View More" button
+    document.querySelector('.view-more-btn').addEventListener('click', function () {
+        // Show additional list items, for example, next five
+        for (var i = 5; i < listItems.length; i++) {
+            listItems[i].style.display = 'block';
+        }
+        // Hide the "View More" button after displaying all elements
+        this.style.display = 'none';
+    });
+</script>
+

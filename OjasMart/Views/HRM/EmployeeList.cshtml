@@ -1,0 +1,127 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "EmployeeList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Data;
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('select').select2();
+        $("#tblItemHead").DataTable();
+    });
+    function Showme(obj) {
+        $(obj).parent().find("#divbranch").toggle();
+        $(obj).toggle();
+    }
+    function UpdateBranch(obj,empcode) {
+        var branchid = $(obj).parent().find("#ddlbranch").val();
+        var EmpId=empcode;
+        $.post("/HRM/AllotBranch",{branchid:branchid,EmpId:EmpId},function(data){
+            alert(data);
+            window.location.reload();
+        });
+    }
+</script>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                <a href="../Payroll/AddEmployee" class="btn btn-danger waves-effect waves-light mb-2"><i class="mdi mdi-plus-circle mr-1"></i> Add Employee</a>
+            </div>
+            <h4 class="page-title">Employee List</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <div class="table-responsive">
+                <table id="tblItemHead" class="table table-centered mb-0">
+                    <thead class="thead-light" style="font-size: 12px;">
+                        <tr>
+                            <th>Sr.No</th>
+
+                            <th>Employee Basic</th>
+                            <th>Branch</th>
+                            @*<th>Father Name</th>*@
+
+                            <th>Annual CTC</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                i++;
+                                <tr>
+                                    <td>@i</td>
+                                    <td>
+
+                                        <div class="media">
+                                            @if (!string.IsNullOrEmpty(Convert.ToString(dr["Employee_Photo"])))
+                                            {
+                                                <img class="d-flex align-self-center mr-3" src="@Convert.ToString(dr["Employee_Photo"])" alt="Def-Photo" height="64">
+                                            }
+                                            else
+                                            {
+                                                if (Convert.ToString(dr["Gender"]) == "Female")
+                                                {
+                                                    <img class="d-flex align-self-center mr-3" src="~/assets/images/users/female.png" alt="Def-Photo" height="64">
+                                                }
+                                                else
+                                                {
+                                                    <img class="d-flex align-self-center mr-3" src="~/assets/images/users/male.jpg" alt="Def-Photo" height="64">
+                                                }
+
+                                            }
+
+                                            <div class="media-body">
+                                                <h4 class="mt-0 mb-2 font-16"><a href="../HRM/EmployeeProfile?EmpCode=@dr["EmployeeCode"]" style="font-weight: bold;color: #1e6c94;cursor:pointer"> <i class="mdi mdi-briefcase-account"></i>@dr["Employee_Name"]- @dr["EmployeeCode"] </a></h4>
+                                                <p class="mb-1"><b> Mobile:</b> <span class="badge badge-primary">@dr["Contact_Number"]</span> <b>Gender:</b> <span class="badge badge-primary">@dr["Gender"]</span></p>
+                                                <p class="mb-1"><b class="icon-mail"> Email:</b> <span class="badge badge-primary">@dr["WorkEmailId"]</span> <b> Designation: </b> <span class="badge badge-primary">@dr["DesignationName"]</span><b> Password: </b> <span class="badge badge-primary">@dr["Password"]</span></p>
+
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    @*<td>@dr["Employee_Father_Name"]</td>*@
+                                    <td>
+                                        @if (Convert.ToString(dr["Branch"]) == "0")
+                                        {
+                                            <button type="button" class="btn btn-sm btn-warning" onclick="Showme(this)">Allot Branch</button>
+                                            <div style="display:none" id="divbranch">
+                                                @Html.DropDownList("ddlbranch", (List<SelectListItem>)ViewBag.Branchlist, "-Select Branch-", new { @id = "ddlbranch", @class = "form-control" })
+
+                                                <button class="btn btn-sm btn-success mt-2" onclick="UpdateBranch(this,'@dr["EmployeeCode"]')">Allot</button>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <p><span class="badge badge-success">@dr["Branch"]</span></p>
+                                            <button type="button" class="btn btn-sm btn-primary" onclick="Showme(this)">Re Allot Branch</button>
+                                                <div style="display:none" id="divbranch">
+                                                    @Html.DropDownList("ddlbranch", (List<SelectListItem>)ViewBag.Branchlist, "-Select Branch-", new { @id = "ddlbranch", @class = "form-control" })
+
+                                                    <button class="btn btn-sm btn-success mt-2" onclick="UpdateBranch(this,'@dr["EmployeeCode"]')">Allot</button>
+                                                </div>
+                                        }
+
+                                    </td>
+
+                                    <td>@dr["ctc"]</td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- end card-box-->
+    </div> <!-- end col-->
+</div>

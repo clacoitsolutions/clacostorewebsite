@@ -1,0 +1,314 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Cart Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using System.Data;
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var row_count = $('#tblCartList').find('tr').length - 1;
+        $('#totItems').text(row_count);
+        $('#totalCount').text(row_count);
+
+        var ttamt = 0;
+        $('#tblCartList TBODY TR').each(function () {
+            var row = $(this);
+            var qty = $('#txtQty', this).val();
+            if (qty == "1") {
+                $('.btnReduce', this).off('click');
+            }
+            var amt1 = $.trim(row.find('.tAmt').text()) != "" ? parseFloat(row.find('.tAmt').text()) : 0;
+            ttamt = ttamt + amt1;
+        });
+        $("#lblGrossTotal").text(ttamt.toFixed(2));
+        $("#lblTotal").text(ttamt.toFixed(2));
+
+        $('.btnAdd').click(function () {
+            var row = $(this).closest('tr');
+            var qty = row.find('.txtcls').val() != "" ? parseInt(row.find('.txtcls').val()) : 0;
+            var itemCode = row.find('.hdItemCode').val();
+            var Rate = row.find('.hdRate').val() != "" ? parseFloat(row.find('.hdRate').val()) : 0;
+            if (itemCode == "") {
+                alert("Product Code is Empty !!!");
+                return;
+            }
+            var dataobject = {
+                ItemCode: itemCode,
+                Quantity: "1",
+                Action: "1",
+                Status: "A"
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Ecommarce/InsertToCartList",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                //data: dataobject,
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    if (r.strId == '1') {
+                        var NewQty = qty + 1;
+                        row.find('.txtcls').val(NewQty);
+                        var tt = Rate * NewQty;
+                        row.find('.tAmt').text(tt.toFixed(2));
+                        var amt = 0;
+                        $('#tblCartList tbody tr').each(function () {
+                            var trow = $(this);
+                            var amt1 = $.trim(trow.find('.tAmt').text()) != "" ? parseFloat(trow.find('.tAmt').text()) : 0;
+                            amt = amt + amt1;
+                        });
+                        $("#lblGrossTotal").text(amt.toFixed(2));
+                        $("#lblTotal").text(amt.toFixed(2));
+                        toastr.success('Item successfully updated in cart.');
+                        //location.reload();
+                    }
+                    else {
+                        //alert('Item is not added with Cart !!!');
+                        toastr.error('Server not Responding.');
+
+                    }
+                    $("#showSpinner").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    //alert('Server not Responding !!!');
+                    toastr.error('Server not Responding.');
+                    $("#showSpinner").hide();
+                }
+            });
+        });
+
+        $('.btnReduce').click(function () {
+            var row = $(this).closest('tr');
+            var qty = row.find('.txtcls').val() != "" ? parseInt(row.find('.txtcls').val()) : 0;
+            if (qty > 1) {
+                var itemCode = row.find('.hdItemCode').val();
+                if (itemCode == "") {
+                    alert("Product Code is Empty !!!");
+                    return;
+                }
+                var dataobject = {
+                    ItemCode: itemCode,
+                    Quantity: "1",
+                    Action: "1",
+                    Status: "R"
+                };
+                $("#showSpinner").show();
+                $.ajax({
+                    url: "/Ecommarce/InsertToCartList",
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    //data: dataobject,
+                    data: JSON.stringify(dataobject),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (r) {
+                        if (r.strId == '1') {
+                            var Rate = row.find('.hdRate').val() != "" ? parseFloat(row.find('.hdRate').val()) : 0;
+                            var NewQty = qty - 1;
+                            row.find('.txtcls').val(NewQty);
+
+                            var tt = Rate * NewQty;
+                            row.find('.tAmt').text(tt.toFixed(2));
+                            var amt = 0;
+                            $('#tblCartList tbody tr').each(function () {
+                                var trow = $(this);
+                                var amt1 = $.trim(trow.find('.tAmt').text()) != "" ? parseFloat(trow.find('.tAmt').text()) : 0;
+                                amt = amt + amt1;
+                            });
+                            $("#lblGrossTotal").text(amt.toFixed(2));
+                            $("#lblTotal").text(amt.toFixed(2));
+
+                            toastr.success('Item successfully updated in cart.');
+                            //location.reload();
+                        }
+                        else {
+                            //alert('Item is not added with Cart !!!');
+                            toastr.error('Server not Responding.');
+
+                        }
+                        $("#showSpinner").hide();
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        //alert('Server not Responding !!!');
+                        toastr.error('Server not Responding.');
+                        $("#showSpinner").hide();
+                    }
+                });
+
+
+
+
+            }
+        });
+
+        $('.rem').click(function () {
+            var row = $(this).closest('tr');
+            var itemCode = row.find('.hdItemCode').val();
+
+            var x = confirm("Are you sure you want to remove this Item?");
+            if (x) {
+                if (itemCode == "") {
+                    alert("Item Code is Empty !!!");
+                    return;
+                }
+                var dataobject = {
+                    ItemCode: itemCode,
+                    Quantity: 0,
+                    Action: "4",
+                    Status: 'A'
+                };
+                $("#showSpinner").show();
+                $.ajax({
+                    url: "/Ecommarce/InsertToCartList",
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    //data: dataobject,
+                    data: JSON.stringify(dataobject),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (r) {
+                        if (r.strId == '1') {
+                            alert('Item successfully Removed from the cart. !!!');
+                            location.reload();
+                        }
+                        else {
+                            alert('Item details not found !!!');
+                            $("#showSpinner").hide();
+
+                        }
+                        $("#showSpinner").hide();
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert('Server not Responding !!!');
+                        //toastr.error('Server not Responding.');
+                        $("#showSpinner").hide();
+                    }
+                });
+            }
+            else {
+                return false;
+            }
+        });
+    });
+
+</script>
+
+<style>
+    .txtcls {
+        width: 56px;
+        height: 28px;
+        float: left;
+        margin: 0px 7px 0px 7px;
+    }
+</style>
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+            </div>
+            <h4 class="page-title">Cart Detail</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-8">
+        <div class="card-box">
+            <h4 class="header-title mb-3" style="font-weight:bold">Items In Cart (<span id="totItems">0</span>)</h4>
+            <hr />
+            <div class="table-responsive">
+                <table class="table table-borderless table-hover table-centered m-0" id="tblCartList">
+                    <thead class="thead-light">
+                        <tr>
+                            <th colspan="2">Particulars</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                        {
+                            int i = 0;
+                            foreach (DataRow dr in Model.dt.Rows)
+                            {
+                                <tr>
+                                    <td style="width: 36px;">
+                                        <img src="@dr["ProductMainImageUrl"]" alt="contact-img" title="contact-img" class="rounded-circle avatar-sm" />
+                                        <input type="hidden" class="hdRate" id="hdRate" value="@dr["OnlinePrice"]" />
+                                        <input type="hidden" class="hdItemCode" id="hdItemCode" value="@dr["ProductID"]" />
+                                    </td>
+                                    <td>
+                                        <h5 class="m-0 font-weight-normal">@dr["ItemName"]</h5>
+                                        <p style="margin-top:9px">
+                                            <a href="javascript: void(0);" class="btn btn-xs btn-danger btnReduce" id="btnMinus" style="float:left"><i class="mdi mdi-minus"></i></a>
+                                            <input type="text" id="txtQty" class="form-control txtcls" value="@dr["Quantity"]" disabled />
+                                            <a href="javascript: void(0);" class="btn btn-xs btn-primary btnAdd" id="btnPlus" style="float:left"><i class="mdi mdi-plus"></i></a>
+
+                                        </p>
+                                    </td>
+                                    <td>
+                                        &#8377; <span class="tAmt">@dr["TotalPrice"]</span>
+                                        <p style="margin-top:9px"><a href="javascript: void(0);" class="btn btn-link waves-effect btn-xs rem"><i class="far fa-trash-alt"></i> REMOVE</a> </p>
+                                    </td>
+                                </tr>
+                            }
+
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" style="color:red">No Item added in Item List...</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row" style="font-weight: bold;font-size: 16px;margin-top:12px;border-top:dotted;border-top-width:1px">
+                <div class="col-md-12" style="padding-top:12px;text-align:left;margin-top:28px">
+                    <a href="../Ecommarce/EcommarceCustomerDashboard" class="btn btn-warning btn-sm"><i class="fas fa-arrow-left"></i> COUTINUE SHOPPING </a>
+                </div>
+            </div>
+        </div>
+    </div> <!-- end col -->
+    <div class="col-xl-4">
+        <div class="card-box">
+            <h4 class="header-title mb-3">PRICE DETAILS</h4>
+            <hr />
+            <div class="row" style="font-weight: bold;font-size: 16px;">
+                <div class="col-md-8">
+                    <span>Price(<span id="totalCount"></span> Items)</span>
+                </div>
+                <div class="col-md-4" style="float:right">
+                    &#8377; <span id="lblGrossTotal">0.00</span>
+                </div>
+            </div>
+            <div class="row" style="font-weight: bold;font-size: 16px;margin-top:12px">
+                <div class="col-md-8">
+                    <span>Delivery</span>
+                </div>
+                <div class="col-md-4" style="float:right">
+                    <span style="color:#388e3c">FREE</span>
+                </div>
+            </div>
+            <div class="row" style="font-weight: bold;font-size: 16px;margin-top:12px;border-top:dotted;border-top-width:1px">
+                <div class="col-md-8" style="padding-top:12px">
+                    <span>Total Payable</span>
+                </div>
+                <div class="col-md-4" style="float:right;padding-top:12px">
+                    &#8377; <span id="lblTotal">0.00</span>
+                </div>
+            </div>
+            <div class="row" style="font-weight: bold;font-size: 16px;margin-top:12px;border-top:dotted;border-top-width:1px">
+                <div class="col-md-12" style="padding-top:12px;text-align:right;margin-top:28px">
+                    <a href="../Ecommarce/ItemCheckout?type=C" class="btn btn-info btn-sm"> PROCEED TO CHECKOUT <i class="fas fa-arrow-right"></i> </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

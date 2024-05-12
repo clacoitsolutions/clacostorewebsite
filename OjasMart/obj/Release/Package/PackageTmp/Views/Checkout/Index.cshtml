@@ -1,0 +1,1456 @@
+﻿@model OjasMart.Models.PropertyClass
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+@using System.Data;
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyCOejrdA6Od52MC7gbIKCGTeFJeYc6fOY4"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script>
+    function PayMode(Type) {
+        if (Type == "Online") {
+            $("#qrcode").css("display", "block");
+        }
+        else if (Type == "COD") {
+            $("#qrcode").css("display", "none");
+        }
+        else if (Type == "Paytm") {
+            $("#qrcode").css("display", "none");
+        }
+    }
+
+    $(document).ready(function () {
+
+
+
+
+        debugger;
+        if ($('#mCode').val() != '') {
+            $('#collapseTwo').removeClass('collapse');
+            $('#collapseOne').removeClass('in show');
+        }
+        else {
+            //$('#collapseTwo').removeClass('collapse');
+            //$('#collapseOne').addClass('in show');
+        }
+
+        if ($('#hdDefAddress').val() == '' || $('#hdDefAddress').val() == undefined) {
+            $('#divNewAddress').show();
+        }
+
+        $('#btnSendCode').click(function () {
+            if ($("#txtCode").val() == "") {
+                alert("Please Enter Mobile No !!!");
+                $("#txtCode").focus();
+                return;
+            }
+            var dataobject = {
+                MobileNo: $('#txtCode').val()
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Checkout/CheckUserLogin",
+                type: "POST",
+                data: dataobject,
+                dataType: "json",
+                success: function (data1) {
+                    if (data1 == "0") {
+                        SendOTP();
+                        $("#showSpinner").hide();
+                        return;
+                    }
+                    else {
+                        $('#divPwd').show();
+                        $('#btnSendCode').hide();
+                        $("#showSpinner").hide();
+                    }
+                    $("#showSpinner").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Please Check values Entered by you !!!');
+                    $("#showSpinner").hide();
+                }
+            });
+        });
+        $('#btnVerifyOTP').click(function () {
+            debugger;
+            if ($('#hdOTPNo').val() != '') {
+                var enterd_otp = "";
+                var otp_st = '0';
+                if ($('#code1').val() == '') {
+                    otp_st = "1";
+                }
+                else {
+                    enterd_otp += $('#code1').val();
+                }
+                if ($('#code2').val() == '') {
+                    otp_st = "1";
+                }
+                else {
+                    enterd_otp += $('#code2').val();
+                }
+                if ($('#code3').val() == '') {
+                    otp_st = "1";
+                }
+                else {
+                    enterd_otp += $('#code3').val();
+                }
+                if ($('#code4').val() == '') {
+                    otp_st = "1";
+                }
+                else {
+                    enterd_otp += $('#code4').val();
+                }
+                if ($('#code5').val() == '') {
+                    otp_st = "1";
+                }
+                else {
+                    enterd_otp += $('#code5').val();
+                }
+                if ($('#code6').val() == '') {
+                    otp_st = "1";
+                }
+                else {
+                    enterd_otp += $('#code6').val();
+                }
+                if (otp_st == '1') {
+                    alert('Invalid OTP');
+                    return;
+                }
+                if (enterd_otp == $('#hdOTPNo').val()) {
+                    var dataobject = {
+                        ContactNo: $("#txtCode").val(),
+                        AccountType: 'Online'
+                    };
+                    $("#showSpinner").show();
+                    $.ajax({
+                        url: "/Account/InsertCustomerAccounts",
+                        type: "POST",
+                        contentType: false,
+                        processData: false,
+                        //data: dataobject,
+                        data: JSON.stringify(dataobject),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (r) {
+                            if (r.strId == '1') {
+                                location.reload();
+                            }
+                            else if (r.strId == '2') {
+                                alert(r.msg);
+                                $("#showSpinner").hide();
+                            }
+                            else {
+                                alert('something went wrong, please try after some time !!!');
+                                $("#showSpinner").hide();
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            alert('something went wrong, please try after some time !!!');
+                            $("#showSpinner").hide();
+                        }
+                    });
+                    return;
+                }
+                else {
+                    alert('Invalid OTP');
+                    return;
+                }
+            }
+        });
+
+        $('#btnSignIn').click(function () {
+            if ($("#txtCode").val() == '') {
+                alert('Please Enter Mobile No. !');
+                return;
+            }
+
+            if ($('#txtPwd').val() != '') {
+                var dataobject = {
+                    UserName: $("#txtCode").val(),
+                    Password: $('#txtPwd').val()
+                };
+                $("#showSpinner").show();
+                $.ajax({
+
+                    url: "/Account/AuthenticateUser",
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    //data: dataobject,
+                    data: JSON.stringify(dataobject),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (r) {
+                        if (r[0] == '1') {
+                            location.reload();
+                        }
+                        if (r[0] == "0") {
+                            alert("Invalid User Name or Password!");
+                            $("#showSpinner").hide();
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("Please Check Credentials Entered by you!");
+                        $("#showSpinner").hide();
+                    }
+                });
+            }
+            else {
+                alert('Please Enter password!');
+                return;
+            }
+        });
+
+
+        $("#btnPlaceOrder").click(function () {
+            debugger;
+            if ($('#mCode').val() == '') {
+                alert('Your not SignIn,please signIn and Countinue!');
+                return;
+            }
+
+            var PayOption = $('[name=paymentmethod]:checked').val();
+            if (PayOption == "" || PayOption == undefined) {
+                alert('Please Select Payment Option !!!');
+                $('input[name=paymentmethod]').focus();
+                return;
+            }
+
+            var st = null;
+            if (PayOption == "COD") {
+                //var WalletBal = $.trim($('#hdWalletBal').val()) != "" ? parseFloat($.trim($('#hdWalletBal').val())) : 0;
+                //var PaidAmt = $.trim($('#lblTotal').text()) != "" ? parseFloat($.trim($('#lblTotal').text())) : 0;
+                //if (PaidAmt > WalletBal) {
+                //    alert('Insufficient Wallet Balance !!!');
+                //    return;
+                //}
+                st = "pending";
+            }
+            else {
+                st = "pending"
+            }
+            //if (PayOption == "Online") {
+            //    alert("This Feature is under Maintenance. !!!");
+            //    return;
+            //}
+            var ItemList = []; var FreeItemList = [];
+            $('#divItemSummary .border_radius').each(function () {
+                var row = $(this);
+                item = {};
+                var pid = row.attr('ProductId');
+                var varIdL = row.attr('varid');
+                var clr = row.attr('color');
+                var sizeid = row.attr('sizename');
+                var UnitRate = row.attr('UnitRate') != '' ? parseFloat(row.attr('UnitRate')) : 0;
+                var regrate = row.attr('regrate') != '' ? parseFloat(row.attr('regrate')) : 0;
+                var qty = row.find('input[name=quantity]').val() != '' ? parseInt(row.find('input[name=quantity]').val()) : 1;
+                var GstAmount = row.attr('gstamount') != '' ? parseFloat(row.attr('gstamount')) : 0;
+                var GSTRate = row.attr('GSTRate') != '' ? parseFloat(row.attr('GSTRate')) : 0;
+                var TotGst = GstAmount * qty;
+                var TotAmt = (UnitRate * qty)+TotGst;
+
+
+
+                var discount_amt = 0;
+                discount_amt = (((regrate*qty)+TotGst) - (TotAmt));
+
+                // var TotalAmt=((TotAmt-discount)-(TotAmt));
+
+                item["ItemCode"] = pid;
+                item["Quantity"] = qty;
+                item["GstAmount"] = GstAmount;
+                item["GSTRate"] = GSTRate;
+                item["Rate"] = UnitRate,
+                item["TotalAmount"] = TotAmt;
+                item["TotalGst"] = TotGst;
+                item["Reason"] = varIdL;
+                item["regrate"] = regrate,
+                item["discount_amt"] = discount_amt,
+                 item["color"] = clr,
+                 item["Size"] = sizeid,
+                ItemList.push(item);
+            });
+
+
+
+
+
+            debugger;
+            $('#divFreeItemSummary .FreeComboProduct').each(function () {
+                debugger;
+                var row = $(this);
+                freeitem = {};
+                var pid = row.attr('ProductId');
+                var varIdL = row.attr('varId');
+                var qty = row.attr('qty') != '' ? parseInt(row.attr('qty')) : 1;
+
+                freeitem["ItemCode"] = pid;
+                freeitem["qty"] = qty;
+                freeitem["varIdL"] = varIdL;
+                FreeItemList.push(freeitem);
+            });
+
+
+
+            var subtotal = $.trim($('#spnsubtotal').text()) != '' ? parseFloat($.trim($('#spnsubtotal').text())) : 0;
+            var NetAmt = $.trim($('#spnTotalAmount').text()) != '' ? parseFloat($.trim($('#spnTotalAmount').text())) : 0;
+            var DelCharges = $.trim($('#spnDelCharges').text()) != '' ? parseFloat($.trim($('#spnDelCharges').text())) : 0;
+            var GstCharges= $.trim($('#spnGstCharges').text()) != '' ? parseFloat($.trim($('#spnGstCharges').text())) : 0;
+
+            /* var SubAmt = NetAmt - DelCharges;*/
+
+            if (NetAmt <= 0) {
+                alert('Total Payable Should be greater than 0 !!!');
+                return;
+            }
+            var IsCoupenApllied = '0', CoupenAmt = 0;
+            if ($.trim($('#spnPromo').text()) != '') {
+                IsCoupenApllied = "0";
+                CoupenAmt = $.trim($('#spnPromo').text());
+                if (CoupenAmt > 0) {
+                    IsCoupenApllied = "1";
+                }
+            }
+            var dataobject = {
+                GrossPayable: subtotal,
+                deliverycharges: DelCharges,
+                gstamount: GstCharges,
+                iscoupenapplied: IsCoupenApllied,
+                CoupenAmount: CoupenAmt,
+                DiscAmt: CoupenAmt,
+                DeliveryTo: $("#hdDefAddress").val(),
+                PayMode: PayOption,
+                Status: st,
+                NetTotal: NetAmt,
+                ItemList: ItemList,
+                FreeItemList: FreeItemList,
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "/Ecommarce/InsertOnlineOrder",
+                type: "POST",
+                contentType: false,
+                processData: false,
+
+                data: JSON.stringify(dataobject),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+
+
+                    if (r.strId != "0") {
+                        if (r.OrderId != "0") {
+                            if ($("#rdo_Paytm").is(":checked")) {
+                                var fr = '<form action=\"/payroll/Index\" method=\"post\">' +
+                                      '<input type=\"hidden\" name=\"Cust_Id\" value=\"' + r.MobileNo + '\" />' +
+                                       '<input type=\"hidden\" name=\"Mobile\" value=\"' + r.MobileNo + '\" />' +
+                                       '<input type=\"hidden\" name=\"Email\" value=\"' + r.EmailAddress + '\" />' +
+                                       '<input type=\"hidden\" name=\"Amount\" value=\"' + r.Amount + '\" />' +
+                                       '<input type=\"hidden\" name=\"OrderId\" value=\"' + r.OrderId + '\" />' +
+                                       '</form>';
+                                var form = jQuery(fr);
+                                jQuery('body').append(form);
+                                form.submit();
+                            }
+                            else{
+                                alert('Your Order Successfully  Placed. !!!');
+                                var url = '../Checkout/SucessfullOrder?OrderId=' + r.OrderId;
+                                window.location.href = url;
+
+
+                                $("#showSpinner").hide();
+                            }
+
+
+                        }
+
+                    }
+                    else {
+                        alert("Error !!!");
+                        $("#showSpinner").hide();
+                    }
+                }
+            });
+        });
+
+
+
+
+    });
+
+
+    function UpdateTableQty(obj, btntype) {
+        debugger;
+        var NetTot = 0, RegAmt = 0;
+        var qty = 0;
+        qty = $(obj).parent().find('input[type=number]').val() != '' ? parseInt($(obj).parent().find('input[type=number]').val()) : 1;
+        if (btntype == 'A') {
+            $(obj).parent().find('input[type=number]').val(qty + 1);
+        }
+        else {
+            if (qty == 1) {
+                return false;
+            }
+            $(obj).parent().find('input[type=number]').val(qty - 1);
+        }
+
+        $('#divItemSummary .border_radius').each(function () {
+            var row = $(this);
+            item = {};
+            var UnitRate = row.attr('UnitRate') != '' ? parseFloat(row.attr('UnitRate')) : 0;
+            var RegRate = row.attr('RegRate') != '' ? parseFloat(row.attr('RegRate')) : 0;
+            qty = row.find('input[type=number]').val() != '' ? parseInt(row.find('input[type=number]').val()) : 1;
+            var TotAmt = UnitRate * (qty);
+            var RegTot = RegRate * (qty);
+            NetTot += TotAmt;
+            RegAmt += RegTot;
+        });
+
+        var totSaving = (parseFloat(RegAmt) - parseFloat(NetTot));
+        $('#SpntotSaving').text(totSaving.toFixed(2));
+        $('#spnTotalAmount').text(NetTot.toFixed(2));
+        $('#hdNetAmt').val(NetTot.toFixed(2));
+    }
+
+    function SendOTP() {
+        if ($("#txtCode").val() == "") {
+            alert("Please Enter Mobile No !!!");
+            $("#SendOTP").focus();
+            return;
+        }
+        var dataobject = {
+            MobileNo: $('#txtCode').val()
+        };
+        $("#showSpinner").show();
+        $.ajax({
+            url: "/Checkout/SendOTP",
+            type: "POST",
+            data: dataobject,
+            dataType: "json",
+            success: function (data1) {
+                if (data1 == "0") {
+                    alert("Invalid Mobile No !!!");
+                    $('#SendOTP').val('');
+                    $('#SendOTP').focus();
+                    $('#hdOTPNo').val('');
+                    $("#showSpinner").hide();
+                    return;
+                }
+                else {
+                    $('#ConfOTP').removeClass('collapse');
+                    $('#edit-number').addClass('collapse');
+                    $('#btnMobInfo').show();
+                    $('#spnPhone').text($('#txtCode').val());
+                    $('#hdOTPNo').val(data1);
+                    $("#showSpinner").hide();
+                }
+                $("#showSpinner").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Please Check values Entered by you !!!');
+                $("#showSpinner").hide();
+            }
+        });
+    }
+
+
+    function InsertDeliverAddress() {
+        debugger;
+        if ($("#txtName").val() == "") {
+            alert("Please Enter Name !!!");
+            $("#txtName").focus();
+            return;
+        }
+        if ($("#txtMobileNo").val() == "") {
+            alert("Please Enter Mobile No !!!");
+            $("#txtMobileNo").focus();
+            return;
+        }
+        if ($("#txtAddress").val() == "") {
+            alert("Please Select Location !!!");
+            $("#txtAddress").focus();
+            return;
+        }
+
+
+        if ($("#txtAddress2").val() == "") {
+            alert("Please Enter Address !!!");
+            $("#txtAddress2").focus();
+            return;
+        }
+
+        if ($("#txtPinCode").val() == "") {
+            alert("Please Enter Pin Code !!!");
+            $("#txtPinCode").focus();
+            return;
+        }
+        if ($("#txtCityName").val() == "") {
+            alert("Please Enter City Name !!!");
+            $("#txtCityName").focus();
+            return;
+        }
+
+        if ($("#ddlState").val() == "") {
+            alert("Please Select State !!!");
+            $("#ddlState").focus();
+            return;
+        }
+        var AddressType = $("input:radio[name=address1]:checked").val();
+        var latitude = "";
+        var longitude = "";
+
+        var geocoder = new google.maps.Geocoder();
+
+        geocoder.geocode({ 'address': $("#txtAddress").val() }, function (results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                latitude = results[0].geometry.location.lat();
+                longitude = results[0].geometry.location.lng();
+                var dataobject = {
+                    SSName: $("#txtName").val(),
+                    ContactNo: $("#txtMobileNo").val(),
+                    PinCode: $("#txtPinCode").val(),
+                    Address: $("#txtAddress").val(),
+                    CityName: $("#txtCityName").val(),
+                    StCode: $("#ddlState").val(),
+                    landmark: $("#txtLandmark").val(),
+                    altmobileno: $("#txtAltMobileNo").val(),
+                    Address2: $("#txtAddress2").val(),
+                    OfferType: AddressType,
+                    latitude: latitude,
+                    longitude: longitude
+                };
+                $("#showSpinner").show();
+                $.ajax({
+                    url: "/Ecommarce/InsertDeliveryAddress",
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    //data: dataobject,
+                    data: JSON.stringify(dataobject),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (r) {
+                        if (r.strId == '1') {
+                            location.reload();
+                        }
+                        else {
+                            alert('Server not Responding !!!');
+                            $("#showSpinner").hide();
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert('Server not Responding !!!');
+                        $("#showSpinner").hide();
+                    }
+                });
+
+            }
+            else {
+                alert("Please Select Address ");
+                return false;
+            }
+        });
+
+    }
+
+    function NewAddressAdd() {
+        $('#MyAddress').hide();
+        $('#divNewAddress').show();
+    }
+
+    function RemoveItemFromCart(pId) {
+        var mm = confirm('are you sure to remove this Item?');
+        if (mm) {
+            if (pId == '') {
+                return;
+            }
+            var dataobject = {
+                ProductId: pId,
+                IPAddress: null
+            };
+            $("#showSpinner").show();
+            $.ajax({
+                url: "@Url.Action("RemoveFromCart", "AddToCart")",
+                type: "POST",
+                data: dataobject,
+                datatype: "json",
+                success: function (data) {
+                    if (data == "1") {
+                        location.reload();
+                        $("#showSpinner").hide();
+                    }
+                    else {
+                        alert('Something went wrong!')
+                        $("#showSpinner").hide();
+                    }
+                },
+                error: function () {
+                    alert('Error!')
+                    $("#showSpinner").hide();
+                    //cart.add('69');
+                }
+            });
+        }
+        return;
+    }
+
+    function OpenPromoWindow() {
+        $('#divPromo').show();
+    }
+    function ClosePromoWindow() {
+        $('#txtPromoCode').val('');
+        $('#divPromo').hide();
+
+
+        CancelPromo();
+    }
+
+    function ApplyPromoCode() {
+        debugger;
+        if ($('#txtPromoCode').val() == '') {
+            alert('Please Enter Promocode !');
+            $('#txtPromoCode').focus();
+            return;
+        }
+        var dataobject = {
+            PromoCode: $('#txtPromoCode').val(),
+
+            Orderamount: (@Model.PaidAmount-@Model.deliverycharges),
+            //Orderamount: $('#spnTotalAmount').val(),
+
+
+        };
+        $.ajax({
+            type: "POST",
+            url: "/Checkout/GetPromoCode",
+            data: dataobject,
+            dataType: "json",
+            success: function (r) {
+                if (r.RespoCode == "1") {
+                    var TotalAmt = (@Model.PaidAmount-@Model.deliverycharges) != '' ? parseFloat(@Model.PaidAmount-@Model.deliverycharges) : 0;
+                    var deiverycharger = 0;
+                    deliverycharges = @Model.deliverycharges != '' ? parseFloat(@Model.deliverycharges) : 0;
+                    var PromoAmt = 0;
+                    if (r.OfferType == "Amount") {
+                        PromoAmt = r.DiscPer;
+                        $('#spnInfo').text("Rs." + r.DiscPer + " off.");
+                    }
+                    else {
+                        PromoAmt = (TotalAmt * r.DiscPer) / 100;
+                        $('#spnInfo').text("" + r.DiscPer + "% off.");
+                    }
+                    TotalAmt = TotalAmt - PromoAmt;
+
+                    TotalAmt = TotalAmt + deliverycharges;
+                    $("#divPromo").hide();
+                    $(".promo-link45").hide();
+                    $('#spnPromo').text(Math.round(PromoAmt.toFixed(2)));
+                    $('#spnTotalAmount').text(Math.round(TotalAmt.toFixed(2)));
+                    $('#divApplyPromo').show();
+                }
+                else {
+                    alert('Invalid Promocode.');
+                    var TotalAmt =@Model.PaidAmount != '' ? parseFloat(@Model.PaidAmount) : 0;
+                    $('#spnTotalAmount').text(Math.round(@Model.PaidAmount));
+                    $('#spnInfo').text('');
+                    $('#divApplyPromo').hide();
+                }
+            }
+        });
+
+    }
+
+    function CancelPromo() {
+        debugger;
+        var TotalAmt = $('#hdNetAmt').val() != '' ? parseFloat($('#hdNetAmt').val()) : 0;
+        $('#spnTotalAmount').text(Math.round(TotalAmt.toFixed(2)));
+        $('#spnInfo').text('');
+        $('#divApplyPromo').hide();
+        $("#divPromo").show();
+        $(".promo-link45").show();
+    }
+</script>
+<script>
+    var searchaddress = 'txtAddress';
+    $(document).ready(function () {
+        debugger;
+        var autocomplete;
+        autocomplete = new google.maps.places.Autocomplete((document.getElementById(searchaddress)), {
+            types: ['geocode'],
+            /*componentRestrictions: {
+             country: "USA"
+            }*/
+        });
+        google.maps.event.addListener(autocomplete, 'place_changed', function () {
+            var near_place = autocomplete.getPlace();
+        });
+    });
+</script>
+<style>
+    .spnAddress {
+        color: #f5762c;
+        font-weight: bold;
+        font-size: 15px;
+        margin-left: 126px;
+    }
+</style>
+
+<input type="hidden" id="mCode" value="@Session["mCode"]" />
+
+
+<div class="gambo-Breadcrumb">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="../WebHome/Index">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="all-product-grid">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-7">
+                <div id="checkout_wizard" class="checkout accordion left-chck145">
+                    <div class="checkout-step" hidden>
+                        <div class="checkout-card" id="headingOne">
+                            <span class="checkout-step-number">1</span>
+                            <h4 class="checkout-step-title">
+                                <button class="wizard-btn" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> Phone Number Verification</button>
+                            </h4>
+                        </div>
+                        <div id="collapseOne" class="collapse in show" data-parent="#checkout_wizard">
+                            <div class="checkout-step-body">
+                                <p>We need your phone number so we can inform you about any delay or problem.</p>
+                                <p class="phn145" id="btnMobInfo" style="display:none">6 digits code send to your phone <span>+91<span id="spnPhone">8437176189</span></span><a class="edit-no-btn hover-btn" data-toggle="collapse" href="#edit-number">Edit</a></p>
+                                <div id="edit-number">
+                                    <div class="row">
+                                        <div class="col-lg-8">
+                                            <div class="checkout-login">
+                                                <div class="login-phone">
+                                                    <input type="text" id="txtCode" class="form-control" placeholder="Phone Number">
+                                                </div>
+                                                <a class="chck-btn hover-btn" role="button" data-toggle="collapse" id="btnSendCode">Submit</a>
+                                            </div>
+                                            <div class="checkout-login" id="divPwd" style="display:none;margin-top: 13px;">
+                                                <div class="login-phone">
+                                                    <input type="password" id="txtPwd" style="padding-left:14px" class="form-control" placeholder="Password">
+                                                </div>
+                                                <a class="chck-btn hover-btn" role="button" data-toggle="collapse" id="btnSignIn">Sign In</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <script>
+                                    function moveCursor(fromTextBox, ToTextBox) {
+                                        debugger;
+                                        var length = $(fromTextBox).val().length;
+                                        var maxlength = 1;
+                                        if (length == maxlength) {
+                                            $("#" + ToTextBox).focus();
+                                        }
+                                    }
+                                </script>
+                                <div class="otp-verifaction collapse" id="ConfOTP">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="form-group mb-0">
+                                                <label class="control-label">Enter Code</label>
+                                                <input type="hidden" id="hdOTPNo" />
+                                                <ul class="code-alrt-inputs">
+                                                    <li>
+                                                        <input id="code1" name="number" type="text" placeholder="" class="form-control input-md" required="" onkeyup="moveCursor(this, 'code2')">
+                                                    </li>
+                                                    <li>
+                                                        <input id="code2" name="number" type="text" placeholder="" class="form-control input-md" required="" onkeyup="moveCursor(this, 'code3')">
+                                                    </li>
+                                                    <li>
+                                                        <input id="code3" name="number" type="text" placeholder="" class="form-control input-md" required="" onkeyup="moveCursor(this, 'code4')">
+                                                    </li>
+                                                    <li>
+                                                        <input id="code4" name="number" type="text" placeholder="" class="form-control input-md" required="" onkeyup="moveCursor(this, 'code5')">
+                                                    </li>
+                                                    <li>
+                                                        <input id="code5" name="number" type="text" placeholder="" class="form-control input-md" required="" onkeyup="moveCursor(this, 'code6')">
+                                                    </li>
+                                                    <li>
+                                                        <input id="code6" name="number" type="text" placeholder="" class="form-control input-md" required="">
+                                                    </li>
+                                                    <li>
+                                                        <a class="collapsed chck-btn hover-btn" role="button" data-toggle="collapse" data-parent="#checkout_wizard" id="btnVerifyOTP">Next</a>
+                                                    </li>
+                                                </ul>
+                                                <a href="#" class="resend-link">Resend Code</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="checkout-step">
+                        <div class="checkout-card" id="headingTwo">
+                            <span class="checkout-step-number">1</span>
+                            <h4 class="checkout-step-title">
+                                <button class="wizard-btn collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"> Delivery Address</button>
+                            </h4>
+                        </div>
+                        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#checkout_wizard">
+                            <div class="checkout-step-body">
+                                <div class="checout-address-step">
+                                    @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                                    {
+                                        int i = 0;
+                                        <div class="row" id="MyAddress">
+                                            @foreach (DataRow dr in Model.dt.Rows)
+                                            {
+                                                i++;
+                                                if (Convert.ToString(dr["IsDefaultAccount"]) == "Default")
+                                                {
+                                                    <input type="hidden" id="hdDefAddress" value="@dr["SrNo"]" />
+                                                    <div class="address-item" AddId="@dr["SrNo"]">
+                                                        <div class="address-icon1">
+                                                            <i class="uil uil-home-alt"></i>
+                                                        </div>
+                                                        <div class="address-dt-all">
+                                                            <h4>@dr["AddressType"] - <span style="color: #1868b5;font-weight: bold;">@dr["IsDefaultAccount"]</span></h4>
+                                                            <p>@dr["Name"]-@dr["compAdd"]  @dr["PinCode"] <br /> @dr["MobileNo"]</p>
+                                                            <ul class="action-btns" style="display:none">
+                                                                <li><a href="#" class="action-btn"><i class="uil uil-edit"></i></a></li>
+                                                                <li><a href="#" class="action-btn"><i class="uil uil-location-arrow"></i>View More Address</a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                <div id="addList" style="display:none">
+                                                    <div class="address-item" AddId="@dr["SrNo"]">
+                                                        <div class="address-icon1">
+                                                            <i class="uil uil-home-alt"></i>
+                                                        </div>
+                                                        <div class="address-dt-all">
+                                                            <h4>@dr["AddressType"] - <span style="color: #1868b5;font-weight: bold;" id="spnDefAddress" AddId="@dr["SrNo"]">@dr["IsDefaultAccount"]</span></h4>
+                                                            <p>@dr["Name"]-@dr["compAdd"]  @dr["PinCode"] <br /> @dr["MobileNo"]</p>
+                                                            <ul class="action-btns">
+                                                                <li><a href="#" class="action-btn"><i class="uil uil-edit"></i></a></li>
+                                                                <li><a href="#" class="action-btn"><i class="uil uil-trash-alt"></i></a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            <div class="col-lg-12 col-md-12 hrtag">
+                                                <div class="form-group">
+                                                    <div class="address-btns">
+                                                        <button class="save-btn14 hover-btn" onclick="NewAddressAdd()">Add New Address</button>
+                                                        <a class="collapsed ml-auto next-btn16 hover-btn" role="button" data-toggle="collapse" data-parent="#checkout_wizard" href="#collapseFour"> Next </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="row" id="divNewAddress" style="display:none">
+                                        <div class="col-lg-12">
+                                            <div class="form-group">
+                                                <div class="product-radio">
+                                                    <ul class="product-now">
+                                                        <li>
+                                                            <input type="radio" id="ad1" value="Home" name="address1" checked>
+                                                            <label for="ad1">Home</label>
+                                                        </li>
+                                                        <li>
+                                                            <input type="radio" id="ad2" value="Office" name="address1">
+                                                            <label for="ad2">Office</label>
+                                                        </li>
+                                                        <li>
+                                                            <input type="radio" id="ad3" value="Other" name="address1">
+                                                            <label for="ad3">Other</label>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <div class="address-fieldset">
+                                                <div class="row">
+                                                    <div class="col-lg-6 col-md-12">
+                                                        <div class="form-group">
+                                                            <label class="control-label">Name*</label>
+                                                            <input id="txtName" type="text" placeholder="Name" class="form-control input-md" required="">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-12">
+                                                        <div class="form-group">
+                                                            <label class="control-label">Mobile No*</label>
+                                                            <input id="txtMobileNo" type="text" placeholder="Mobile No" class="form-control input-md" required="">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12">
+                                                        <div class="form-group">
+                                                            <label class="control-label">Select Location</label>
+                                                            <input id="txtAddress" name="flat" type="text" placeholder="Address" class="form-control input-md" required="">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-12 col-md-12">
+                                                        <div class="form-group">
+                                                            <label class="control-label">Address</label>
+                                                            <input id="txtAddress2" name="flat" type="text" placeholder="Address" class="form-control input-md" required="">
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div class="col-lg-6 col-md-12">
+                                                        <div class="form-group">
+                                                            <label class="control-label">Pincode*</label>
+                                                            <input id="txtPinCode" name="pincode" type="text" placeholder="Pincode" class="form-control input-md" required="">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-12">
+                                                        <div class="form-group">
+                                                            <label class="control-label">City*</label>
+                                                            <input id="txtCityName" name="locality" type="text" placeholder="Enter City" class="form-control input-md" required="">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-12">
+                                                        <div class="form-group">
+                                                            <label class="control-label">State*</label>
+                                                            @Html.DropDownList("ddlState", (List<SelectListItem>)ViewBag.StateList, new { @id = "ddlState", @class = "form-control" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-12">
+                                                        <div class="form-group">
+                                                            <label class="control-label">Landmark (optional)</label>
+                                                            <input id="txtLandmark" name="txtLandmark" type="text" placeholder="Enter Landmark (optional)" class="form-control input-md">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-12">
+                                                        <div class="form-group">
+                                                            <label class="control-label">Alternate Mobile No. (optional)</label>
+                                                            <input id="Locality" name="txtAltMobileNo" type="text" placeholder="Enter Alternate Mobile No. (optional)" class="form-control input-md">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="address-btns">
+                                                                <button class="save-btn14 hover-btn" onclick="InsertDeliverAddress()">Save & Next</button>
+                                                                <a class="collapsed ml-auto next-btn16 hover-btn" role="button" data-toggle="collapse" data-parent="#checkout_wizard" href="#collapseFour"> Next </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="checkout-step" style="display:none">
+                        <div class="checkout-card" id="headingThree">
+                            <span class="checkout-step-number">3</span>
+                            <h4 class="checkout-step-title">
+                                <button class="wizard-btn collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree"> Delivery Time & Date </button>
+                            </h4>
+                        </div>
+                        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#checkout_wizard">
+                            <div class="checkout-step-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label">Select Date and Time*</label>
+                                            <div class="date-slider-group">
+                                                <div class="owl-carousel date-slider owl-theme">
+                                                    <div class="item">
+                                                        <div class="date-now">
+                                                            <input type="radio" id="dd1" name="address1" checked="">
+                                                            <label for="dd1">Today</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="item">
+                                                        <div class="date-now">
+                                                            <input type="radio" id="dd2" name="address1">
+                                                            <label for="dd2">Tomorrow</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="item">
+                                                        <div class="date-now">
+                                                            <input type="radio" id="dd3" name="address1">
+                                                            <label for="dd3">10 May 2020</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="item">
+                                                        <div class="date-now">
+                                                            <input type="radio" id="dd4" name="address1">
+                                                            <label for="dd4">11 May 2020</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="item">
+                                                        <div class="date-now">
+                                                            <input type="radio" id="dd5" name="address1">
+                                                            <label for="dd5">12 May 2020</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="item">
+                                                        <div class="date-now">
+                                                            <input type="radio" id="dd6" name="address1">
+                                                            <label for="dd6">13 May 2020</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="item">
+                                                        <div class="date-now">
+                                                            <input type="radio" id="dd7" name="address1">
+                                                            <label for="dd7">14 May 2020</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="item">
+                                                        <div class="date-now">
+                                                            <input type="radio" id="dd8" name="address1">
+                                                            <label for="dd8">15 May 2020</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="time-radio">
+                                                <div class="ui form">
+                                                    <div class="grouped fields">
+                                                        <div class="field">
+                                                            <div class="ui radio checkbox chck-rdio">
+                                                                <input type="radio" name="fruit" checked="" tabindex="0" class="hidden">
+                                                                <label>8.00AM - 10.00AM</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="field">
+                                                            <div class="ui radio checkbox chck-rdio">
+                                                                <input type="radio" name="fruit" tabindex="0" class="hidden">
+                                                                <label>10.00AM - 12.00PM</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="field">
+                                                            <div class="ui radio checkbox chck-rdio">
+                                                                <input type="radio" name="fruit" tabindex="0" class="hidden">
+                                                                <label>12.00PM - 2.00PM</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="field">
+                                                            <div class="ui radio checkbox chck-rdio">
+                                                                <input type="radio" name="fruit" tabindex="0" class="hidden">
+                                                                <label>2.00PM - 4.00PM</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="field">
+                                                            <div class="ui radio checkbox chck-rdio">
+                                                                <input type="radio" name="fruit" tabindex="0" class="hidden">
+                                                                <label>4.00PM - 6.00PM</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a class="collapsed next-btn16 hover-btn" role="button" data-toggle="collapse" href="#collapseFour"> Proccess to payment </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="checkout-step">
+                        <div class="checkout-card" id="headingFour">
+                            <span class="checkout-step-number">2</span>
+                            <h4 class="checkout-step-title">
+                                <button class="wizard-btn collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">Payment</button>
+                            </h4>
+                        </div>
+                        <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#checkout_wizard">
+                            <div class="checkout-step-body">
+                                <div class="payment_method-checkout">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="rpt100">
+                                                <ul class="radio--group-inline-container_1">
+                                                    <li>
+                                                        <div class="radio-item_1">
+                                                            <input id="cashondelivery1" value="COD" name="paymentmethod" type="radio" data-minimum="50.0" onchange="PayMode('COD')">
+                                                            <label for="cashondelivery1" class="radio-label_1">Cash on Delivery</label>
+                                                        </div>
+                                                    </li>
+                                                    @*<li>
+    <div class="radio-item_1">
+        <input id="card1" value="Online" name="paymentmethod" type="radio" data-minimum="50.0" onchange="PayMode('Online')">
+        <label for="card1" class="radio-label_1">Credit / Debit Card</label>
+    </div>
+    </li>*@
+                                                    @*<li>
+                                                        <div class="radio-item_1">
+                                                            <input id="rdo_Paytm" value="Paytm " name="paymentmethod" type="radio" data-minimum="50.0" onchange="PayMode('Paytm')">
+                                                            <label for="rdo_Paytm" class="radio-label_1">Paytm</label>
+                                                        </div>
+                                                    </li>*@
+                                                </ul>
+                                            </div>
+
+                                            <div class="form-group return-departure-dts" data-method="cashondelivery1">
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                        <div class="pymnt_title">
+                                                            <h4>Cash on Delivery</h4>
+                                                            <p>Cash on Delivery will not be available if your order value exceeds &#8377;10.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="form-group return-departure-dts" data-method="card1">
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                        <div class="pymnt_title mb-4">
+                                                            <h4>Credit / Debit Card</h4>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group mt-1">
+                                                            <label class="control-label">Holder Name*</label>
+                                                            <div class="ui search focus">
+                                                                <div class="ui left icon input swdh11 swdh19">
+                                                                    <input class="prompt srch_explore" type="text" name="holdername" value="" id="holder[name]" required="" maxlength="64" placeholder="Holder Name">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group mt-1">
+                                                            <label class="control-label">Card Number*</label>
+                                                            <div class="ui search focus">
+                                                                <div class="ui left icon input swdh11 swdh19">
+                                                                    <input class="prompt srch_explore" type="text" name="cardnumber" value="" id="card[number]" required="" maxlength="64" placeholder="Card Number">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4">
+                                                        <div class="form-group mt-1">
+                                                            <label class="control-label">Expiration Month*</label>
+                                                            <select class="ui fluid search dropdown form-dropdown" name="card[expire-month]">
+                                                                <option value="">Month</option>
+                                                                <option value="1">January</option>
+                                                                <option value="2">February</option>
+                                                                <option value="3">March</option>
+                                                                <option value="4">April</option>
+                                                                <option value="5">May</option>
+                                                                <option value="6">June</option>
+                                                                <option value="7">July</option>
+                                                                <option value="8">August</option>
+                                                                <option value="9">September</option>
+                                                                <option value="10">October</option>
+                                                                <option value="11">November</option>
+                                                                <option value="12">December</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div class="col-lg-4">
+                                                        <div class="form-group mt-1">
+                                                            <label class="control-label">Expiration Year*</label>
+                                                            <div class="ui search focus">
+                                                                <div class="ui left icon input swdh11 swdh19">
+                                                                    <input class="prompt srch_explore" type="text" name="card[expire-year]" maxlength="4" placeholder="Year">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <div class="form-group mt-1">
+                                                            <label class="control-label">CVV*</label>
+                                                            <div class="ui search focus">
+                                                                <div class="ui left icon input swdh11 swdh19">
+                                                                    <input class="prompt srch_explore" name="card[cvc]" maxlength="3" placeholder="CVV">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <a href="javascript:void(0);" class="next-btn16 hover-btn" id="btnPlaceOrder">Place Order</a>
+
+                                            @*<div class="col-sm-12">
+                                                <div id="qrcode" style="display:none">
+                                                    <img src="~/img/qrcode.jpeg" style="height:450px;" />
+                                                </div>
+                                            </div>*@
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-5">
+                <div class="pdpt-bg mt-0">
+                    <div class="pdpt-title">
+                        <h4>Order Summary</h4>
+                    </div>
+                    <div class="right-cart-dt-body" id="divItemSummary">
+                        @if (Model.dt2 != null && Model.dt2.Rows.Count > 0)
+                        {
+                            foreach (DataRow dr in Model.dt2.Rows)
+                            {
+ <div class="cart-item border_radius" ProductId="@dr["ProductCode"]" UnitRate="@dr["salevalue"]" RegRate="@dr["RegularPrice"]" varId="@dr["varId"]"gstamount="@dr["GstAmount"]" GSTRate="@dr["GSTRate"]" color="@dr["ColorName"]" sizename="@dr["SizeName"]">
+                                    <div class="cart-product-img" style="">
+                                        <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]">
+
+
+                                        @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                        {
+                                            <div class="offer-badge">@dr["Discper"]% OFF</div>
+                                        }
+                                    </div>
+                                    <div class="cart-text">
+                                        <h4>@dr["pName"]</h4>
+                                        @if (Convert.ToString(dr["VarriationName"]) != "")
+                                        {
+                                            <div class="cart-radio">
+                                                <ul class="kggrm-now">
+                                                    <li>
+                                                        <input type="radio" id="1" name="cart1" disabled>
+                                                        <label for="1" style="background-color:#f55d2c">@dr["VarriationName"]</label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        }
+                                        <div class="cart-item-SizeColor">
+                                            @if (Convert.ToString(dr["ColorName"]) != "")
+                                            {
+                                                @*<input type="button" disabled value="@dr["ColorName"]" style="background-color:@dr["ColorName"]" />*@
+                                                <p style="color:blue">Color : @dr["ColorName"] </p>
+                                            }
+                                            @if (Convert.ToString(dr["SizeName"]) != "")
+                                            {
+                                                <p style="color:blue">size : @dr["SizeName"] </p>
+                                            }
+                                        </div>
+                                        <div class="cart-item-price">
+                                            @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                            {
+                                                <span>&#8377;@dr["SalePrice"] </span>
+                                                <label>&#8377;<label id="saleprice">@dr["salevalue"]</label></label>
+
+                                            }
+                                            else
+                                            {
+                                                <label>&#8377;<label id="saleprice">@dr["salevalue"]</label></label>
+
+                                            }
+
+
+
+                                        </div><br />
+                                        <div class="cart-item-price">
+
+
+
+                                            @*<input  name="GstAmount" value="@Model.gstamount" class="input-text qty text qty1 ">*@
+
+                                        </div><br />
+                                        <div class="cart-item-price">
+                                            <div class="qty-cart">
+                                                <div class="quantity buttons_added">
+                                                    @*<input type="button" value="-" class="minus minus-btn" onclick="UpdateTableQty(this,'D')">*@
+                                                    @if (!string.IsNullOrEmpty(Model.productQty))
+                                                    {
+                                                        <input type="number" step="1" name="quantity" value="@Model.productQty" class="input-text qty text qty1 ">
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="number" step="1" name="quantity" value="@dr["Quantity"]" class="input-text qty text qty1 ">
+                                                    }
+
+                                                    @*<input type="button" value="+" class="plus plus-btn" onclick="UpdateTableQty(this,'A')">*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @if (string.IsNullOrEmpty(Model.productQty))
+                                        {
+                                            <button type="button" class="cart-close-btn" onclick="RemoveItemFromCart(@dr["CartListID"])"><i class="uil uil-multiply"></i></button>
+                                        }
+                                    </div>
+
+
+
+
+
+
+                                </div>
+                            }
+                        }
+                    </div>
+
+
+
+                    <div class="total-checkout-group">
+                        <div class="cart-total-dil">
+                            <h4>Sub Total</h4>
+                            <span>&#8377;<span id="spnsubtotal">@Model.NetTotal</span></span>
+                        </div>
+                        <div class="cart-total-dil pt-3">
+                            <h4>Delivery Charges</h4>
+                            <span>&#8377;<span id="spnDelCharges">@Model.deliverycharges</span></span>
+                        </div>
+                        <div class="cart-total-dil pt-3">
+                            <h4>Gst Amount</h4>
+                            <span>&#8377;<span id="spnGstCharges">@Model.gstamount</span></span>
+                        </div>
+                    </div>
+
+                    <div class="cart-total-dil saving-total" style="background-color:#3cea315e;display:none" id="divApplyPromo">
+                        <h4>
+                            Promocode applied.<br />
+                            <a href="javascript:void(0);" style="font-size:14px" onclick="ClosePromoWindow()">Remove</a>
+                            <span id="spnInfo"></span>
+                        </h4>
+                        <span>&#8377;<span id="spnPromo">0.00</span></span>
+                    </div>
+
+
+
+
+
+                    <div class="main-total-cart">
+                        <h2> Payable Amount</h2>
+                        <span>&#8377;<span id="spnTotalAmount">@Math.Round(Model.PaidAmount)</span></span>
+                        <input type="hidden" id="hdNetAmt" value="@Math.Round(Model.PaidAmount)" />
+                    </div>
+                    <div class="payment-secure">
+                        <i class="uil uil-padlock"></i>Secure checkout
+                    </div>
+                </div>
+                <a href="javascript:void(0);" onclick="OpenPromoWindow()" class="promo-link45">Have a promocode?</a>
+                <div class="checkout-safety-alerts" id="divPromo" style="display:none">
+                    <div class="checkout-login" style="padding: 11px;">
+                        <div class="login-phone">
+                            <input type="text" id="txtPromoCode" style="padding-left: 19px;" class="form-control" placeholder="Enter Promocode">
+                        </div>
+                        <a class="chck-btn hover-btn" role="button" data-toggle="collapse" id="btSendPromo" onclick="ApplyPromoCode()">Submit</a>
+                        <a href="javascript:void(0);" onclick="ClosePromoWindow()" id="btnCancelPromo">Cancel</a>
+                    </div>
+                </div>
+                @if (Model.dtcombooffer != null && Model.dtcombooffer.Rows.Count > 0)
+                {
+                    <hr />
+
+                    <div class="pdpt-title">
+                        <h4>Free Item</h4>
+                    </div>
+
+
+
+                    <div class="right-cart-dt-body" id="divFreeItemSummary">
+
+                        @foreach (DataRow dr in Model.dtcombooffer.Rows)
+                        {
+                            <div class="cart-item FreeComboProduct" ProductId="@dr["ProductCode"]" varId="@dr["VariationCode"]" qty="@dr["Quantity"]">
+                                <div class="cart-product-img" style="">
+                                    <img src="@dr["PorductImage"]" alt="@dr["ProductName"]">
+
+                                </div>
+                                <div class="cart-text">
+                                    <h4>@dr["ProductName"]</h4>
+                                    <br />
+                                    <div class="cart-item-price">
+                                        <div class="qty-cart">
+                                            <div class="quantity buttons_added">
+                                                <input type="number" step="1" name="quantity2" value="@dr["Quantity"]" class="input-text qty text  ">
+                                                @*<input type="button" value="+" class="plus plus-btn" onclick="UpdateTableQty(this,'A')">*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+
+
+                <div class="checkout-safety-alerts">
+                    <p><i class="uil uil-sync"></i>100% Replacement Guarantee</p>
+                    <p><i class="uil uil-check-square"></i>100% Genuine Products</p>
+                    <p><i class="uil uil-shield-check"></i>Secure Payments</p>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.dt1 != null && Model.dt1.Rows.Count > 0)
+        {
+            <div class="section145">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="main-title-tt">
+                                <div class="main-title-left">
+                                    <span>For You</span>
+                                    <h2>More Like This</h2>
+                                </div>
+                                <a href="#" class="see-more-btn" style="display:block">See All</a>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="owl-carousel featured-slider owl-theme">
+                                @foreach (DataRow dr in Model.dt1.Rows)
+                                {
+                                    <div class="item">
+                                        <div class="product-item">
+                                            <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" class="product-img">
+                                                <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]">
+                                                <div class="product-absolute-options">
+                                                    @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                                    {
+                                                        <span class="offer-badge-1">@dr["Discper"]% off</span>
+                                                    }
+                                                    <span class="like-icon" title="wishlist" style="display:none"></span>
+                                                </div>
+                                            </a>
+                                            <div class="product-text-dt">
+                                                <p>Available<span>(In Stock)</span></p>
+                                                <h4>@dr["pName"]</h4>
+                                                <div class="product-price">
+                                                    &#8377;@dr["SalePrice"]
+                                                    @if (Convert.ToDecimal(dr["RegularPrice"]) > Convert.ToDecimal(dr["SalePrice"]))
+                                                    {
+                                                        <span>&#8377;@dr["RegularPrice"]</span>
+                                                    }
+                                                </div>
+                                                <div class="qty-cart">
+                                                    <div class="quantity buttons_added">
+                                                        <input type="button" value="-" class="minus minus-btn">
+                                                        <input type="number" step="1" name="quantity" value="1" class="input-text qty text">
+                                                        <input type="button" value="+" class="plus plus-btn">
+                                                    </div>
+                                                    <span class="cart-icon"><i class="uil uil-shopping-cart-alt"></i></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
