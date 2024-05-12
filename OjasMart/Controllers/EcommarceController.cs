@@ -1461,51 +1461,27 @@ namespace OjasMart.Controllers
         }
 
         [ValidateInput(false)]
-        public JsonResult UpdateProductDetails(PropertyClass p)
+        public JsonResult UpdateProductDetails(PropertyClass p, string MainImage, string fumultiFile)
         {
             try
             {
                 DataTable dt = new DataTable();
                 dt.Columns.Add("ImageUrl");
 
-                if (Request.Files.Count > 0)
+
+                if (MainImage != null)
                 {
-                    HttpPostedFileBase mainPic = Request.Files[0];
-                    string fileExt = Path.GetExtension(mainPic.FileName);
-                    var fileName = Path.GetFileName(mainPic.FileName);
-                    string fName = DateTime.Now.Ticks + fileExt;
-                    string fname = DateTime.Today.ToString("ddmmyyyy") + "_" + new Random().Next() + Path.GetRandomFileName();
-
-                    string ImagePathThumb = String.Format("/productImagesThumble/{0}{1}", fname, fileExt);
-                    string ImagePath1 = String.Format("/productImages/{0}{1}", fname, fileExt);
-                    using (var img = System.Drawing.Image.FromStream(mainPic.InputStream))
-                    {
-                        SaveToFolder(img, fileName, fileExt, new Size(300, 300), ImagePathThumb);
-                        SaveToFolder(img, fileName, fileExt, new Size(600, 600), ImagePath1);
-                    }
-                    string myfile = fname + fileExt;
-                    p.Url = myfile;
+                    p.Url = MainImage;
                 }
-                HttpFileCollectionBase files = Request.Files;
-                for (int i = 0; i < files.Count; i++)
+
+                string[] multipleFiles = fumultiFile.Split(',');
+
+
+                foreach (string columnName in multipleFiles)
                 {
-                    HttpPostedFileBase file = files[i];
-
-                    string fileExt = Path.GetExtension(file.FileName);
-                    var fileName = Path.GetFileName(file.FileName);
-                    string fName = DateTime.Now.Ticks + fileExt;
-                    string fname = DateTime.Today.ToString("ddmmyyyy") + "_" + new Random().Next() + Path.GetRandomFileName();
-
-                    string ImagePathThumb = String.Format("/productImagesThumble/{0}{1}", fname, fileExt);
-                    string ImagePath1 = String.Format("/productImages/{0}{1}", fname, fileExt);
-                    using (var img = System.Drawing.Image.FromStream(file.InputStream))
-                    {
-                        SaveToFolder(img, fileName, fileExt, new Size(300, 300), ImagePathThumb);
-                        SaveToFolder(img, fileName, fileExt, new Size(600, 600), ImagePath1);
-                    }
-                    string myfile = fname + fileExt;
-                    dt.Rows.Add(myfile);
+                    dt.Rows.Add(columnName);
                 }
+
                 p.Action = "1";
                 p.CompanyCode = Convert.ToString(Session["CompanyCode"]);
                 p.SSCode = Convert.ToString(Session["UserName"]);

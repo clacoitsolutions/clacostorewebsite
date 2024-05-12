@@ -4,6 +4,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @using System.Data;
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 <script>
     $(document).ready(function () {
 
@@ -57,7 +60,7 @@
             if ($('#hdBrand').val() != '') {
             $('#ddlBrand').val($('#hdBrand').val()).trigger('change');
             }
-        
+
             if ($('#hdUOM').val() != '') {
             $('#ddlUOM').val($('#hdUOM').val()).trigger('change');
             }
@@ -217,7 +220,7 @@
 
 
     function InsertProductDetails() {
-            debugger;
+
             var username = '@Request.RequestContext.HttpContext.Session["UserName"]';
             if (username == '') {
                 window.location.href = '../account/index';
@@ -332,10 +335,24 @@
         });
 
 
-        var Imagefile = $("#fuMainFile").get(0).files;
-        var Images = $("#fumultiFile").get(0).files;
-        var data = new FormData;
-        data.append("MainImage", Imagefile[0]);
+
+        var fileInput = document.getElementById('fuMainFile');
+        var file = fileInput.files[0];
+
+        var filesList = document.getElementById('fumultiFile').files;
+        var files = Array.from(filesList);
+
+        if (files.length > 0) {
+            uploadMultipleFilesToFirebase(files)
+                .then(function (downloadURLs) {
+                    var data = new FormData();
+                    console.log(downloadURLs);
+                    data.append("fumultiFile", downloadURLs);
+
+                    // Data is available here
+                    uploadFileToFirebaseStorage(file)
+                        .then(function (downloadURL) {
+                            data.append("MainImage", downloadURL);
 
         data.append("GroupCode", $("#ddlItemGroup").val());
         data.append("ItemCode", $("#hdItemCode").val());
@@ -365,22 +382,13 @@
         data.append("Purchase_taxIncludeExclude", PurchasetaxInclude);
         data.append("Sale_taxIncludeExclude", SaletaxInclude);
         data.append("HSNCode", $("#txtHSNCode").val());
-        data.append("Manufacturerid", $("#ddlBrand").val()); 
+        data.append("Manufacturerid", $("#ddlBrand").val());
         data.append("UOM", $("#ddlUOM").val());
         data.append("Dailydeal", $("#Dailydeal").val());
         data.append("LowStockAlert", $("#txtLowStockAlert").val() != '' ? parseFloat($("#txtLowStockAlert").val()) : 0);
 
         data.append("Taxtype11", $("#taxtype").val());
         data.append("GstAmt", $("#txttaxamount").val() != "" ? parseFloat($("#txttaxamount").val()) : 0);
-
-
-
-        var files = $("#fumultiFile").get(0).files;
-        for (var i = 0; i < files.length; i++) {
-            data.append("fumultiFile", files[i]);
-        }
-
-
 
         $("#showSpinner").show();
         $.ajax({
@@ -405,6 +413,19 @@
                 $("#showSpinner").hide();
             }
         });
+                        })
+                        .catch(function (error) {
+                            console.error(error);
+                            alert('Error occurred while uploading image.');
+                        });
+
+                })
+                .catch(function (error) {
+                    console.error('Error:', error);
+                });
+        } else {
+            console.error('No files selected.');
+        }
     }
 
     function ChangepType() {
@@ -922,58 +943,58 @@
             </div>
         </div>
         @*< !--end col-->*@
-    <div class="card-box">
-        <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Inventory Details</h5>
-        <div class="form-group mb-3">
-            <div class="row">
-                <div class="col-md-6">
-                    <label for="product-meta-keywords">HSN Code</label>
-                    <input type="text" class="form-control" id="txtHSNCode" value="@Model.HSNCode" placeholder="Enter HSN Code">
-                </div>
-                <div class="col-md-6">
-                    <label for="product-meta-keywords">Manufacturer</label>
-                    @Html.DropDownList("ddlBrand", (List<SelectListItem>)ViewBag.BrandList, new { @id = "ddlBrand", @class = "form-control" })
+        <div class="card-box">
+            <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Inventory Details</h5>
+            <div class="form-group mb-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="product-meta-keywords">HSN Code</label>
+                        <input type="text" class="form-control" id="txtHSNCode" value="@Model.HSNCode" placeholder="Enter HSN Code">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="product-meta-keywords">Manufacturer</label>
+                        @Html.DropDownList("ddlBrand", (List<SelectListItem>)ViewBag.BrandList, new { @id = "ddlBrand", @class = "form-control" })
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="form-group mb-3" id="">
-            <div class="row">
-                <div class="col-md-6">
-                    <label for="product-meta-keywords">Daily Deal</label>
-                    @Html.DropDownList("Dailydeal", (List<SelectListItem>)ViewBag.Dailydeal, new { @id = "Dailydeal", @class = "form-control" })
+            <div class="form-group mb-3" id="">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="product-meta-keywords">Daily Deal</label>
+                        @Html.DropDownList("Dailydeal", (List<SelectListItem>)ViewBag.Dailydeal, new { @id = "Dailydeal", @class = "form-control" })
+                    </div>
+                    @*<div class="col-md-6" style="display:none;">
+                            <label for="product-meta-keywords">Low Stock Alert</label>
+                            <input type="text" class="form-control allownumericwithdecimal" id="txtLowStockAlert" value="@Model.Dailydeal" placeholder="0">
+                        </div>*@
                 </div>
-                @*<div class="col-md-6" style="display:none;">
-                    <label for="product-meta-keywords">Low Stock Alert</label>
-                    <input type="text" class="form-control allownumericwithdecimal" id="txtLowStockAlert" value="@Model.Dailydeal" placeholder="0">
-                </div>*@
             </div>
-        </div>
-        <div class="form-group mb-3" id="divInQty">
+            <div class="form-group mb-3" id="divInQty">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="product-meta-keywords">UOM</label>
+                        @Html.DropDownList("ddlUOM", (List<SelectListItem>)ViewBag.UOMList, new { @id = "ddlUOM", @class = "form-control" })
+                    </div>
+                    <div class="col-md-6" style="display:none;">
+                        <label for="product-meta-keywords">Low Stock Alert</label>
+                        <input type="text" class="form-control allownumericwithdecimal" id="txtLowStockAlert" value="@Model.LowStockAlert" placeholder="0">
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
-                <div class="col-md-6">
-                    <label for="product-meta-keywords">UOM</label>
-                    @Html.DropDownList("ddlUOM", (List<SelectListItem>)ViewBag.UOMList, new { @id = "ddlUOM", @class = "form-control" })
+                <div class="col-md-6" style="display:none;">
+                    <label for="product-meta-keywords">GST Rate</label>
+                    <input type="text" class="form-control allownumericwithdecimal" id="txtgstRate" value="@Model.GSTPer" placeholder="0">
                 </div>
                 <div class="col-md-6" style="display:none;">
-                    <label for="product-meta-keywords">Low Stock Alert</label>
-                    <input type="text" class="form-control allownumericwithdecimal" id="txtLowStockAlert" value="@Model.LowStockAlert" placeholder="0">
+                    <label for="product-meta-keywords">Cess Rate</label>
+                    <input type="text" class="form-control allownumericwithdecimal" id="txtCessRate" value="@Model.CessRate" placeholder="0">
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-md-6" style="display:none;">
-                <label for="product-meta-keywords">GST Rate</label>
-                <input type="text" class="form-control allownumericwithdecimal" id="txtgstRate" value="@Model.GSTPer" placeholder="0">
-            </div>
-            <div class="col-md-6" style="display:none;">
-                <label for="product-meta-keywords">Cess Rate</label>
-                <input type="text" class="form-control allownumericwithdecimal" id="txtCessRate" value="@Model.CessRate" placeholder="0">
-            </div>
-        </div>
-
-        @Html.HiddenFor(model => model.ProductVariationsDetails)
-    </div> <!-- end card-box -->
+            @Html.HiddenFor(model => model.ProductVariationsDetails)
+        </div> <!-- end card-box -->
     </div> <!-- end col-->
 </div>
 @if (Model != null && Model.dt01 != null)
@@ -1153,6 +1174,97 @@
     //        $("#tblAttList tfoot").html(Html);
     //    }
     //})
+
+
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+        apiKey: "AIzaSyCz22UHSeOXoKQJVmRUQACJZEoh_guEP-w",
+        authDomain: "clacostore-7303d.firebaseapp.com",
+        projectId: "clacostore-7303d",
+        storageBucket: "clacostore-7303d.appspot.com",
+        messagingSenderId: "811975379858",
+        appId: "1:811975379858:web:4d7a818a2ee24984c3cf4b",
+        measurementId: "G-TK8PFFV7VW"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const storage = firebase.storage();
+
+
+    function uploadFileToFirebaseStorage(file) {
+
+        return new Promise((resolve, reject) => {
+            const storageRef = firebase.storage().ref();
+            const fileRef = storageRef.child('product_image/' + file.name);
+
+
+            fileRef.put(file).then(snapshot => {
+
+                snapshot.ref.getDownloadURL().then(downloadURL => {
+
+                    resolve(downloadURL);
+                }).catch(error => {
+
+                    reject(error);
+                });
+            }).catch(error => {
+
+                reject(error);
+            });
+        });
+    }
+
+
+    //new
+    function uploadMultipleFilesToFirebase(files) {
+        return new Promise((resolve, reject) => {
+            const uploadPromises = [];
+            const downloadURLs = [];
+
+            // Iterate over each file and upload it to Firebase Storage
+            Array.from(files).forEach(file => {
+                const storageRef = firebase.storage().ref();
+                const fileRef = storageRef.child('product_image/' + file.name);
+
+                // Start the upload process for each file
+                const uploadTask = fileRef.put(file);
+
+                // Push the upload task promise into an array
+                uploadPromises.push(
+                    new Promise((resolve, reject) => {
+                        uploadTask.on('state_changed',
+                            null,
+                            error => {
+                                // Reject the promise if an error occurs during upload
+                                reject(error);
+                            },
+                            () => {
+                                // Resolve the promise with the download URL once upload is complete
+                                uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+                                    downloadURLs.push(downloadURL);
+                                    resolve(); // Resolve the promise once URL is pushed
+                                }).catch(error => {
+                                    reject(error);
+                                });
+                            }
+                        );
+                    })
+                );
+            });
+
+            // Wait for all upload promises to resolve
+            Promise.all(uploadPromises)
+                .then(() => {
+                    // Resolve with all download URLs once all files are uploaded
+                    resolve(downloadURLs);
+                })
+                .catch(error => {
+                    // Reject if any upload promise fails
+                    reject(error);
+                });
+        });
+    }
 
 </script>
 
