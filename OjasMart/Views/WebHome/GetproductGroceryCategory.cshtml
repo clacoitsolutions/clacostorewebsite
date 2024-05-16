@@ -2,7 +2,37 @@
 @using System.Data;
 @using OjasMart.Models;
 
-<!---product design for mobile view-->
+<script>
+    function AddItemInCartSingle() {
+        debugger;
+        var AttrId = null;
+        var varId = null;
+        var SizeId = null;
+        var color = null;
+        var pId = $('#hdProductId').val();
+        var Qty = $('#proQty').val();
+
+        if ($("#hdnproducttype").val() != "Simple Product" && $("#hdnfashiontype").val() == "True") {
+            AttrId = 1;
+            /*   $('ul#switcher23').find('li.active').val();*/
+            var SizeId = $('ul#switcher23').find('li.active').attr('value');
+        }
+        else if ($("#hdnproducttype").val() != "Simple Product" && $("#hdnfashiontype").val() == "False") {
+            AttrId = $('input[name="option"]:checked').attr("attrId");
+            varId = $('input[name="option"]:checked').attr("varId");
+
+        }
+        else {
+
+        }
+
+        var color = $("#switcher").find('li[class=active]').attr('value');
+        if (SizeId == null) {
+            var SizeId = $("#switcher23").find('li[class=active]').attr('value')
+        }
+        AdditemToCart(pId, Qty, AttrId, varId, SizeId, color);
+    }
+</script>
 <style>
     .cts {
         display: none;
@@ -10,6 +40,13 @@
 
     #ct {
         display: none;
+    }
+
+    .productimg {
+        display: block !important;
+        width: 40% !important;
+        height: 150px !important;
+        margin: 10% 30% !important;
     }
 
 
@@ -27,10 +64,6 @@
         .product-item {
             height: 400px;
             width: 180px;
-        }
-
-        .occ {
-            display: none;
         }
     }
 </style>
@@ -187,254 +220,269 @@
 
 @if (Model.dtCatProduct != null && Model.dtCatProduct.Rows.Count > 0)
 {
-    <div class="col-md-12 occ">
-        <div class="owl-carousel featured-slider owl-theme">
-            @foreach (DataRow dr in Model.dtCatProduct.Rows)
-            {
-                <div class="item" id="sdo">
-                    <div class="product-item">
-                        @if (Convert.ToString(dr["ProductType"]) == "Attribute Product")
-                        {
-                            <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]&&VarId=@dr["VarId"]" target="_blank" class="product-img" style="left:0px;">
-                                <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]">
-                                @*<div class="product-absolute-options">
-                                        @if (Convert.ToDecimal(dr["Discper"]) > 0)
-                                        {
-                                            <span class="offer-badge-1">@dr["Discper"]% off</span>
-                                        }
-                                        <span class="like-icon" title="wishlist" onclick="AddToWhishlist()"></span>
-                                    </div>*@
-                            </a>
-                        }
-                        else
-                        {
-                            <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" target="_blank" class="product-img">
-                                <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]">
-                                <div class="product-absolute-options">
+    <div class="row">
+        <div class="col-md-12 occ">
+            <div class="owl-carousel featured-slider owl-theme">
+                @foreach (DataRow dr in Model.dtCatProduct.Rows)
+                {
+                    <div class="col-sm-2">
+                        <div class="card product-item" style="width: 18rem;height:350px" id="sdo">
+                            @if (Convert.ToString(dr["ProductType"]) == "Attribute Product")
+                            {
+                                <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]&&VarId=@dr["VarId"]" target="_blank" class="productimg" style="left:0px;">
+                                    <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]">
+                                    @*<div class="product-absolute-options">
+                                            @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                            {
+                                                <span class="offer-badge-1">@dr["Discper"]% off</span>
+                                            }
+                                            <span class="like-icon" title="wishlist" onclick="AddToWhishlist()"></span>
+                                        </div>*@
+                                </a>
+                            }
+                            else
+                            {
+                                <div class="row" style="height:150px">
+                                    <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" target="_blank" class="productimg">
+                                        <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]">
+                                        <div class="product-absolute-options">
 
-                                    <span class="like-icon" title="wishlist" onclick="AddToWhishlist('@dr["ProductCode"]')"></span>
+                                            <span class="like-icon" title="wishlist" onclick="AddToWhishlist('@dr["ProductCode"]')"></span>
+                                        </div>
+                                    </a>
                                 </div>
-                            </a>
-                        }
-                        <div class="product-text-dt">
-                            <p>Available<span>(In Stock)</span></p>
-                            <h4>@dr["pName"]</h4>
-                            <div class="product-price">
+                            }
+                            <div class="card-body">
+                                <p class="card-title">Available (in stock)</p>
+                                @*<p style="color:#a59b9a">Fresh</p>*@
+                                <p class="card-text" style="font-size:17px;font-weight:bold;">
+                                    @dr["pName"]
+                                </p>
 
+
+
+                                <br />
+
+                                <div class="product-price">
+
+                                    <div class="row" style="width:100%;">
+                                        <div class="col-mb-12" style="display: flex; width: 100%; justify-content:space-between;">
+                                            <div style="float: left!important;font-size:15px;padding:0px 20px">
+
+
+
+                                                @if (Convert.ToDecimal(dr["Discper"]) > 0)
+                                                {
+
+                                                    <span class="regularprice">&#8377;@dr["RegularPrice"] &nbsp; &nbsp;</span>
+                                                    <label class="salepice">
+                                                        &#8377; @dr["SaleValue"]
+                                                    </label>
+                                                }
+                                                else
+                                                {
+                                                    if (Convert.ToDecimal(dr["RegularPrice"]) == Convert.ToDecimal(dr["SaleValue"]))
+                                                    {
+                                                        <label class="salepice">
+                                                            &#8377;@dr["SaleValue"]
+                                                        </label>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="regularprice">&#8377;@dr["RegularPrice"] &nbsp; &nbsp;</span>
+                                                        <label class="salepice">
+                                                            &#8377; @dr["SaleValue"]
+                                                        </label>
+                                                    }
+                                                }
+
+
+                                                @*else if (!string.IsNullOrEmpty(Convert.ToString(dr["VarId"])))
+                                                    {
+                                                        @Html.Action("VariationPrice", "ProductDetail", new { VariationId = dr["VarId"], discount = dr["Discper"] })
+                                                    }*@
+
+                                                @if (Convert.ToString(dr["ProductType"]) == "Attribute Product")
+                                                {
+                                                    LogicClass objL = new LogicClass();
+                                                    DataTable dt = objL.Proc_GetProductDetail_Varaiation(Convert.ToString(dr["ProductCode"]), "Proc_GetProductDetail_Varaiation");
+                                                    if (dt != null && dt.Rows.Count > 0)
+                                                    {
+                                                        <div>
+                                                            <select class="form-control ddl_PVariation sp_@dr["ProductCode"]">
+                                                                @foreach (DataRow drvariation in dt.Rows)
+                                                                {
+                                                                    <option value="@drvariation["VarId"]" RegularPrice="@drvariation["RegularPrice"]" SalePrice="@drvariation["SalePrice"]"> @drvariation["VarriationName"]</option>
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    @*<div class="form-control" style="border: none;"> </div>*@
+                                                }
+                                            </div>
+                                            <div style="float:right!important;">
+                                                <button style="float:right;border:1px solid #Fa2365;color:black!important;" class="btn btn-light" onclick="AddItemInCartSingle()">Add </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="display:none">
+                                    <select style="width:67%">
+                                        <option>Select</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
                                 @if (Convert.ToDecimal(dr["Discper"]) > 0)
                                 {
-
-                                    <span class="regularprice">&#8377;@dr["RegularPrice"] &nbsp; &nbsp;</span>
-                                    <label class="salepice">
-                                        &#8377; @dr["SaleValue"]
-                                    </label>
+                                    <span class="ttp" style="position:absolute;right:5%; color:green; bottom:7%!important;">@dr["Discper"]% off</span>
                                 }
-                                else
-                                {
-                                    if (Convert.ToDecimal(dr["RegularPrice"]) == Convert.ToDecimal(dr["SaleValue"]))
-                                    {
-                                        <label class="salepice">
-                                            &#8377;@dr["SaleValue"]
-                                        </label>
-
-                                    }
-                                    else
-                                    {
-                                        <span class="regularprice">&#8377;@dr["RegularPrice"] &nbsp; &nbsp;</span>
-                                        <label class="salepice">
-                                            &#8377; @dr["SaleValue"]
-                                        </label>
-                                    }
-                                }
-
-
-                                @*else if (!string.IsNullOrEmpty(Convert.ToString(dr["VarId"])))
-                                    {
-                                        @Html.Action("VariationPrice", "ProductDetail", new { VariationId = dr["VarId"], discount = dr["Discper"] })
-                                    }*@
-
-                                @if (Convert.ToString(dr["ProductType"]) == "Attribute Product")
-                                {
-                                    LogicClass objL = new LogicClass();
-                                    DataTable dt = objL.Proc_GetProductDetail_Varaiation(Convert.ToString(dr["ProductCode"]), "Proc_GetProductDetail_Varaiation");
-                                    if (dt != null && dt.Rows.Count > 0)
-                                    {
-                                        <div>
-                                            <select class="form-control ddl_PVariation sp_@dr["ProductCode"]">
-                                                @foreach (DataRow drvariation in dt.Rows)
-                                                {
-                                                    <option value="@drvariation["VarId"]" RegularPrice="@drvariation["RegularPrice"]" SalePrice="@drvariation["SalePrice"]"> @drvariation["VarriationName"]</option>
-                                                }
-                                            </select>
-                                        </div>
-                                    }
-                                }
-                                else
-                                {
-                                    <div class="form-control" style="border: none;"> </div>
-                                }
-
                             </div>
-                            <div style="display:none">
-                                <select style="width:67%">
-                                    <option>Select</option>
-                                </select>
-                            </div>
-                            @*<div class="qty-cart">
-                                    <div class="quantity buttons_added">
-                                        <input type="button" value="-" class="minus minus-btn">
-                                        <input type="number" step="1" name="quantity" value="0" class="input-text qty text">
-                                        <input type="button" value="+" class="plus plus-btn">
-                                    </div>
-                                    <span class="cart-icon" onclick="AddItemInCart('@dr["ProductCode"]',this,'@dr["AttrId"]','@dr["VarId"]')"><i class="uil uil-shopping-cart-alt"></i></span>
-                                </div>*@
-                        </div>
-                        <div>
-                            @if (Convert.ToDecimal(dr["Discper"]) > 0)
-                            {
-                                <span class="ttp" style="position:absolute;right:5%; color:green; bottom:10%;">@dr["Discper"]% off</span>
-                            }
                         </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
         </div>
     </div>
 }
-<!-- code by muskan-->
-<div class="row cts" style="display:flex;flex-wrap:wrap;">
 
-    @{
-        int counter = 0;
-        int maxItems = Model.dtCatProduct.Rows.Count >= 6 ? 6 : Model.dtCatProduct.Rows.Count;
 
-        foreach (DataRow dr in Model.dtCatProduct.Rows)
-        {
-            if (counter >= maxItems)
+<div class="row">
+    <!-- code by muskan-->
+    <div class="row cts" style="display:flex;flex-wrap:wrap;">
+        @{
+            int counter = 0;
+            int maxItems = Model.dtCatProduct.Rows.Count >= 6 ? 6 : Model.dtCatProduct.Rows.Count;
+
+            foreach (DataRow dr in Model.dtCatProduct.Rows)
             {
-                break;
-            }
+                if (counter >= maxItems)
+                {
+                    break;
+                }
 
-            <div class="col-6" style="margin-left:-10px;">
-                <div class="item">
-                    <div class="product-item" id="ct">
-                        @if (Convert.ToString(dr["ProductType"]) == "Attribute Product")
-                        {
-                            <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]&&VarId=@dr["VarId"]" target="_blank" class="product-img">
-                                <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]" class="mx-3">
-                                @*<div class="product-absolute-options">
-                                        @if (Convert.ToDecimal(dr["Discper"]) > 0)
-                                        {
-                                            <span class="offer-badge-1"style="margin-top:100%!important;">@dr["Discper"]% off</span>
-                                        }
-                                        <span class="like-icon" title="wishlist" onclick="AddToWhishlist()"></span>
-                                    </div>*@
-                            </a>
-                        }
-                        else
-                        {
-                            <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" target="_blank" class="product-img">
-                                <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]">
+                <div class="col-6" style="margin-left:-10px;">
+                    <div class="item">
+                        <div class="product-item" id="ct">
+                            @if (Convert.ToString(dr["ProductType"]) == "Attribute Product")
+                            {
+                                <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]&&VarId=@dr["VarId"]" target="_blank" class="product-img">
+                                    <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]" class="mx-3">
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="../ProductDetail/ShowProduct_detail?ProductCategory=@dr["ProductCategory"]&&proId=@dr["ProductCode"]&&title=@dr["ProductName"]&&CatId=@dr["MainCategoryCode"]" target="_blank" class="product-img">
+                                    <img src="@dr["ProductMainImageUrl"]" alt="@dr["ProductName"]">
+                                    <span class="like-icon" title="wishlist" onclick="AddToWhishlist('@dr["ProductCode"]')" style="right:7%!important;"></span>
 
+                                </a>
+                            }
+                            <div class="card-body">
+                                <p class="card-title">Available (in stock)</p>
+                                @*<p style="color:#a59b9a">Fresh</p>*@
+                                <p class="card-text" style="font-size:15px;font-weight:bold;">
+                                    @dr["pName"]
+                                </p>
 
-                                <span class="like-icon" title="wishlist" onclick="AddToWhishlist('@dr["ProductCode"]')" style="right:7%!important;"></span>
+                                <div class="row" style="width:100%;min-height:50px">
+                                    <div class="col-mb-12" style="display: flex; width: 100%; justify-content:space-between;">
+                                        <div style="float: left!important;font-size:15px;padding:0px 20px">
+                                            100g
+                                        </div>
+                                        <div style="float:right!important;">
+                                            <button style="float:right;border:1px solid #Fa2365;color:black!important;" class="btn btn-light" onclick="AddItemInCartSingle()">Add </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="product-price">
 
-                            </a>
-                        }
-                        <div class="product-text-dt">
-                            <p style="color:black!important;">Available<span>(In Stock)</span></p>
-
-                            <h4>@dr["pName"]</h4>
-                            <div class="product-price">
-
-                                @if (Convert.ToDecimal(dr["Discper"]) > 0)
-                                {
-                                    <span class="regularprice">&#8377;@dr["RegularPrice"] &nbsp; &nbsp;</span>
-                                    <label class="salepice">
-                                        &#8377; @dr["SaleValue"]
-                                    </label>
-                                }
-                                else
-                                {
-                                    if (Convert.ToDecimal(dr["RegularPrice"]) == Convert.ToDecimal(dr["SaleValue"]))
-                                    {
-                                        <label class="salepice">
-                                            &#8377;@dr["SaleValue"]
-                                        </label>
-                                    }
-                                    else
+                                    @if (Convert.ToDecimal(dr["Discper"]) > 0)
                                     {
                                         <span class="regularprice">&#8377;@dr["RegularPrice"] &nbsp; &nbsp;</span>
                                         <label class="salepice">
                                             &#8377; @dr["SaleValue"]
                                         </label>
                                     }
-                                }
-
-
-                                @*else if (!string.IsNullOrEmpty(Convert.ToString(dr["VarId"])))
+                                    else
                                     {
-                                        @Html.Action("VariationPrice", "ProductDetail", new { VariationId = dr["VarId"], discount = dr["Discper"] })
-                                    }*@
-
-                                @if (Convert.ToString(dr["ProductType"]) == "Attribute Product")
-                                {
-                                    LogicClass objL = new LogicClass();
-                                    DataTable dt = objL.Proc_GetProductDetail_Varaiation(Convert.ToString(dr["ProductCode"]), "Proc_GetProductDetail_Varaiation");
-                                    if (dt != null && dt.Rows.Count > 0)
-                                    {
-                                        <div>
-                                            <select class="form-control ddl_PVariation sp_@dr["ProductCode"]">
-                                                @foreach (DataRow drvariation in dt.Rows)
-                                                {
-                                                    <option value="@drvariation["VarId"]" RegularPrice="@drvariation["RegularPrice"]" SalePrice="@drvariation["SalePrice"]"> @drvariation["VarriationName"]</option>
-                                                }
-                                            </select>
-                                        </div>
+                                        if (Convert.ToDecimal(dr["RegularPrice"]) == Convert.ToDecimal(dr["SaleValue"]))
+                                        {
+                                            <label class="salepice">
+                                                &#8377;@dr["SaleValue"]
+                                            </label>
+                                        }
+                                        else
+                                        {
+                                            <span class="regularprice">&#8377;@dr["RegularPrice"] &nbsp; &nbsp;</span>
+                                            <label class="salepice">
+                                                &#8377; @dr["SaleValue"]
+                                            </label>
+                                        }
                                     }
-                                }
-                                else
-                                {
-                                    <div class="form-control" style="border: none;"> </div>
-                                }
 
+
+                                    @*else if (!string.IsNullOrEmpty(Convert.ToString(dr["VarId"])))
+                                        {
+                                            @Html.Action("VariationPrice", "ProductDetail", new { VariationId = dr["VarId"], discount = dr["Discper"] })
+                                        }*@
+
+                                    @if (Convert.ToString(dr["ProductType"]) == "Attribute Product")
+                                    {
+                                        LogicClass objL = new LogicClass();
+                                        DataTable dt = objL.Proc_GetProductDetail_Varaiation(Convert.ToString(dr["ProductCode"]), "Proc_GetProductDetail_Varaiation");
+                                        if (dt != null && dt.Rows.Count > 0)
+                                        {
+                                            <div>
+                                                <select class="form-control ddl_PVariation sp_@dr["ProductCode"]">
+                                                    @foreach (DataRow drvariation in dt.Rows)
+                                                    {
+                                                        <option value="@drvariation["VarId"]" RegularPrice="@drvariation["RegularPrice"]" SalePrice="@drvariation["SalePrice"]"> @drvariation["VarriationName"]</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="form-control" style="border: none;"> </div>
+                                    }
+
+                                </div>
+                                <div style="display:none">
+                                    <select style="width:67%">
+                                        <option>Select</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div style="display:none">
-                                <select style="width:67%">
-                                    <option>Select</option>
-                                </select>
-                            </div>
-                            @*<div class="qty-cart">
-                                    <div class="quantity buttons_added">
-                                        <input type="button" value="-" class="minus minus-btn">
-                                        <input type="number" step="1" name="quantity" value="0" class="input-text qty text">
-                                        <input type="button" value="+" class="plus plus-btn">
-                                    </div>
-                                    <span class="cart-icon" onclick="AddItemInCart('@dr["ProductCode"]',this,'@dr["AttrId"]','@dr["VarId"]')"><i class="uil uil-shopping-cart-alt"></i></span>
-                                </div>*@
                             <div class="product-absolute-options">
                                 @if (Convert.ToDecimal(dr["Discper"]) > 0)
                                 {
-                                    <span class="ttp" style="position:absolute;left:25%; color:green; bottom:90px!important;">@dr["Discper"]% off</span>
+                                    <span class="ttp" style="position:absolute;left:25%; color:green;top:10px">@dr["Discper"]% off</span>
                                 }
                             </div>
 
                         </div>
-                    </div>
-                </div>
 
-            </div>
-            counter++;
-            if (counter % 6 == 0)
-            {
-                @Html.Raw("</div>") <!-- Close the current row after six items -->
+                    </div>
+
+                </div>
+                counter++;
+                if (counter % 6 == 0)
+                {
+                    @Html.Raw("</div>") <!-- Close the current row after six items -->
+                }
             }
+
         }
 
-    }
 
 
 
-
+    </div>
+    <!--code by muskan-->
 </div>
-<!--code by muskan-->

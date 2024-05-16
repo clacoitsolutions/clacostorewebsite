@@ -528,11 +528,40 @@
 
 
     </div>
-    <div>
-        <h2>Grocery</h2>
-        @Html.Action("GetproductGroceryCategory", "WebHome")
-    </div>
+
     @* Best Category end *@
+
+    <div class="section145">
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row" style="width:100%;">
+                        <div class="col-mb-12 ast" style="display: flex; width: 100%; justify-content:space-between;">
+                            <div style="float: left!important;font-weight: bold;font-size:25px;">
+                                Vegetables & Fruits
+                            </div>
+                            <div style="float:right!important;">
+                                <button style="float:right!important;background:none;border:none;border:1px solid gray;width:110px;height:40px;border-radius:10px;margin-bottom:10px;"><a href="/ProductDetail/SearchCategory?CatName=Grocery&&CatId=30223&&SubCatId=0" style="color: black !important; display: inline-block;">View all</a></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--mobile view show all product start -->
+                    <div class="row" style="width:100%;">
+                        <div class="mb-12  phdg" style="display:flex; width:100%; justify-content:space-between;margin-left:2%;">
+                            <div style="float: left; font-weight: bold;font-size:25px;top:20px">Grocery</div>
+                            <div style="float:right;margin-left:-20%;"><a href="/WebHome/viewGetproductctg?CategoryId=30223" style="color: black !important; display: inline-block; float:right;padding-top:10px;margin-left:-50%!important;">View all</a></div>
+                        </div>
+                    </div>
+                    <!-- mobile view show all product end-->
+
+                    @Html.Action("GetproductGroceryCategory", "WebHome")
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!---card design for category-->
     <div class="row" style="border:1px solid #e1dede; margin: 0px !important;">
         <div class="col-md-12 offer_card">
